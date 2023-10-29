@@ -1,38 +1,101 @@
 <template>
   <div>
-    <div class="d-flex justify-space-between ma-2 pa-0">
-      <div>Admin List</div>
-      <v-btn to="/admin/add">add admin</v-btn>
-    </div>
-    <PaginationComponent class="ma-2 pa-0" :pagination="adminList">
-      <v-row class="py-4">
-        <v-col v-for="(admin, index) in adminList.list" cols="12" sm="4" md="3" :key="admin.id ?? index">
-          <PersonCardComponent :person="admin" :to="`/admin/${admin.id}`"></PersonCardComponent>
-          <!-- <PersonCardComponent :person="admin" @click="$router.push(`/admin/${admin.id}`)" pointer-cursor></PersonCardComponent> -->
-        </v-col>
-      </v-row>
-    </PaginationComponent>
+    <h1 class="page-title">Admin List</h1>
+    <OffsetPaginationComponent :pagination="adminPagination">
+      <template v-slot:editSection>
+        <v-btn prepend-icon="mdi-account-plus-outline" variant="tonal" to="/admin/add">Add Admin</v-btn>
+      </template>
+
+      <v-table height="400px" density="compact" style="width: 100%;" class="datatable">
+        <thead>
+          <tr>
+            <th>name</th>
+            <th>email</th>
+            <th>a super user</th>
+            <th>disabled</th>
+            <th v-if="user?.hasSuperUserRole()"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-if="adminPagination.resultList.length < 1">
+            <td class="no-data" colspan="12">
+              <div class="justify-center text-center pa-5">
+                <img src="@/assets/images/image-no-data.svg" alt="No Data" /><br /><br />
+                <span class="text-disabled text-body-1">Data Admin kosong</span>
+              </div>
+            </td>
+          </tr>
+          <tr v-else v-for="(admin, index) in adminPagination.resultList" :key="admin.id ?? index"
+            :to="`/admin/${admin.id}`" @dblclick="toDetail(admin.id)">
+            <td>{{ admin.name }}</td>
+            <td>{{ admin.email }}</td>
+            <td>{{ admin.aSuperUser }}</td>
+            <td>{{ admin.disabled }}</td>
+            <td v-if="user?.hasSuperUserRole()"><v-btn variant="text" icon="mdi-account-cancel-outline" size="x-small"
+              @click="disableConfirmation($event)"></v-btn>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </OffsetPaginationComponent>
   </div>
 </template>
 
 <script lang="ts" setup>
-import HttpRequestInterface from '@/domain/http-request-interface';
-import { AdminListDataInterface } from '@/domain/model/admin';
 import UserRepository from '@/domain/user-repository';
-import PaginationComponent from '@/resources/components/PaginationComponent.vue';
-import Pagination from '@/resources/components/pagination';
-import PersonCardComponent from '@/shared/components/person-card-component.vue';
-import { inject, reactive } from 'vue';
+import HttpRequestInterface from '@/domain/user-role/http-request-interface';
+import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
+import { KeywordSearch, PaginationResponse } from '@/resources/components/abstract-pagination';
+import OffsetPagination from '@/resources/components/offset-pagination';
+import EnumFilter from '@/resources/components/pagination/enum-filter';
+import { reactive } from 'vue';
+import { inject } from 'vue';
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useConfirm } from "primevue/useconfirm";
 
-const httpRequest = inject<HttpRequestInterface>('httpRequest')!;
-const user = inject<UserRepository>('userRepository')?.getUser()!;
+const httpRequest = inject<HttpRequestInterface>('httpRequest')!
+const user = inject<UserRepository>('userRepository')?.getInnovUser()
+const router = useRouter();
+const confirm = useConfirm();
 
-const adminList = reactive(new Pagination<AdminListDataInterface>(
-  async (pagination: Pagination<AdminListDataInterface>) =>
-    await user.submitGetRequest(httpRequest, '/admin', pagination.getQueryParameters())
+type ResponseType = { id: string; name: string; email: string; disabled: boolean, aSuperUser: boolean }
+
+const adminPagination = reactive(new OffsetPagination<ResponseType>(
+  async (pagination) => {
+    const response = await user?.executeGraphqlQueryInInnov<{ adminList: PaginationResponse<ResponseType> }>(httpRequest, {
+      operation: 'adminList',
+      variables: pagination.toGraphqlVariables(),
+      fields: OffsetPagination.wrapResultFields(['id', 'name', 'email', 'disabled', 'aSuperUser'])
+    })!
+    return response.adminList;
+  },
+  [
+    new EnumFilter('disabled', 'Admin.disabled', () => [{ status: true, name: 'disabled' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
+    new EnumFilter('a super user', 'Admin.aSuperUser', () => [{ status: true, name: 'SU admin' }, { status: false, name: 'non SU admin' }], 'IN', undefined, 'name', 'status'),
+  ],
+  new KeywordSearch(["Admin.name", "Admin.email"])
 ))
-adminList.init();
 
+onMounted(async () => {
+  await adminPagination.loadPage();
+})
+
+const toDetail = (adminId: string) => router.push(`/admin/${adminId}`)
+
+const disableConfirmation = (event: Event) => {
+  console.log('confirm disable')
+  confirm.require({
+    target: event.currentTarget as HTMLElement,
+    message: 'Do you want to disable this user?',
+    icon: 'mdi mdi-alert-outline',
+    acceptClass: 'p-button-danger',
+    accept: () => {
+      // toast.add({ severity: 'info', summary: 'Confirmed', detail: 'Record deleted', life: 3000 });
+    },
+    reject: () => {}
+  });
+};
 
 </script>
 

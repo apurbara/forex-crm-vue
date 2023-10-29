@@ -1,105 +1,78 @@
 <template>
-  <div>
-    <div>
-      <div class="filter" style="justify-content: space-between;">
-        <div style="width: 420px; display: flex">
-          <div style="width: 320px">
-            <v-text-field placeholder="Cari..." variant="outlined" hide-details
-              v-model="pagination.keywordSearch" v-on:keyup.enter="renewList()">
-              <template v-slot:append-inner>
-                <div class="btn-append-primary" @click="renewList()" style="cursor: pointer">
-                  <img src="@/assets/icons/ic-search.svg" style="position: relative; top: 12px; left: 12px" />
-                </div>
+  <div class="pagination">
+    <section class="pagination__filter">
+      <div class="d-flex flex-wrap justify-space-between align-center">
+        <div class="d-flex flex-wrap justify-start align-center">
+          <v-text-field v-if="pagination.keywordSearch" class="ma-2 flex-grow-1 flex-shrink-1"
+            style="min-width: 300px; max-width: 100%;" hide-details variant="plain"
+            v-model="pagination.keywordSearch.value" append-inner-icon="mdi-magnify" @keyup.enter="submitKeywordSearch"
+            clearable @click:append-inner="submitKeywordSearch" density="compact"></v-text-field>
+          <div class="ma-2 filter">
+            <v-menu v-if="pagination.availableFilters.length > 0" :close-on-content-click="false">
+              <template v-slot:activator="{ props }">
+                <v-btn append-icon="mdi-filter-outline" v-bind="props" variant="plain">Filter</v-btn>
               </template>
-            </v-text-field>
-          </div>
-          <v-menu v-if="pagination.filters.length > 0">
-            <template v-slot:activator="{ props }">
-              <v-btn class="filter ml-2" min-height="40" v-bind="props">
-                <img src="@/assets/icons/button/filter.svg" alt="no data" class="mr-2" />Filter
-              </v-btn>
-            </template>
-            <div class="py-2" style="width: 240px; background-color: white; border-radius: 8px;">
-              <div v-for="(filter, index) in pagination.filters" :key="index">
-                <v-divider v-if="index > 0" />
-                <EnumFilterComponent v-if="filter.type === 'ENUM'" class="mx-4 my-2" :enum-filter="filter"
-                  @filter-updated="renewList" />
+              <div class="filter-list elevation-1">
+                <div v-for="(filter, index) in pagination.availableFilters" :key="index">
+                  <v-divider v-if="index > 0" />
+                  <EnumFilterComponent v-if="filter.type === 'ENUM'" class="mx-4 my-2" :enum-filter="filter"
+                    @filter-updated="renewList" />
+                </div>
               </div>
-            </div>
-          </v-menu>
+            </v-menu>
+          </div>
+          <div class="ma-2">
+            <slot name="filterExtension"></slot>
+          </div>
         </div>
-        <div style="display: flex; justify-content: end;">
-          <slot name="filter"></slot>
+        <div class="ma-2">
+          <slot name="editSection"></slot>
         </div>
       </div>
-      <div v-if="pagination.getAppliedFilters()?.length > 0" class="d-flex mt-4">
-        <div class="font-12 font-medium font-link mx-2 mt-1" style="cursor: pointer" @click="resetFilter()">Reset</div>
-        <div v-for="(filter, index) in pagination.filters" :key="index">
-          <v-chip v-for="appliedFilter in filter.getAppliedFilters()" :key="appliedFilter.value ?? appliedFilter"
-            color="primary" closable close-icon="mdi-close"
-            @click:close="removeAppliedFilter(filter, appliedFilter.value ?? appliedFilter)" class="ml-2 px-2">
-            <span class="font-12 font-medium">{{ appliedFilter.title }}</span>
+      <div v-if="hasSelectedFilters" class="d-flex flex-wrap justify-start align-center">
+        <div class="ma-2">
+          <v-btn @click="resetFilter">Reset</v-btn>
+        </div>
+        <div v-for="(filter, index) in pagination.availableFilters" :key="filter.selectedItems.length">
+          <v-chip v-for="(selectedItem, index) in filter.selectedItems" :key="index" color="primary" closable
+            close-icon="mdi-close" @click:close="removeFilterSelectedItem(filter, selectedItem)" class="ma-1">
+            <span>{{ selectedItem[filter.itemTitle] }}</span>
           </v-chip>
-          <!-- <div class="chip-blue ml-2" v-for="(appliedFilter, index) in pagination.getAppliedFilters()" :key="index">
-          {{ appliedFilter }}
-        </div> -->
         </div>
       </div>
-      <slot></slot>
-      <OffsetLimitComponent :offset-limit="pagination.offsetLimit" @renew-list="renewList" @load-page="loadPage" />
+    </section>
+    <slot></slot>
+    <div class="ma-2">
+      <slot name="navigation"></slot>
     </div>
   </div>
 </template>
 
 <script setup lang="ts" generic="ResultType">
-import Pagination from './pagination';
-import OffsetLimitComponent from "./pagination/OffsetLimitComponent.vue";
 import EnumFilterComponent from "./pagination/EnumFilterComponent.vue";
 import EnumFilter from './pagination/enum-filter';
+import AbstractPagination from "./abstract-pagination";
+import { computed } from "vue";
 
 
-const props = defineProps<{ pagination: Pagination<ResultType> }>()
+const props = defineProps<{ pagination: AbstractPagination<ResultType> }>()
+
+const hasSelectedFilters = computed(() => {
+  return !props.pagination.noAppliedFilter()
+})
 
 const renewList = async () => {
-  await props.pagination.renewList();
-}
-const loadPage = async () => {
-  await props.pagination.init();
+  await props.pagination.resetList();
 }
 const submitKeywordSearch = async () => {
-  await props.pagination.renewList()
+  await props.pagination.resetList()
 }
 const resetFilter = async () => {
-  await props.pagination.resetFilters();
+  await props.pagination.resetFilter();
 }
-const removeAppliedFilter = async (filter: EnumFilter, appliedFilterValue: string) => {
-  await props.pagination.removeAppliedFilter(filter, appliedFilterValue);
+const removeFilterSelectedItem = async (filter: EnumFilter, selectedItem: { [key: string]: string | number | boolean }) => {
+  await props.pagination.removeFilterSelectedItem(filter, selectedItem);
 }
-
-
-// export default {
-//   components: {
-//     OffsetLimitComponent: OffsetLimitComponent,
-//     EnumFilterComponent,
-//   },
-//   props: {
-//     pagination: Pagination,
-//     paginationType: {
-//       type: String,
-//       default() {
-//         return "card";
-//       },
-//     },
-//   },
-//   data() {
-//     return {
-//       keyword: null,
-//     };
-//   },
-//   methods: {
-
-//   },
-// };
 </script>
 
 <style scoped></style>

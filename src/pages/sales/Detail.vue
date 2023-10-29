@@ -1,37 +1,50 @@
 <template>
   <div>
-    <v-row class="pa-8">
-      <v-col cols="12">
-        <v-text-field label="name" v-model="sales.name" />
-      </v-col>
-      <v-col cols="6">
-        <v-text-field label="email" v-model="sales.email" />
-      </v-col>
-      <v-col cols="6">
-        <v-text-field label="phone" v-model="sales.phone" />
-      </v-col>
-      <v-col cols="12">
-        <v-text-field label="location" v-model="sales.location" />
-      </v-col>
-    </v-row>
+    <h1 class="page-title">Sales Detail</h1>
+    <section class="page-section">
+      <h2 class="section-title">Personnel Info</h2>
+      <p>name: {{ sales.personnel?.accountInfo.name }}</p>
+      <p>email: {{ sales.personnel?.accountInfo.email }}</p>
+      <p>created time: {{ sales.createdTime }}</p>
+    </section>
+    <section class="page-section">
+      <h2 class="section-title">Manager Info</h2>
+      <p>name: {{ sales.manager?.personnel?.accountInfo.name }}</p>
+      <p>email: {{ sales.manager?.personnel?.accountInfo.email }}</p>
+    </section>
   </div>
 </template>
 
 <script lang="ts" setup>
-import HttpRequestInterface from '@/domain/http-request-interface';
-import Sales, { SalesDataInterface } from '@/domain/model/sales';
-import UserRepository from '@/domain/user-repository';
+import Sales, { SalesType } from '@/domain/model/personnel/manager/sales';
+import { CompanyUserRoleInterface } from '@/domain/user-role/role-interfaces';
+import { useDependencyInjection } from '@/shared/composables/dependency-injection';
+import { onMounted } from 'vue';
 import { reactive } from 'vue';
-import { inject } from 'vue';
 
-const props = defineProps<{ salesId: string }>()
-const httpRequest = inject<HttpRequestInterface>('httpRequest')!;
-const user = inject<UserRepository>('userRepository')?.getUser()!;
+const { httpRequest, userRepository, cache } = useDependencyInjection();
 
 const sales = reactive(new Sales())
-user.submitGetRequest<SalesDataInterface>(httpRequest, `/sales/${props.salesId}`)
-  .then((res) => { sales.load(res) })
+const props = defineProps<{ salesId: string }>()
 
+onMounted(async () => {
+  const cacheData = cache?.pull<SalesType>(`sales-${props.salesId}`);
+  if (cacheData) {
+    sales.load(cacheData);
+  } else {
+    const response = await userRepository?.getUser<CompanyUserRoleInterface>()
+      .executeGraphqlQueryInCompany<{ salesDetail: SalesType }>(httpRequest, {
+        operation: 'salesDetail',
+        variables: { salesId: { type: 'ID!', value: props.salesId } },
+        fields: [
+          'id', 'disabled', 'createdTime',
+          { personnel: ["id", "name", "email"] },
+          { manager: ["id", { personnel: ["id", "name", "email"] }] }
+        ],
+      })
+    sales.load(response.salesDetail)
+  }
+})
 </script>
 
 <style lang="scss" scoped></style>

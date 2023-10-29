@@ -4,6 +4,10 @@ export function isEmail(email: string): boolean {
   return emailFormat.test(String(email));
 }
 export function isPassword(password: string): boolean {
+  // >8 char, numeric, uppercase, lowercase, special char (!@#$%&*()-+=^.), no whitespace
+  // const passwordFormat =
+  //   /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()])(?=\\S+$).{8,}$/;
+
   //8 characters and contain combination of alphabet and number
   const passwordFormat = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
   return passwordFormat.test(String(password));

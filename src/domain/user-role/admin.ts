@@ -1,12 +1,12 @@
+import HttpRequestInterface from "./http-request-interface";
+import { UserRoleDataType, UserRoleInterface } from "./role-interfaces";
 import LayoutInterface from "@/resources/components/layout-interface";
+import { GraphqlBuilderOptions } from "@/resources/types/graphql";
 import UserRepository from "../user-repository";
 import {
   generateBaseAppBarMenuItems,
   baseHome,
 } from "@/shared/components/default-layout";
-import UserRoleInterface from "../user-role-interface";
-import UserRoleDataInterface from "./user-role-data-interface";
-import HttpRequestInterface from "../http-request-interface";
 
 const ADMIN_ROLE_TYPE = "ADMIN";
 
@@ -16,7 +16,7 @@ export default class Admin implements UserRoleInterface {
   protected aSuperUser: boolean;
   readonly type: string = ADMIN_ROLE_TYPE;
 
-  constructor(parameters: UserRoleDataInterface) {
+  constructor(parameters: UserRoleDataType) {
     this.token = parameters.token;
     this.name = parameters.name;
     this.aSuperUser = parameters.aSuperUser!;
@@ -34,10 +34,19 @@ export default class Admin implements UserRoleInterface {
     return true;
   }
 
+  getLandingPage(): string {
+    return "/personnel";
+  }
+
   canAccess(menu: string): boolean {
-    return true;
-    // const asSuperUserMenus = this.aSuperUser ? ["admin"] : [];
-    // return [...asSuperUserMenus, "manager", "sales"].includes(menu);
+    const asSuperUserMenus = this.aSuperUser ? ["admin"] : [];
+    return [
+      ...asSuperUserMenus,
+      "firm",
+      "area-structure",
+      "area",
+      "customer-verification",
+    ].includes(menu);
   }
 
   getLayout(userRepository: UserRepository): LayoutInterface {
@@ -49,37 +58,86 @@ export default class Admin implements UserRoleInterface {
       appBarMenuItems: generateBaseAppBarMenuItems(userRepository, this.name),
       navBarMenuItems: [
         ...asSuperUserNavbarMenus,
-        { title: "manager", to: "/manager" },
-        { title: "sales", to: "/sales" },
-        { title: "product", to: "/product" },
-        { title: "mail content", to: "/mail-content" },
-        { title: "sales mission", to: "/sales-mission" },
+        {
+          title: "area structure",
+          to: "/area-structure",
+        },
+        {
+          title: "area",
+          to: "/area",
+        },
+        {
+          title: "personnel",
+          to: "/personnel",
+        },
+        {
+          title: "customer verification",
+          to: "/customer-verification",
+        },
+        {
+          title: "sales activity",
+          to: "/sales-activity",
+        },
+        {
+          title: "manager",
+          to: "/manager",
+        },
+        {
+          title: "sales",
+          to: "/sales",
+        },
       ],
     };
   }
 
-  getLandingPage(): string {
-    return "/product";
+  //
+  async executeGraphqlMutation<ResponseType>(
+    httpRequest: HttpRequestInterface,
+    options: GraphqlBuilderOptions
+  ): Promise<ResponseType> {
+    const response = await httpRequest.mutate(
+      "user",
+      {
+        operation: "byAdmin",
+        fields: [options],
+      },
+      this.token
+    );
+    return response.byAdmin;
+  }
+  async executeGraphqlQuery<ResponseType>(
+    httpRequest: HttpRequestInterface,
+    options: GraphqlBuilderOptions
+  ): Promise<ResponseType> {
+    const response = await httpRequest.query(
+      "user",
+      {
+        operation: "byAdmin",
+        fields: [options],
+      },
+      this.token
+    );
+    return response.byAdmin;
   }
 
   //
-  getToken(): string {
-    return this.token;
+  async executeGraphqlMutationInCompany<ResponseType>(
+    httpRequest: HttpRequestInterface,
+    options: GraphqlBuilderOptions
+  ): Promise<ResponseType> {
+    const response = await httpRequest.mutate("company", options, this.token);
+    return response;
   }
 
-  async submitPostRequest<PayloadType, ExpectedResponseType>(
+  async executeGraphqlQueryInCompany<ResponseType>(
     httpRequest: HttpRequestInterface,
-    endPoint: string,
-    payload: PayloadType
-  ): Promise<ExpectedResponseType> {
-    return await httpRequest.post(endPoint, payload, this.token);
+    options: GraphqlBuilderOptions
+  ): Promise<ResponseType> {
+    const response = await httpRequest.query("company", options, this.token);
+    return response;
   }
 
-  async submitGetRequest<ExpectedResponseType>(
-    httpRequest: HttpRequestInterface,
-    endPoint: string,
-    params?: { [key: string]: string }
-  ): Promise<ExpectedResponseType> {
-    return await httpRequest.get(endPoint, this.token, params);
+  hasSuperUserRole(): boolean {
+    return this.aSuperUser;
   }
 }

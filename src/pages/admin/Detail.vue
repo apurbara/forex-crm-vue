@@ -1,34 +1,42 @@
 <template>
   <div>
-    <v-row class="pa-8">
-      <v-col cols="12">
-        <v-text-field label="name" v-model="admin.name" />
-      </v-col>
-      <v-col cols="6">
-        <v-text-field label="email" v-model="admin.email" />
-      </v-col>
-      <v-col cols="6">
-        <v-text-field label="phone" v-model="admin.phone" />
-      </v-col>
-    </v-row>
+    <h1 class="page-title">Admin Detail</h1>
+    <div class="form">
+      <v-row>
+        <v-col cols="12" md="6"><v-text-field label="Name" v-model="admin.accountInfo.name" /></v-col>
+        <v-col cols="12" md="6"><v-text-field label="Email" v-model="admin.accountInfo.email" /></v-col>
+      </v-row>
+      <v-switch color="success" label="Super User" v-model="admin.aSuperUser" />
+      <v-switch color="success" label="Active" v-model="admin.disabled" :true-value="false" :false-value="true" />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import HttpRequestInterface from '@/domain/http-request-interface';
-import Admin, { AdminDataInterface } from '@/domain/model/admin';
-import UserRepository from '@/domain/user-repository';
+import Admin, { AdminType } from '@/domain/model/admin';
+import { useDependencyInjection } from '@/shared/composables/dependency-injection';
+import { onMounted } from 'vue';
 import { reactive } from 'vue';
-import { inject } from 'vue';
 
-const props = defineProps<{ adminId: string }>()
-const httpRequest = inject<HttpRequestInterface>('httpRequest')!;
-const user = inject<UserRepository>('userRepository')?.getUser()!;
+const { httpRequest, userRepository, cache } = useDependencyInjection();
 
 const admin = reactive(new Admin())
-user.submitGetRequest<AdminDataInterface>(httpRequest, `/admin/${props.adminId}`)
-  .then((res) => { admin.load(res) })
+const props = defineProps<{ adminId: string }>()
 
+onMounted(async () => {
+  const cacheData = cache?.pull<AdminType>(`admin-${props.adminId}`);
+  if (cacheData) {
+    admin.load(cacheData);
+  } else {
+    const response = await userRepository?.getInnovUser()
+      .executeGraphqlQueryInInnov<{ adminDetail: AdminType }>(httpRequest, {
+        operation: 'adminDetail',
+        variables: { adminId: { type: 'ID!', value: props.adminId } },
+        fields: ['id', 'name', 'email', 'aSuperUser', 'disabled'],
+      })
+    admin.load(response.adminDetail)
+  }
+})
 </script>
 
 <style lang="scss" scoped></style>

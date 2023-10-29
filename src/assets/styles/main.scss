@@ -1,0 +1,40 @@
+@import "datatable";
+@import "pagination";
+@import "form";
+@import "popup";
+@import "card-list";
+@import "layout";
+
+body {
+  font-family: "Montserrat", sans-serif !important;
+}
+// #app {
+.content {
+  background-color: #eaf1f3;
+  padding: 24px;
+  min-height: calc(100vh - 110px);
+  height: auto;
+  .page-title {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .page-section {
+    background-color: #ffffff;
+    padding: 24px 24px 24px 24px;
+    border-radius: 8px;
+    font-size: 12px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    .section-title {
+      font-size: 16px;
+    }
+  }
+}
+// }
+.login-page {
+  min-height: 100vh !important;
+
+  .login-card {
+    height: min-content;
+  }
+}

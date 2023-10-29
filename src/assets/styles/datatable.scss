@@ -1,0 +1,212 @@
+.v-table.datatable {
+  .v-table__wrapper {
+    border-radius: 4px;
+    border: 1px solid #e5e7e9;
+    th {
+      font-size: 12px;
+      font-weight: 600;
+      color: #5979a6;
+      // border-top: 1px solid #E5E7E9;
+      border-bottom: 2px solid #e5e7e9;
+      min-height: 56px;
+      &.first {
+        border-top-left-radius: 8px;
+        border-left: 1px solid #e5e7e9;
+      }
+
+      &.last {
+        border-top-right-radius: 8px;
+        border-right: 1px solid #e5e7e9;
+      }
+
+      .v-checkbox {
+        height: 40px;
+        .v-checkbox-btn {
+          min-height: 40px;
+          .v-selection-control__wrapper {
+            width: 16px;
+            height: 16px;
+            .mdi-checkbox-blank-outline {
+              width: 16px;
+              height: 16px;
+              border: 2px solid #e0e0e0;
+              opacity: 1;
+              border-radius: 4px;
+              &:before {
+                content: none;
+              }
+            }
+
+            .mdi-checkbox-marked {
+              background-image: url(/src/assets/icons/checkbox-marked.svg);
+              background-position: center;
+              &:before {
+                content: none;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        td.no-data {
+          border: 0px;
+          &:hover {
+            background-color: #ffffff;
+            cursor: default;
+          }
+          img {
+            height: 200px;
+          }
+        }
+        td {
+          font-size: 12px;
+          color: #333333;
+          border-bottom: 1px solid #e5e7e9;
+          // padding: 16px 12px 16px 16px;
+          padding: 8px 12px 8px 16px;
+
+          .v-checkbox {
+            height: 20px;
+            .v-checkbox-btn {
+              min-height: 20px;
+              .v-selection-control__wrapper {
+                width: 16px;
+                height: 16px;
+                .mdi-checkbox-blank-outline {
+                  width: 16px;
+                  height: 16px;
+                  border: 2px solid #e0e0e0;
+                  opacity: 1;
+                  border-radius: 4px;
+                  &:before {
+                    content: none;
+                  }
+                }
+
+                .mdi-checkbox-marked {
+                  background-image: url(/src/assets/icons/checkbox-marked.svg);
+                  background-position: center;
+                  &:before {
+                    content: none;
+                  }
+                }
+              }
+            }
+          }
+
+          &.first {
+            border-left: 1px solid #e5e7e9;
+            &.last-row {
+              border-bottom-left-radius: 8px;
+            }
+          }
+
+          &.last {
+            border-right: 1px solid #e5e7e9;
+            &.last-row {
+              border-bottom-right-radius: 8px;
+            }
+
+            .btn-action {
+              min-width: 24px;
+              max-width: 24px;
+              min-height: 24px;
+              max-height: 24px;
+              background-color: #e5e7e9;
+              border-radius: 6px;
+              padding: 7px;
+              background-image: url(/src/assets/icons/button/3dot.svg);
+              background-repeat: no-repeat;
+              background-position: center;
+              &:hover {
+                background-color: hsla(215, 70%, 40%, 1);
+                background-image: url(/src/assets/icons/button/3dot-white.svg);
+              }
+            }
+          }
+
+          .chip {
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 100px;
+            padding: 4px 8px;
+            text-align: center;
+            text-transform: capitalize;
+            &.orange {
+              background-color: #fff3e6;
+              border: 1px solid #ffd6ad;
+              color: #ff8000;
+            }
+            &.green {
+              background-color: #edf7f2;
+              border: 1px solid #c7e5d7;
+              color: #397e5d;
+            }
+            &.blue {
+              background-color: #e9f1fb;
+              border: 1px solid #bad1f3;
+              color: #2671d9;
+            }
+            &.purple {
+              background-color: #f7edfc;
+              border: 1px solid #e8ccf6;
+              color: #b73ef0;
+            }
+            &.red {
+              background-color: #faebea;
+              border: 1px solid #efc0bd;
+              color: #c53830;
+            }
+          }
+
+          &.val-stacombkit {
+            font-weight: 600;
+            &.red {
+              color: #c53830;
+            }
+            &.green {
+              color: #397e5d;
+            }
+          }
+
+          .coloredText {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            text-align: left;
+            text-transform: capitalize;
+            &.orange {
+              color: #ff8000;
+            }
+            &.green {
+              color: #397e5d;
+            }
+            &.blue {
+              color: #004d8b;
+            }
+            &.purple {
+              color: #763bd7;
+            }
+            &.red {
+              color: #e2517c;
+            }
+          }
+
+          .v-btn {
+            &:hover {
+              background-color: #9df8ff;
+            }
+          }
+        }
+
+        &:hover {
+          background-color: #f6f7fd;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}

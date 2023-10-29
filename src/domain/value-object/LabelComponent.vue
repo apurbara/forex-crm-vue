@@ -1,12 +1,11 @@
 <template>
-  <div>
-    <v-text-field label="name" v-model="label.name"></v-text-field>
-    <v-text-field label="description" v-model="label.description"></v-text-field>
-  </div>
+    <v-text-field label="name" v-model="label.name" :rules="[label.isValidName()]"></v-text-field>
+    <v-textarea label="description" v-model="label.description"></v-textarea>
 </template>
 
 <script lang="ts" setup>
-import { Label } from '@/domain/value-object/label';
+import Label from './label';
+
 
 defineProps<{ label: Label }>()
 </script>

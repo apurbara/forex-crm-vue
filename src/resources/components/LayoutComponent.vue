@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="layout">
     <v-app-bar app absolute :clipped-left="true" elevation="1" color="transparent" v-bind="$attrs">
       <v-app-bar-nav-icon v-if="layout.navBarMenuItems?.length && !lgAndUp" @click="toggleNavbar" />
       <HomeComponent :home="layout.home"></HomeComponent>

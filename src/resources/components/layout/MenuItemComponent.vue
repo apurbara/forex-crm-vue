@@ -20,4 +20,4 @@ import MenuItemInterface from './menu-item-interface';
 const props = defineProps<{ menuItem: MenuItemInterface | "divider" }>()
 </script>
 
-<style></style>
+<style lang="scss" scoped></style>

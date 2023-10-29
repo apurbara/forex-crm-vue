@@ -1,0 +1,66 @@
+.v-overlay-container {
+  .v-list {
+    .v-list-item {
+      min-height: 36px;
+      .v-list-item-title {
+        font-size: 13px;
+      }
+    }
+    margin: 0;
+  }
+  
+  .filter-list {
+    width: 240px;
+    background-color: white;
+    border-radius: 4px;
+    // border: 1px solid black;
+    .filter-title {
+      font-size: 13px;
+    }
+  }
+  
+  .v-card {
+    .v-card-title{
+      padding: 0;
+    }
+    .v-virtual-scroll__item {
+      font-size: 13px;
+      .v-list-item {
+        min-height: 36px;
+        .v-label {
+          font-size: 13px;
+        }
+      }
+    }
+    .v-card-actions {
+      .v-btn {
+        font-size: 13px;
+      }
+    }
+  }
+}
+.p-confirm-popup {
+  border-radius: 4px;
+  background-color: white;
+  padding: 16px;
+  font-size: 13px;
+
+  .p-confirm-popup-icon {
+    margin-right: 8px;
+    font-size: 150%;
+  }
+  .p-confirm-popup-footer {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    align-items: center;
+    .p-button {
+      margin: 4px 8px;
+      padding: 4px 16px;
+      border-radius: 4px;
+      border: 1px solid;
+      // background-color: aqua;
+    }
+  }
+}

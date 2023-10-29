@@ -1,37 +1,47 @@
 <script lang="ts" setup>
+import Guest from '@/domain/user-role/guest';
 import { reactive, inject } from 'vue';
-import UserRepository from '@/domain/user-repository';
 import Admin from '@/domain/user-role/admin';
+import { UserRoleDataType } from '@/domain/user-role/role-interfaces';
 import LoginPayload from '@/domain/user-role/login-payload';
-import HttpRequestInterface from '@/domain/http-request-interface';
-import LoginTask from '@/domain/task/user-bc/by-guest/login-task';
+import { useDependencyInjection } from '@/shared/composables/dependency-injection';
+import useFocus from '@/resources/composables/focus';
+import { useRouter } from 'vue-router';
 
 const loginPayload = reactive(new LoginPayload());
 
-const httpRequest = inject<HttpRequestInterface>('httpRequest')!;
-const userRepository = inject<UserRepository>('userRepository')!;
+const { httpRequest, userRepository } = useDependencyInjection();
+const { focus } = useFocus();
+const router = useRouter();
 
 const login = async () => {
-  const adminData = await new LoginTask(httpRequest).adminLogin(loginPayload);
-  userRepository.logUserIn(new Admin(adminData));
+  const response = await userRepository
+    .getUser<Guest>()
+    .executeGraphqlMutation<{ adminLogin: UserRoleDataType }>(httpRequest, {
+      operation: 'adminLogin',
+      variables: loginPayload.toGraphqlVariable(),
+      fields: ['token', 'name', 'aSuperUser'],
+    });
+  const adminData = response.adminLogin;
+  userRepository.logUserIn(new Admin(adminData))
+  router.push("/personnel");
 }
 </script>
-    
+
 <template>
-  <div class="d-flex align-center justify-center pa-4">
-    <v-card class="pa-4" min-width="400px" max-width="400px">
-      <v-row>
-        <v-col cols="12">
-          <v-text-field v-model="loginPayload.email" label="Email" :rules="[loginPayload.isValidEmail()]" />
-        </v-col>
-        <v-col cols="12">
-          <v-text-field v-model="loginPayload.password" label="Password" type="password"
-            :rules="[loginPayload.isValidPassword()]" />
-        </v-col>
-      </v-row>
-      <v-divider class="mt-12" />
+  <div class="content login-page d-flex justify-space-around">
+    <v-card class="login-card pa-4 mt-12 form" width="400px">
+      <v-card-title class="d-flex justify-space-around">
+        <v-title>Login To Continue</v-title>
+      </v-card-title>
+      <v-card-item>
+        <v-text-field ref="focus" v-model="loginPayload.email" label="Email" :rules="[loginPayload.isValidEmail()]" />
+        <v-text-field v-model="loginPayload.password" label="Password" type="password"
+          :rules="[loginPayload.isValidPassword()]" />
+      </v-card-item>
+      <v-divider />
       <v-card-actions>
-        <v-btn :disabled="!loginPayload.isValidLoginPayload()" block @click="login">
+        <v-btn :disabled="!loginPayload.isValidLoginPayload()" block @click="login" variant="elevated" color="primary">
           Login
         </v-btn>
       </v-card-actions>

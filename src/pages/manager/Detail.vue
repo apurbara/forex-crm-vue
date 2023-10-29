@@ -1,34 +1,42 @@
 <template>
   <div>
-    <v-row class="pa-8">
-      <v-col cols="12">
-        <v-text-field label="name" v-model="manager.name" />
-      </v-col>
-      <v-col cols="6">
-        <v-text-field label="email" v-model="manager.email" />
-      </v-col>
-      <v-col cols="6">
-        <v-text-field label="phone" v-model="manager.phone" />
-      </v-col>
-    </v-row>
+    <h1 class="page-title">Manager Detail</h1>
+    <section class="page-section">
+      <h2 class="section-title">Personnel Info</h2>
+      <p>name: {{ manager.personnel?.accountInfo.name }}</p>
+      <p>email: {{ manager.personnel?.accountInfo.email }}</p>
+      <p>created time: {{ manager.createdTime }}</p>
+    </section>
   </div>
 </template>
 
 <script lang="ts" setup>
-import HttpRequestInterface from '@/domain/http-request-interface';
-import Manager, { ManagerDataInterface } from '@/domain/model/manager';
-import UserRepository from '@/domain/user-repository';
+import PersonnelCreateComponent from '@/domain/model/PersonnelCreateComponent.vue';
+import Manager, { ManagerType } from '@/domain/model/personnel/manager';
+import { CompanyUserRoleInterface } from '@/domain/user-role/role-interfaces';
+import { useDependencyInjection } from '@/shared/composables/dependency-injection';
+import { onMounted } from 'vue';
 import { reactive } from 'vue';
-import { inject } from 'vue';
 
-const props = defineProps<{ managerId: string }>()
-const httpRequest = inject<HttpRequestInterface>('httpRequest')!;
-const user = inject<UserRepository>('userRepository')?.getUser()!;
+const { httpRequest, userRepository, cache } = useDependencyInjection();
 
 const manager = reactive(new Manager())
-user.submitGetRequest<ManagerDataInterface>(httpRequest, `/manager/${props.managerId}`)
-  .then((res) => { manager.load(res) })
+const props = defineProps<{ managerId: string }>()
 
+onMounted(async () => {
+  const cacheData = cache?.pull<ManagerType>(`manager-${props.managerId}`);
+  if (cacheData) {
+    manager.load(cacheData);
+  } else {
+    const response = await userRepository?.getUser<CompanyUserRoleInterface>()
+      .executeGraphqlQueryInCompany<{ managerDetail: ManagerType }>(httpRequest, {
+        operation: 'managerDetail',
+        variables: { managerId: { type: 'ID!', value: props.managerId } },
+        fields: ['id', 'disabled', 'createdTime', { personnel: ["id", "name"] }],
+      })
+    manager.load(response.managerDetail)
+  }
+})
 </script>
 
 <style lang="scss" scoped></style>

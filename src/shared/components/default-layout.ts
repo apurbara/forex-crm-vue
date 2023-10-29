@@ -4,8 +4,8 @@ import MenuItemInterface from "@/resources/components/layout/menu-item-interface
 import { useStringLimiter } from "@/resources/composables/typography";
 
 export const baseHome: HomeInterface = {
-  title: "forex",
-  to: "/home",
+  title: "pintar-forex",
+  to: "/",
 };
 
 export const generateBaseAppBarMenuItems = (

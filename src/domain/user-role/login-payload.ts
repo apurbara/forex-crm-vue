@@ -1,5 +1,5 @@
 import { isEmail, isNotEmpty } from "@/resources/composables/validator";
-import { ValidationResult } from "@/resources/composables/common-types";
+import { ValidationResult } from "@/resources/types/custom-types";
 
 export default class LoginPayload {
   constructor(public email: string = "", public password: string = "") {}
@@ -13,5 +13,13 @@ export default class LoginPayload {
 
   isValidLoginPayload(): boolean {
     return this.isValidEmail() === true && this.isValidPassword() === true;
+  }
+
+  //
+  toGraphqlVariable() {
+    return {
+      email: { value: this.email, required: true },
+      password: { value: this.password, required: true },
+    };
   }
 }

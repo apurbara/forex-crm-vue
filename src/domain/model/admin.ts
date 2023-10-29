@@ -1,33 +1,39 @@
-export interface AdminListDataInterface {
-  id?: string;
-  name?: string;
-  phone?: string;
-}
+import {
+  OptionalBoolean,
+  OptionalString,
+} from "@/resources/types/custom-types";
+import AccountInfo, { AccountInfoType } from "../value-object/account-info";
 
-export interface AdminDataInterface {
-  id?: string;
-  name?: string;
-  email?: string;
-  phone?: string;
-}
+export type AdminType = {
+  id: string;
+  aSuperUser: boolean;
+  disabled: boolean;
+} & AccountInfoType;
 
 export default class Admin {
-  id?: string;
-  name: string;
-  email: string;
-  phone: string;
+  constructor(
+    public id: OptionalString = undefined,
+    public aSuperUser: boolean = false,
+    public disabled: OptionalBoolean = undefined,
+    public accountInfo: AccountInfo = new AccountInfo()
+  ) {}
 
-  constructor(parameters: AdminDataInterface = {}) {
-    this.id = parameters.id;
-    this.name = parameters.name ?? "";
-    this.email = parameters.email ?? "";
-    this.phone = parameters.phone ?? "";
+  load(data: AdminType): void {
+    this.id = data.id;
+    this.aSuperUser = data.aSuperUser;
+    this.disabled = data.disabled;
+    this.accountInfo.load(data);
   }
 
-  load(parameters: AdminDataInterface = {}) {
-    this.id = parameters.id ?? this.id;
-    this.name = parameters.name ?? this.name;
-    this.email = parameters.email ?? this.email;
-    this.phone = parameters.phone ?? this.phone;
+  toGraphqlVariables() {
+    return {
+      aSuperUser: this.aSuperUser,
+      ...this.accountInfo.toGraphqlVariables(),
+    };
+  }
+
+  //
+  isValidToCreate(): boolean {
+    return this.accountInfo.isValidToCreate();
   }
 }

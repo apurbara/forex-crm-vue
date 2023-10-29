@@ -25,7 +25,9 @@ export default createVuetify({
   },
   defaults: {
     VBtn: { variant: "outlined" },
-    VTextField: { variant: "outlined", density: "compact" },
+    VTextField: { variant: "outlined" },
+    VTextarea: { variant: "outlined" },
+    VSelect: { variant: "outlined" },
     global: {
       ripple: false,
     },

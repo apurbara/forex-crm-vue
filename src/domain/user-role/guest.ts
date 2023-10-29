@@ -1,6 +1,7 @@
+import HttpRequestInterface from "./http-request-interface";
+import { UserRoleInterface } from "./role-interfaces";
 import LayoutInterface from "@/resources/components/layout-interface";
-import UserRoleInterface from "../user-role-interface";
-import HttpRequestInterface from "../http-request-interface";
+import { GraphqlBuilderOptions } from "@/resources/types/graphql";
 
 export default class Guest implements UserRoleInterface {
   isAuthenticated(): boolean {
@@ -15,35 +16,36 @@ export default class Guest implements UserRoleInterface {
     return GUEST_LAYOUT;
   }
 
-  getToken(): string | undefined {
-    return undefined;
-  }
-
   getLandingPage(): string {
-    return "/home";
+      return '/home';
   }
 
-  //
-  async submitPostRequest<PayloadType, ExpectedResponseType>(
+  async executeGraphqlMutation<ResponseType>(
     httpRequest: HttpRequestInterface,
-    endPoint: string,
-    payload: PayloadType
-  ): Promise<ExpectedResponseType> {
-    return await httpRequest.post(endPoint, payload);
+    options: GraphqlBuilderOptions
+  ): Promise<ResponseType> {
+    const response = await httpRequest.mutate("user", {
+      operation: "byGuest",
+      fields: [options],
+    });
+    return response.byGuest;
   }
 
-  async submitGetRequest<ExpectedResponseType>(
+  async executeGraphqlQuery<ResponseType>(
     httpRequest: HttpRequestInterface,
-    endPoint: string,
-    params?: { [key: string]: string } | undefined
-  ): Promise<ExpectedResponseType> {
-    return await httpRequest.get(endPoint, undefined, params);
+    options: GraphqlBuilderOptions
+  ): Promise<ResponseType> {
+    const response = await httpRequest.query("user", {
+      operation: "byGuest",
+      fields: [options],
+    });
+    return response.byGuest;
   }
 }
 
 const GUEST_LAYOUT: LayoutInterface = {
   home: {
-    title: "forex",
+    title: "pintar-forex",
     to: "/home",
   },
   appBarMenuItems: [

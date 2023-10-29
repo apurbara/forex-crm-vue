@@ -1,35 +1,36 @@
-import { inject } from 'vue';
+import { inject } from "vue";
 /**
  * plugins/index.ts
  *
  * Automatically included in `./src/main.ts`
  */
 
+import { App } from "vue";
+
 // Plugins
 import vuetify from "./vuetify";
 import pinia from "../store";
 import router from "../router";
 import PrimeVue from "primevue/config";
+// import "primevue/resources/themes/soho-light/theme.css";
 
+//service
 import ToastService from "primevue/toastservice";
 import ConfirmationService from "primevue/confirmationservice";
 
-import Toast from "primevue/toast";
-
 // Types
-import UserRepository from "@/domain/user-repository";
-import { App, reactive } from "vue";
-// import AxiosHttpRequest from '@/infrastructure/axios/axios-http-request';
-import MockHttpRequest from '@/infrastructure/mock/mock-http-request';
+import Toast from "primevue/toast";
+import ConfirmPopup from "primevue/confirmpopup";
 
 export function registerPlugins(app: App) {
-  app.use(vuetify).use(router).use(pinia).use(PrimeVue, {
-    ripple: true,
-    inputStyle: "outlined",
-  });
+  app.use(vuetify)
+  .use(router)
+  .use(pinia)
+  .use(PrimeVue);
 
   // register primevue component
   app.component("Toast", Toast);
+  app.component("ConfirmPopup", ConfirmPopup);
 
   // register global primevue service
   app.use(ConfirmationService);
@@ -46,15 +47,14 @@ export function registerPlugins(app: App) {
     // });
   };
 
-  // register global directives
-  app.directive("focus", { mounted: (el) => el.focus() });
+  // // register global directives
+  // app.directive("focus", { mounted: (el) => el.focus() });
 
-  // register global properties
-  const userRepository = reactive(new UserRepository());
-  // app.config.globalProperties.userRepository = reactive(userRepository);
-  app.provide("userRepository", userRepository);
+  // // register global properties
+  // const userRepository = reactive(new UserRepository());
+  // // app.config.globalProperties.userRepository = reactive(userRepository);
+  // app.provide("userRepository", userRepository);
 
   // const httpRequest = new AxiosHttpRequest();
-  const httpRequest = new MockHttpRequest();
-  app.provide("httpRequest", httpRequest);
+  // app.provide("httpRequest", httpRequest);
 }

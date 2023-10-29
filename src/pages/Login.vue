@@ -1,47 +1,42 @@
 <script lang="ts" setup>
-import HttpRequestInterface from '@/domain/http-request-interface';
-import LoginTask from '@/domain/task/user-bc/by-guest/login-task';
-import UserRepository from '@/domain/user-repository';
+import { useRouter } from 'vue-router';
 import LoginPayload from '@/domain/user-role/login-payload';
-import Manager from '@/domain/user-role/manager';
-import Sales from '@/domain/user-role/sales';
-import { reactive, inject, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
+import { UserRoleDataType, UserRoleInterface } from '@/domain/user-role/role-interfaces';
+import { useDependencyInjection } from '@/shared/composables/dependency-injection';
+import useFocus from '@/resources/composables/focus';
+import Personnel from '@/domain/user-role/personnel';
 
 const loginPayload = reactive(new LoginPayload());
-const roleSelection = ["sales", "manager"];
-const selectedRole = ref('sales');
 
-const httpRequest = inject<HttpRequestInterface>('httpRequest')!;
-const userRepository = inject<UserRepository>('userRepository')!;
+const { httpRequest, userRepository } = useDependencyInjection()
+const { focus } = useFocus()
 
 const login = async () => {
-  const task = new LoginTask(httpRequest);
-  if (selectedRole.value == "manager") {
-    const managerData = await task.managerLogin(loginPayload);
-    userRepository.logUserIn(new Manager(managerData));
-  } else {
-    const salesData = await task.salesLogin(loginPayload);
-    userRepository.logUserIn(new Sales(salesData));
-  }
+  const response = await userRepository.getUser<UserRoleInterface>().executeGraphqlMutation<{ personnelLogin: UserRoleDataType }>(httpRequest, {
+    operation: 'personnelLogin',
+    variables: loginPayload,
+    fields: ['token', 'name', 'activeSales']
+  });
+  userRepository.logUserIn(new Personnel(response.personnelLogin));
+  useRouter().push("/personnel-dashboard");
 }
 </script>
     
 <template>
-  <div class="d-flex align-center justify-center pa-4">
-    <v-card class="pa-4" min-width="400px" max-width="400px">
-      <v-select v-model="selectedRole" :items="roleSelection" label="User Role" outlined></v-select>
-      <v-row>
-        <v-col cols="12">
-          <v-text-field v-model="loginPayload.email" label="Email" :rules="[loginPayload.isValidEmail()]" />
-        </v-col>
-        <v-col cols="12">
-          <v-text-field v-model="loginPayload.password" label="Password" type="password"
-            :rules="[loginPayload.isValidPassword()]" />
-        </v-col>
-      </v-row>
-      <v-divider class="mt-12" />
+  <div class="content login-page d-flex justify-space-around">
+    <v-card class="login-card pa-4 mt-12 form" width="400px">
+      <v-card-title class="d-flex justify-space-around">
+        <v-title>Login To Continue</v-title>
+      </v-card-title>
+      <v-card-item>
+        <v-text-field ref="focus" v-model="loginPayload.email" label="Email" :rules="[loginPayload.isValidEmail()]" />
+        <v-text-field v-model="loginPayload.password" label="Password" type="password"
+          :rules="[loginPayload.isValidPassword()]" />
+      </v-card-item>
+      <v-divider />
       <v-card-actions>
-        <v-btn :disabled="!loginPayload.isValidLoginPayload()" block @click="login">
+        <v-btn :disabled="!loginPayload.isValidLoginPayload()" block @click="login" variant="elevated" color="primary">
           Login
         </v-btn>
       </v-card-actions>

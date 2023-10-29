@@ -1,0 +1,95 @@
+.pagination {
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  font-size: 12px;
+  .pagination__filter {
+    .v-text-field {
+      .v-input__control {
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+
+        .v-field--variant-plain {
+          height: 34px;
+
+          .v-field__input {
+            font-size: 12px;
+            padding: 0 12px;
+            min-height: 36px;
+            min-width: 50px;
+            color: #333333;
+            input {
+              font-size: 13px;
+              font-weight: 500;
+              color: black;
+              padding-top: 6px;
+            }
+          }
+
+          .v-field__clearable {
+            padding-top: 6px;
+          }
+          .v-field__append-inner {
+            padding-top: 6px;
+            width: 40px;
+          }
+          .v-field__prepend-inner {
+            padding-top: 6px;
+            padding-left: 6px;
+          }
+          .v-text-field__prefix__text {
+            padding-top: 6px;
+            // width: 40px;
+          }
+        }
+      }
+    }
+    .v-btn {
+      font-size: 13px;
+      border-radius: 6px;
+    }
+    .v-btn--variant-plain {
+      border: 1px solid #e0e0e0;
+    }
+  }
+
+  .pagination__page-navigation {
+    font-size: 12px;
+    .v-text-field {
+      &.v-combobox {
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        .v-combobox__selection-text {
+          text-overflow: inherit;
+        }
+        .v-input__control {
+          height: 32px;
+          padding: 0 8px;
+          .v-field__input {
+            padding-top: 4px !important;
+            padding-right: 0;
+            font-size: 14px;
+            align-items: flex-start;
+          }
+          .v-field__append-inner {
+            padding-top: 6px;
+            margin-right: 8px;
+            width: 16px !important;
+            .mdi-menu-down {
+              opacity: 1;
+              &:before {
+                content: "";
+              }
+            }
+          }
+        }
+      }
+
+      &.v-combobox--active-menu {
+        .v-field__append-inner {
+          padding-top: 4px !important;
+        }
+      }
+    }
+  }
+}
