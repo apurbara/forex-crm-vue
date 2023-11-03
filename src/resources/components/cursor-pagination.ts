@@ -1,10 +1,12 @@
+import { FieldOptions } from "@babel/types";
 import { OptionalString } from "../types/custom-types";
 import AbstractPagination, {
   KeywordSearch,
-  PaginationResponse,
+  PaginationResponseType,
 } from "./abstract-pagination";
 import EnumFilter from "./pagination/enum-filter";
 import OrderType from "./pagination/order-type";
+import Fields from "gql-query-builder/build/Fields";
 
 export type CursorLimitType = {
   pageSize: number;
@@ -62,7 +64,7 @@ export default class CursorPagination<
   constructor(
     viewListCallback: (
       pagination: AbstractPagination<ResultType>
-    ) => Promise<PaginationResponse<ResultType>>,
+    ) => Promise<PaginationResponseType<ResultType>>,
     availableFilters: Array<EnumFilter> = [],
     keywordSearch: KeywordSearch | undefined = undefined,
     public cursorLimit: CursorLimit = new CursorLimit()
@@ -81,7 +83,7 @@ export default class CursorPagination<
     };
   }
 
-  static wrapResultFields(fields: Array<string>) {
+  static wrapResultFields(fields: Fields) {
     return [
       { list: fields },
       { cursorLimit: ["pageSize", "total", "cursorToNextPage"] },

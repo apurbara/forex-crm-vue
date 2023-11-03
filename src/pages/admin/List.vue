@@ -45,7 +45,7 @@
 import UserRepository from '@/domain/user-repository';
 import HttpRequestInterface from '@/domain/user-role/http-request-interface';
 import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
-import { KeywordSearch, PaginationResponse } from '@/resources/components/abstract-pagination';
+import { KeywordSearch, PaginationResponseType } from '@/resources/components/abstract-pagination';
 import OffsetPagination from '@/resources/components/offset-pagination';
 import EnumFilter from '@/resources/components/pagination/enum-filter';
 import { reactive } from 'vue';
@@ -63,7 +63,7 @@ type ResponseType = { id: string; name: string; email: string; disabled: boolean
 
 const adminPagination = reactive(new OffsetPagination<ResponseType>(
   async (pagination) => {
-    const response = await user?.executeGraphqlQueryInInnov<{ adminList: PaginationResponse<ResponseType> }>(httpRequest, {
+    const response = await user?.executeGraphqlQueryInInnov<{ adminList: PaginationResponseType<ResponseType> }>(httpRequest, {
       operation: 'adminList',
       variables: pagination.toGraphqlVariables(),
       fields: OffsetPagination.wrapResultFields(['id', 'name', 'email', 'disabled', 'aSuperUser'])

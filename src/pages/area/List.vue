@@ -44,7 +44,7 @@
 
 <script lang="ts" setup>
 import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
-import { KeywordSearch, PaginationResponse } from '@/resources/components/abstract-pagination';
+import { KeywordSearch, PaginationResponseType } from '@/resources/components/abstract-pagination';
 import OffsetPagination from '@/resources/components/offset-pagination';
 import EnumFilter from '@/resources/components/pagination/enum-filter';
 import { reactive } from 'vue';
@@ -62,7 +62,7 @@ const confirm = useConfirm();
 
 const pagination = reactive(new OffsetPagination<AreaType>(
   async (pagination) => {
-    const response = await user?.executeGraphqlQueryInCompany<{ areaList: PaginationResponse<AreaType> }>(httpRequest, {
+    const response = await user?.executeGraphqlQueryInCompany<{ areaList: PaginationResponseType<AreaType> }>(httpRequest, {
       operation: 'areaList',
       variables: pagination.toGraphqlVariables(),
       fields: OffsetPagination.wrapResultFields([

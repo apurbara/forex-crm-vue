@@ -1,6 +1,6 @@
 import AbstractPagination, {
   KeywordSearch,
-  PaginationResponse,
+  PaginationResponseType,
 } from "./abstract-pagination";
 import EnumFilter from "./pagination/enum-filter";
 import OrderType from "./pagination/order-type";
@@ -59,7 +59,7 @@ export default class OffsetPagination<
   constructor(
     viewListCallback: (
       pagination: AbstractPagination<ResultType>
-    ) => Promise<PaginationResponse<ResultType>>,
+    ) => Promise<PaginationResponseType<ResultType>>,
     filters: Array<EnumFilter> = [],
     keywordSearch: KeywordSearch | undefined = undefined,
     public offsetLimit: OffsetLimit = new OffsetLimit()
@@ -83,7 +83,7 @@ export default class OffsetPagination<
   async loadPage(): Promise<void> {
     this.resultList.length = 0;
     const response = await this.viewListCallback(this);
-console.log(response);
+    console.log(response);
     this.resultList = response.list;
     this.offsetLimit.load(response.offsetLimit!);
   }

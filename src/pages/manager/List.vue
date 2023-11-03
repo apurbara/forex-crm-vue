@@ -37,7 +37,7 @@
 
 <script lang="ts" setup>
 import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
-import { KeywordSearch, PaginationResponse } from '@/resources/components/abstract-pagination';
+import { KeywordSearch, PaginationResponseType } from '@/resources/components/abstract-pagination';
 import OffsetPagination from '@/resources/components/offset-pagination';
 import EnumFilter from '@/resources/components/pagination/enum-filter';
 import { reactive } from 'vue';
@@ -55,7 +55,7 @@ const confirm = useConfirm();
 const pagination = reactive(new OffsetPagination<ManagerType>(
   async (pagination) => {
     const response = await userRepository.getUser<CompanyUserRoleInterface>()
-      .executeGraphqlQueryInCompany<{ managerList: PaginationResponse<ManagerType> }>(httpRequest, {
+      .executeGraphqlQueryInCompany<{ managerList: PaginationResponseType<ManagerType> }>(httpRequest, {
         operation: 'managerList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields(['id', 'disabled', 'createdTime', { personnel: ["id", "name"] }])

@@ -1,4 +1,3 @@
-import { PersonnelType } from "./../../personnel";
 import Area, { AreaType } from "../../area-structure/area";
 import Personnel, { PersonnelType } from "../../personnel";
 import Manager, { ManagerType } from "../manager";

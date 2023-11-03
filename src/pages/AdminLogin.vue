@@ -1,30 +1,27 @@
 <script lang="ts" setup>
 import Guest from '@/domain/user-role/guest';
 import { reactive, inject } from 'vue';
-import Admin from '@/domain/user-role/admin';
-import { UserRoleDataType } from '@/domain/user-role/role-interfaces';
 import LoginPayload from '@/domain/user-role/login-payload';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import useFocus from '@/resources/composables/focus';
 import { useRouter } from 'vue-router';
+import AdminRole, { AdminRoleType } from '@/domain/user-role/admin-role';
 
 const loginPayload = reactive(new LoginPayload());
 
 const { httpRequest, userRepository } = useDependencyInjection();
 const { focus } = useFocus();
-const router = useRouter();
 
 const login = async () => {
   const response = await userRepository
     .getUser<Guest>()
-    .executeGraphqlMutation<{ adminLogin: UserRoleDataType }>(httpRequest, {
+    .executeGraphqlMutation<{ adminLogin: AdminRoleType }>(httpRequest, {
       operation: 'adminLogin',
       variables: loginPayload.toGraphqlVariable(),
       fields: ['token', 'name', 'aSuperUser'],
     });
   const adminData = response.adminLogin;
-  userRepository.logUserIn(new Admin(adminData))
-  router.push("/personnel");
+  userRepository.logUserIn(new AdminRole(adminData))
 }
 </script>
 

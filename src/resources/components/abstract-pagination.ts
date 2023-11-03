@@ -3,7 +3,7 @@ import { CursorLimitType } from "./cursor-pagination";
 import { OffsetLimitType } from "./offset-pagination";
 import EnumFilter, { FilterType } from "./pagination/enum-filter";
 
-export interface PaginationResponse<ResultType> {
+export type PaginationResponseType<ResultType> = {
   list: Array<ResultType>;
   cursorLimit?: CursorLimitType;
   offsetLimit?: OffsetLimitType;
@@ -30,7 +30,7 @@ export default abstract class AbstractPagination<ResultType> {
   constructor(
     public viewListCallback: (
       pagination: AbstractPagination<ResultType>
-    ) => Promise<PaginationResponse<ResultType>>,
+    ) => Promise<PaginationResponseType<ResultType>>,
     public availableFilters: Array<EnumFilter> = [],
     public keywordSearch: KeywordSearch | undefined = undefined
   ) {}

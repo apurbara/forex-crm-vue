@@ -1,6 +1,12 @@
 import { isEmail, isNotEmpty } from "@/resources/composables/validator";
 import { ValidationResult } from "@/resources/types/custom-types";
 
+export type LoginAuthInfo = {
+  id?: string;
+  name?: string;
+  token?: string;
+};
+
 export default class LoginPayload {
   constructor(public email: string = "", public password: string = "") {}
 

@@ -4,6 +4,7 @@ import { inject } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import companyRoutes from "./company-routes";
 import { UserRoleInterface } from "@/domain/user-role/role-interfaces";
+import salesRoutes from "./sales-routes";
 
 const routes = [
   {
@@ -32,6 +33,7 @@ const routes = [
         component: () => import("@/pages/Home.vue"),
       },
       ...companyRoutes,
+      ...salesRoutes,
     ],
   },
 ];

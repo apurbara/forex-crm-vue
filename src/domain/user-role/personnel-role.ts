@@ -1,39 +1,47 @@
 import HttpRequestInterface from "./http-request-interface";
-import {
-  CompanyUserRoleInterface,
-  UserRoleDataType,
-  UserRoleInterface,
-} from "./role-interfaces";
+import { CompanyUserRoleInterface, UserRoleInterface } from "./role-interfaces";
 import LayoutInterface from "@/resources/components/layout-interface";
 import { GraphqlBuilderOptions } from "@/resources/types/graphql";
-import UserRepository from "../user-repository";
+import UserRepository, { StoreableAuthInfo } from "../user-repository";
 import {
   generateBaseAppBarMenuItems,
   baseHome,
 } from "@/shared/components/default-layout";
+import AbstractPagination, {
+  PaginationResponseType,
+} from "@/resources/components/abstract-pagination";
+import SalesRole, { SalesRoleType } from "./personnel/sales-role";
+import { LoginAuthInfo } from "./login-payload";
 
 const PERSONNEL_ROLE_TYPE = "PERSONNEL";
 
-export default class Personnel
-  implements UserRoleInterface, CompanyUserRoleInterface
+export type PersonnelRoleType = {
+  salesAssignments?: PaginationResponseType<SalesRoleType>;
+} & LoginAuthInfo;
+
+export default class PersonnelRole
+  implements StoreableAuthInfo, UserRoleInterface, CompanyUserRoleInterface
 {
-  protected token: string;
-  protected name: string;
+  public id: string;
+  public token: string;
+  public name: string;
   readonly type: string = PERSONNEL_ROLE_TYPE;
 
-  constructor(parameters: UserRoleDataType) {
-    this.token = parameters.token;
-    this.name = parameters.name;
+  constructor(parameters: PersonnelRoleType) {
+    this.token = parameters.token!;
+    this.name = parameters.name!;
+    this.id = parameters.id!;
   }
 
   static getRoleType() {
     return PERSONNEL_ROLE_TYPE;
   }
 
-  getName(): string {
-    return this.name;
+  authorizeAsSales(params: SalesRoleType) {
+    return new SalesRole(this, params);
   }
 
+  //
   isAuthenticated(): boolean {
     return true;
   }
@@ -104,9 +112,5 @@ export default class Personnel
   ): Promise<ResponseType> {
     const response = await httpRequest.query("company", options, this.token);
     return response;
-  }
-
-  hasSuperUserRole(): boolean {
-    return false;
   }
 }

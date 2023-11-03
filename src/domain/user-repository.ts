@@ -1,11 +1,13 @@
+import { PersonnelType } from "./model/personnel";
 import router from "@/router";
-import Admin from "./user-role/admin";
+import AdminRole, { AdminRoleType } from "./user-role/admin-role";
 import Guest from "./user-role/guest";
-import {
-  UserRoleDataType,
-  UserRoleInterface,
-} from "./user-role/role-interfaces";
-import Personnel from "./user-role/personnel";
+import PersonnelRole, { PersonnelRoleType } from "./user-role/personnel-role";
+import SalesRole, { SalesRoleType } from "./user-role/personnel/sales-role";
+
+export type StoreableAuthInfo = {
+  type: string;
+};
 
 export default class UserRepository {
   protected user: any;
@@ -17,13 +19,19 @@ export default class UserRepository {
   constructor() {
     const userParameters = localStorage.getItem("user");
     if (userParameters) {
-      const userData: UserRoleDataType = JSON.parse(userParameters);
+      const userData: StoreableAuthInfo = JSON.parse(userParameters);
       switch (userData.type) {
-        case Admin.getRoleType():
-          this.user = new Admin(userData);
+        case AdminRole.getRoleType():
+          this.user = new AdminRole(userData as AdminRoleType);
           break;
-        case Personnel.getRoleType():
-          this.user = new Personnel(userData);
+        case PersonnelRole.getRoleType():
+          this.user = new PersonnelRole(userData as PersonnelRoleType);
+          break;
+        case SalesRole.getRoleType():
+          const salesRoleData = userData as unknown as SalesRoleType;
+          const personnel = new PersonnelRole(salesRoleData.personnelRole);
+          const sales = personnel.authorizeAsSales(salesRoleData);
+          this.user = sales;
           break;
         default:
           this.user = new Guest();
@@ -34,10 +42,10 @@ export default class UserRepository {
     }
   }
 
-  logUserIn(user: UserRoleInterface): void {
+  logUserIn(user: StoreableAuthInfo): void {
     this.user = user;
     localStorage.setItem("user", JSON.stringify(this.user));
-    router.push("/dashboard");
+    router.push("/");
   }
 
   logout(): void {

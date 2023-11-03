@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import { useRouter } from 'vue-router';
 import LoginPayload from '@/domain/user-role/login-payload';
 import { reactive, ref, onMounted } from 'vue';
-import { UserRoleDataType, UserRoleInterface } from '@/domain/user-role/role-interfaces';
+import { UserRoleInterface } from '@/domain/user-role/role-interfaces';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import useFocus from '@/resources/composables/focus';
-import Personnel from '@/domain/user-role/personnel';
+import PersonnelRole, { PersonnelRoleType } from '@/domain/user-role/personnel-role';
 
 const loginPayload = reactive(new LoginPayload());
 
@@ -13,13 +12,28 @@ const { httpRequest, userRepository } = useDependencyInjection()
 const { focus } = useFocus()
 
 const login = async () => {
-  const response = await userRepository.getUser<UserRoleInterface>().executeGraphqlMutation<{ personnelLogin: UserRoleDataType }>(httpRequest, {
-    operation: 'personnelLogin',
-    variables: loginPayload,
-    fields: ['token', 'name', 'activeSales']
-  });
-  userRepository.logUserIn(new Personnel(response.personnelLogin));
-  useRouter().push("/personnel-dashboard");
+  const response = await userRepository.getUser<UserRoleInterface>()
+    .executeGraphqlMutation<{ personnelLogin: PersonnelRoleType }>(httpRequest, {
+      operation: 'personnelLogin',
+      variables: loginPayload.toGraphqlVariable(),
+      fields: [
+        'token', 'name', 'id',
+        {
+          operation: "salesAssignments",
+          variables: { filters: { type: "[FilterInput]", value: [{ column: "Sales.disabled", value: false }] } },
+          fields: [{ list: ['id'] }],
+          // fields: CursorPagination.wrapResultFields(["id", "createdTime", { area: ["name"] }, { manager: [{ personnel: ["name"] }] }]),
+        }
+      ]
+    });
+  const personnelRoleData = response.personnelLogin;
+  const personnel = new PersonnelRole(personnelRoleData);
+  const salesAssignments = personnelRoleData.salesAssignments?.list ?? [];
+  if (salesAssignments.length > 0) {
+    userRepository.logUserIn(personnel.authorizeAsSales(salesAssignments[0]));
+  } else {
+    userRepository.logUserIn(personnel);
+  }
 }
 </script>
     

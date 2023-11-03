@@ -18,9 +18,9 @@ export default class Area {
   public parent?: Area;
 
   constructor(
-    public id: OptionalString = undefined,
+    public id: string = "",
     public disabled: boolean = false,
-    public createdTime: OptionalString = undefined,
+    public createdTime: string = "",
     public label: Label = new Label()
   ) {}
 

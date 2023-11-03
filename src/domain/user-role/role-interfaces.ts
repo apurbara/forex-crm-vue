@@ -1,17 +1,20 @@
-import { UserRepository } from '@/domain/user-repository';
 import { GraphqlBuilderOptions } from "@/resources/types/graphql";
 import HttpRequestInterface from "./http-request-interface";
 import LayoutInterface from "@/resources/components/layout-interface";
 import UserRepository from "../user-repository";
 
-export type UserRoleDataType = {
-  token: string;
-  type: string;
-  name: string;
-  aSuperUser?: boolean;
-};
+// export type UserRoleDataType = {
+//   token: string;
+//   type: string;
+//   name: string;
+//   aSuperUser?: boolean;
+// };
 
 export interface UserRoleInterface {
+  isAuthenticated(): boolean;
+  canAccess(menu: string): boolean;
+  getLayout(userRepository: UserRepository): LayoutInterface;
+  getLandingPage(): string;
   executeGraphqlMutation<ResponseType>(
     httpRequest: HttpRequestInterface,
     options: GraphqlBuilderOptions
@@ -21,11 +24,6 @@ export interface UserRoleInterface {
     httpRequest: HttpRequestInterface,
     options: GraphqlBuilderOptions
   ): Promise<ResponseType>;
-
-  isAuthenticated(): boolean;
-  canAccess(menu: string): boolean;
-  getLayout(userRepository: UserRepository): LayoutInterface;
-  getLandingPage(): string;
 }
 
 export interface CompanyUserRoleInterface extends UserRoleInterface {
@@ -35,18 +33,6 @@ export interface CompanyUserRoleInterface extends UserRoleInterface {
   ): Promise<ResponseType>;
 
   executeGraphqlQueryInCompany<ResponseType>(
-    httpRequest: HttpRequestInterface,
-    options: GraphqlBuilderOptions
-  ): Promise<ResponseType>;
-}
-
-export interface SalesUserRoleInterface extends CompanyUserRoleInterface {
-  executeSalesGraphqlMutation<ResponseType>(
-    httpRequest: HttpRequestInterface,
-    options: GraphqlBuilderOptions
-  ): Promise<ResponseType>;
-
-  executeSalesGraphqlQuery<ResponseType>(
     httpRequest: HttpRequestInterface,
     options: GraphqlBuilderOptions
   ): Promise<ResponseType>;

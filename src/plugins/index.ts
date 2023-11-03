@@ -12,7 +12,7 @@ import vuetify from "./vuetify";
 import pinia from "../store";
 import router from "../router";
 import PrimeVue from "primevue/config";
-// import "primevue/resources/themes/soho-light/theme.css";
+import "primevue/resources/themes/soho-light/theme.css";
 
 //service
 import ToastService from "primevue/toastservice";
@@ -23,10 +23,7 @@ import Toast from "primevue/toast";
 import ConfirmPopup from "primevue/confirmpopup";
 
 export function registerPlugins(app: App) {
-  app.use(vuetify)
-  .use(router)
-  .use(pinia)
-  .use(PrimeVue);
+  app.use(vuetify).use(router).use(pinia).use(PrimeVue);
 
   // register primevue component
   app.component("Toast", Toast);
