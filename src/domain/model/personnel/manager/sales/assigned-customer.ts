@@ -10,13 +10,18 @@ import { PaginationResponseType } from "@/resources/components/abstract-paginati
 import SalesActivitySchedule, {
   SalesActivityScheduleType,
 } from "./assigned-customer/sales-activity-schedule";
+import CustomerJourney, {
+  CustomerJourneyType,
+} from "@/domain/model/customer-journey";
+import { scheduler } from "timers/promises";
 
 export type AssignedCustomerType = {
   id?: string;
-  disabled?: boolean;
+  status?: string;
   createdTime?: string;
   sales?: SalesType;
   customer?: CustomerType;
+  customerJourney?: CustomerJourneyType;
   schedules?: PaginationResponseType<SalesActivityScheduleType>;
   closingRequests?: PaginationResponseType<ClosingRequestType>;
   recycleRequests?: PaginationResponseType<RecycleRequestType>;
@@ -29,21 +34,25 @@ export default class AssignedCustomer {
 
   constructor(
     public id: string = "",
-    public disabled: boolean = false,
+    public status: string = "ACTIVE",
     public createdTime: string = "",
     public sales: Sales = new Sales(),
-    public customer: Customer = new Customer()
+    public customer: Customer = new Customer(),
+    public customerJourney: CustomerJourney = new CustomerJourney()
   ) {}
 
   load(data: AssignedCustomerType) {
     this.id = data.id ?? this.id;
-    this.disabled = data.disabled ?? this.disabled;
+    this.status = data.status ?? this.status;
     this.createdTime = data.createdTime ?? this.createdTime;
     if (data.sales) {
       this.sales.load(data.sales);
     }
     if (data.customer) {
       this.customer.load(data.customer);
+    }
+    if (data.customerJourney) {
+      this.customerJourney.load(data.customerJourney);
     }
 
     if (data.schedules) {
@@ -69,6 +78,55 @@ export default class AssignedCustomer {
         this.recycleRequests.push(recycleRequest);
       });
     }
+  }
+
+  completedSchedules(): SalesActivitySchedule[] {
+    return this.salesActivitySchedules.filter(
+      (schedule: SalesActivitySchedule) => schedule.status == "COMPLETED"
+    );
+  }
+  upcomingSchedules(): SalesActivitySchedule[] {
+    return this.salesActivitySchedules.filter(
+      (schedule: SalesActivitySchedule) =>
+        schedule.status == "SCHEDULED" &&
+        Date.parse(schedule.endTime) > Date.now()
+    );
+  }
+  pastSchedulesWithoutReport(): SalesActivitySchedule[] {
+    return this.salesActivitySchedules.filter(
+      (schedule: SalesActivitySchedule) =>
+        schedule.status == "SCHEDULED" &&
+        Date.parse(schedule.endTime) < Date.now()
+    );
+  }
+  activeClosingRequest() {
+    return this.closingRequests.filter(
+      (request: ClosingRequest) => request.status == "WAITING_FOR_APPROVAL"
+    );
+  }
+  activeRecycleRequest() {
+    return this.recycleRequests.filter(
+      (request: RecycleRequest) => request.status == "WAITING_FOR_APPROVAL"
+    );
+  }
+  completedClosingRequest() {
+    return this.closingRequests.filter(
+      (request: ClosingRequest) => request.status != "WAITING_FOR_APPROVAL"
+    );
+  }
+  completedRecycleRequest() {
+    return this.recycleRequests.filter(
+      (request: RecycleRequest) => request.status != "WAITING_FOR_APPROVAL"
+    );
+  }
+
+  canSubmitNewSchedulePlan(): boolean {
+    return (
+      this.activeClosingRequest().length < 1 &&
+      this.activeRecycleRequest().length < 1 &&
+      this.pastSchedulesWithoutReport().length < 1 &&
+      this.upcomingSchedules().length < 1
+    );
   }
 
   planNewSchedule(): SalesActivitySchedule {

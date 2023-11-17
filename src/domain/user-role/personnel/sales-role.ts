@@ -11,6 +11,7 @@ import {
   generateBaseAppBarMenuItems,
 } from "@/shared/components/default-layout";
 import LayoutInterface from "@/resources/components/layout-interface";
+import Fields from "gql-query-builder/build/Fields";
 
 export type SalesRoleType = {
   id?: string;
@@ -41,7 +42,7 @@ export default class SalesRole
   }
 
   canAccess(menu: string): boolean {
-    return ["sales-dashboard","schedule", "assigned-customer"].includes(menu);
+    return ["sales-dashboard", "schedule", "assigned-customer"].includes(menu);
   }
 
   getLayout(userRepository: UserRepository): LayoutInterface {
@@ -109,30 +110,32 @@ export default class SalesRole
   //
   async executeSalesGraphqlMutation<ResponseType>(
     httpRequest: HttpRequestInterface,
-    options: GraphqlBuilderOptions
+    options: GraphqlBuilderOptions | Fields
   ): Promise<ResponseType> {
+    const fields = options instanceof Array ? options : [options];
     const response = await httpRequest.mutate<{ sales: ResponseType }>(
       "sales",
       {
         operation: "sales",
         variables: { salesId: { type: "ID", required: true, value: this.id } },
-        fields: [options],
+        fields: fields,
       },
       this.personnelRole.token
     );
     return response.sales;
   }
-
+  
   async executeSalesGraphqlQuery<ResponseType>(
     httpRequest: HttpRequestInterface,
-    options: GraphqlBuilderOptions
-  ): Promise<ResponseType> {
+    options: GraphqlBuilderOptions | Fields
+    ): Promise<ResponseType> {
+    const fields = options instanceof Array ? options : [options];
     const response = await httpRequest.query<{ sales: ResponseType }>(
       "sales",
       {
         operation: "sales",
         variables: { salesId: { type: "ID", required: true, value: this.id } },
-        fields: [options],
+        fields: fields,
       },
       this.personnelRole.token
     );

@@ -49,6 +49,8 @@ export default class AdminRole implements StoreableAuthInfo, UserRoleInterface {
       "area-structure",
       "area",
       "customer-verification",
+      "sales-activity",
+      "customer-journey",
     ].includes(menu);
   }
 
@@ -88,6 +90,10 @@ export default class AdminRole implements StoreableAuthInfo, UserRoleInterface {
         {
           title: "sales activity",
           to: "/sales-activity",
+        },
+        {
+          title: "customer journey",
+          to: "/customer-journey",
         },
       ],
     };

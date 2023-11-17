@@ -163,6 +163,38 @@ const companyRoutes = [
     ],
   },
   {
+    path: "customer-journey/",
+    // component: () => import('@/resources/components/BlankComponent.vue'),
+    beforeEnter: () => {
+      inject<UserRepository>("userRepository")
+        ?.getUser<UserRoleInterface>()
+        .canAccess("customer-journey");
+    },
+    children: [
+      {
+        path: "",
+        name: "customer-journey-list",
+        component: () => import("@/pages/customer-journey/List.vue"),
+      },
+      {
+        path: "set-initial",
+        name: "set-initial-customer-journey",
+        component: () => import("@/pages/customer-journey/SetInitial.vue"),
+      },
+      {
+        path: "add",
+        name: "add-customer-journey",
+        component: () => import("@/pages/customer-journey/Add.vue"),
+      },
+      {
+        path: ":customerJourneyId",
+        name: "customer-journey-detail",
+        props: true,
+        component: () => import("@/pages/customer-journey/Detail.vue"),
+      },
+    ],
+  },
+  {
     path: "manager/",
     // component: () => import('@/resources/components/BlankComponent.vue'),
     beforeEnter: () => {

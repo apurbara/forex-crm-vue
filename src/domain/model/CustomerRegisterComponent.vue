@@ -1,6 +1,7 @@
 <template>
   <v-text-field ref="focus" label="Name" v-model="customer.name" :rules="[customer.isValidName()]" />
   <v-text-field label="email" v-model="customer.email" :rules="[customer.isValidEmail()]" />
+  <v-text-field label="phone" v-model="customer.phone" :rules="[customer.isValidPhone()]" />
   <v-select :items="areaList" item-title="name" return-object @update:model-value="selectArea"></v-select>
 </template>
 

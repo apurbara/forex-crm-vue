@@ -1,6 +1,6 @@
 import { ValidationResult } from "@/resources/types/custom-types";
 import Area, { AreaType } from "./area-structure/area";
-import { isEmail, isNotEmpty } from "@/resources/composables/validator";
+import { isEmail, isNotEmpty, isPhone } from "@/resources/composables/validator";
 import { PaginationResponseType } from "@/resources/components/abstract-pagination";
 import VerificationReport, {
   VerificationReportType,
@@ -13,6 +13,7 @@ export type CustomerType = {
   id?: string;
   email?: string;
   name?: string;
+  phone?: string;
   area?: AreaType;
   verificationReports?: PaginationResponseType<VerificationReportType>;
 };
@@ -23,6 +24,7 @@ export default class Customer {
     public id: string = "",
     public email: string = "",
     public name: string = "",
+    public phone: string = "",
     public area: Area = new Area()
   ) {}
 
@@ -30,6 +32,7 @@ export default class Customer {
     this.id = data.id ?? this.id;
     this.email = data.email ?? this.email;
     this.name = data.name ?? this.name;
+    this.phone = data.phone ?? this.phone;
     if (data.area) {
       this.area.load(data.area);
     }
@@ -65,6 +68,7 @@ export default class Customer {
       areaId: { type: "ID", required: true, value: this.area.id },
       name: this.name,
       email: this.email,
+      phone: this.phone,
     };
   }
 
@@ -75,11 +79,15 @@ export default class Customer {
   isValidEmail(): ValidationResult {
     return isEmail(this.email) || "email in valid format is mandatory";
   }
+  isValidPhone(): ValidationResult {
+    return isPhone(this.phone) || "phone in valid format is mandatory";
+  }
 
   isValidToRegister(): boolean {
     return (
       this.isValidEmail() === true &&
       this.isValidName() === true &&
+      this.isValidPhone() === true &&
       !!this.area.id
     );
   }

@@ -15,6 +15,7 @@ import CustomerRegisterComponent from '@/domain/model/CustomerRegisterComponent.
 import Customer from '@/domain/model/customer';
 import { AssignedCustomerType } from '@/domain/model/personnel/manager/sales/assigned-customer';
 import SalesRole from '@/domain/user-role/personnel/sales-role';
+import CursorPagination from '@/resources/components/cursor-pagination';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
@@ -30,7 +31,12 @@ const submit = async () => {
     .executeSalesGraphqlMutation<{ registerNewCustomer: AssignedCustomerType }>(httpRequest, {
       operation: "registerNewCustomer",
       variables: customer.toGraphqlVariables(),
-      fields: ["id", "disabled", "createdTime", { customer: ["id", "name", "email", { area: ["name"] }] }]
+      fields: [
+        "id", "status", "createdTime", 
+        { customer: ["id", "name", "email", "phone", { area: ["name"] }] },
+        { customerJourney: ["id", "name", "description", "initial"] },
+        { schedules: CursorPagination.wrapResultFields(['id', 'createdTime', 'status', 'startTime', 'endTime']) }
+      ]
     })
   const data = response.registerNewCustomer
   cache.set(`assigned-customer-${data.id}`, data)
