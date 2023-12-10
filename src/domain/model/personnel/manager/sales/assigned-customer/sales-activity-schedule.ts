@@ -19,6 +19,13 @@ export type SalesActivityScheduleType = {
   salesActivityReport?: SalesActivityReportType;
 };
 
+export type SalesActivityScheduleSummaryType = {
+  total?: number;
+  status?: string;
+  startTime?: string;
+  endTime?: string;
+};
+
 export default class SalesActivitySchedule {
   public salesActivityReport: SalesActivityReport = new SalesActivityReport(
     this

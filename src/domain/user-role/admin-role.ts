@@ -42,9 +42,9 @@ export default class AdminRole implements StoreableAuthInfo, UserRoleInterface {
   }
 
   canAccess(menu: string): boolean {
-    const asSuperUserMenus = this.aSuperUser ? ["admin"] : [];
+    // const asSuperUserMenus = this.aSuperUser ? ["admin"] : [];
     return [
-      ...asSuperUserMenus,
+      // ...asSuperUserMenus,
       "firm",
       "area-structure",
       "area",
@@ -55,14 +55,14 @@ export default class AdminRole implements StoreableAuthInfo, UserRoleInterface {
   }
 
   getLayout(userRepository: UserRepository): LayoutInterface {
-    const asSuperUserNavbarMenus = this.aSuperUser
-      ? [{ title: "admin", to: "/admin" }]
-      : [];
+    // const asSuperUserNavbarMenus = this.aSuperUser
+    //   ? [{ title: "admin", to: "/admin" }]
+    //   : [];
     return {
       home: baseHome,
       appBarMenuItems: generateBaseAppBarMenuItems(userRepository, this.name),
       navBarMenuItems: [
-        ...asSuperUserNavbarMenus,
+        // ...asSuperUserNavbarMenus,
         {
           title: "area structure",
           to: "/area-structure",

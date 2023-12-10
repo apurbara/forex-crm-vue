@@ -4,16 +4,14 @@ import {
 } from "@/resources/types/custom-types";
 import AccountInfo, { AccountInfoType } from "../value-object/account-info";
 import Manager, { ManagerType } from "./personnel/manager";
-import Pagination, {
-  PaginationType,
-} from "@/resources.bak/components/pagination";
 import Sales, { SalesType } from "./personnel/manager/sales";
+import { PaginationResponseType } from "@/resources/components/abstract-pagination";
 
 export type PersonnelType = {
   id?: string;
   disabled?: boolean;
-  managerAssignments?: PaginationType<ManagerType>;
-  salesAssignments?: PaginationType<SalesType>;
+  managerAssignments?: PaginationResponseType<ManagerType>;
+  salesAssignments?: PaginationResponseType<SalesType>;
 } & AccountInfoType;
 
 export default class Personnel {
@@ -31,13 +29,13 @@ export default class Personnel {
     this.disabled = data.disabled ?? this.disabled;
     this.accountInfo.load(data);
 
-    data.managerAssignments?.list.forEach((managerData) => {
+    data.managerAssignments?.list.forEach((managerData: ManagerType) => {
       const manager = new Manager();
       manager.load(managerData);
       this.managerAssignments.push(manager);
     });
 
-    data.salesAssignments?.list.forEach((salesData) => {
+    data.salesAssignments?.list.forEach((salesData: SalesType) => {
       const sales = new Sales();
       sales.load(salesData);
       this.salesAssignments.push(sales);

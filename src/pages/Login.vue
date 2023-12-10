@@ -20,7 +20,21 @@ const login = async () => {
         'token', 'name', 'id',
         {
           operation: "salesAssignments",
-          variables: { filters: { type: "[FilterInput]", value: [{ column: "Sales.disabled", value: false }] } },
+          variables: {
+            salesAssignmentfilters: {
+              type: "[FilterInput]", name: "filters", value: [{ column: "Sales.disabled", value: false }]
+            }
+          },
+          fields: [{ list: ['id'] }],
+          // fields: CursorPagination.wrapResultFields(["id", "createdTime", { area: ["name"] }, { manager: [{ personnel: ["name"] }] }]),
+        },
+        {
+          operation: "managerAssignments",
+          variables: {
+            managerAssignmentfilters: {
+              type: "[FilterInput]", name: "filters", value: [{ column: "Manager.disabled", value: false }]
+            }
+          },
           fields: [{ list: ['id'] }],
           // fields: CursorPagination.wrapResultFields(["id", "createdTime", { area: ["name"] }, { manager: [{ personnel: ["name"] }] }]),
         }
@@ -29,8 +43,11 @@ const login = async () => {
   const personnelRoleData = response.personnelLogin;
   const personnel = new PersonnelRole(personnelRoleData);
   const salesAssignments = personnelRoleData.salesAssignments?.list ?? [];
+  const managerAssignments = personnelRoleData.managerAssignments?.list ?? [];
   if (salesAssignments.length > 0) {
-    userRepository.logUserIn(personnel.authorizeAsSales(salesAssignments[0]));
+    userRepository.logUserIn(personnel.authorizeAsSales(salesAssignments[0]))
+  } else if (managerAssignments.length > 0) {
+    userRepository.logUserIn(personnel.authorizeAsManager(managerAssignments[0]))
   } else {
     userRepository.logUserIn(personnel);
   }

@@ -1,54 +1,64 @@
 <template>
   <div>
     <h1 class="page-title">Assigned Customer Detail</h1>
-    <div class="page-section">
-      <PersonCardComponent style="width: 25%;" :person="{
-        name: assignedCustomer.customer.name,
-        bio: `${assignedCustomer.customer.phone} - ${assignedCustomer.customer.email}`
-      }">
-        <v-chip color="primary">{{ assignedCustomer.customer.area.label.name }}</v-chip>
-        <v-chip color="success">{{ assignedCustomer.customerJourney.label.name }}</v-chip>
-        <v-chip color="blue">{{ assignedCustomer.status }}</v-chip>
-      </PersonCardComponent>
+    <div class="d-flex justify-space-between wrap">
 
-      <div class="mt-4">
-        <v-btn @click="showNewScheduleDialog = true" v-if="assignedCustomer.canSubmitNewSchedulePlan()">
-          plan new activity</v-btn>
-      </div>
-
-      <ItemCardComponent class="mt-4" style="min-height: 150px; width: 300px;"
-        v-if="assignedCustomer.upcomingSchedules().length > 0"
-        v-for="(schedule, key) in assignedCustomer.upcomingSchedules()" :key="key" :item="{
-          name: schedule.salesActivity.label.name,
-          description: schedule.salesActivity.label.description
+      <section class="page-section ma-2" style="min-width: 48%;">
+        <h2 class="section-title">Customer Profile</h2>
+        <PersonCardComponent style="width: 25%;" :person="{
+          name: assignedCustomer.customer.name,
+          bio: `${assignedCustomer.customer.phone} - ${assignedCustomer.customer.email}`
         }">
-        <template v-slot>
-          <p>{{ schedule.startTime }} - {{ schedule.endTime }}</p>
-        </template>
-      </ItemCardComponent>
+          <v-chip color="primary">{{ assignedCustomer.customer.area.label.name }}</v-chip>
+          <v-chip color="success">{{ assignedCustomer.customerJourney.label.name }}</v-chip>
+          <v-chip color="blue">{{ assignedCustomer.status }}</v-chip>
+        </PersonCardComponent>
 
-      <ItemCardComponent class="mt-4" style="min-height: 150px; width: 300px;"
-        v-if="assignedCustomer.activeClosingRequest().length > 0"
-        v-for="(request, key) in assignedCustomer.activeClosingRequest()" :key="key" :item="{
-          name: `Pending Closing Request`,
-          description: `
-            value: ${request.transactionValue}
-                                                                                      submit time: ${request.createdTime}
-          `
-        }">
-        <v-chip color="primary">{{ request.status }}</v-chip>
-      </ItemCardComponent>
+        <div class="mt-4">
+          <v-btn @click="showNewScheduleDialog = true" v-if="assignedCustomer.canSubmitNewSchedulePlan()">
+            plan new activity</v-btn>
+        </div>
 
-      <ItemCardComponent class="mt-4" style="min-height: 150px; width: 300px;"
-        v-if="assignedCustomer.activeRecycleRequest().length > 0"
-        v-for="(request, key) in assignedCustomer.activeClosingRequest()" :key="key" :item="{
-          name: `Pending Recycle Request`,
-          description: `submit time: ${request.createdTime}`
-        }">
-        <v-chip color="primary">{{ request.status }}</v-chip>
-      </ItemCardComponent>
+        <ItemCardComponent class="mt-4" style="min-height: 150px; width: 300px;"
+          v-if="assignedCustomer.upcomingSchedules().length > 0"
+          v-for="(schedule, key) in assignedCustomer.upcomingSchedules()" :key="key" :item="{
+            name: schedule.salesActivity.label.name,
+            description: schedule.salesActivity.label.description
+          }">
+          <template v-slot>
+            <p>{{ schedule.startTime }} - {{ schedule.endTime }}</p>
+          </template>
+        </ItemCardComponent>
 
-      <ReportableSalesActivitySchedulesComponent :assigned-customer="assignedCustomer" />
+        <ItemCardComponent class="mt-4" style="min-height: 150px; width: 300px;"
+          v-if="assignedCustomer.activeClosingRequest().length > 0"
+          v-for="(request, key) in assignedCustomer.activeClosingRequest()" :key="key" :item="{
+            name: `Pending Closing Request`,
+            description: `
+              value: ${request.transactionValue}
+                                            submit time: ${request.createdTime}
+            `
+          }">
+          <v-chip color="primary">{{ request.status }}</v-chip>
+        </ItemCardComponent>
+
+        <ItemCardComponent class="mt-4" style="min-height: 150px; width: 300px;"
+          v-if="assignedCustomer.activeRecycleRequest().length > 0"
+          v-for="(request, key) in assignedCustomer.activeClosingRequest()" :key="key" :item="{
+            name: `Pending Recycle Request`,
+            description: `submit time: ${request.createdTime}`
+          }">
+          <v-chip color="primary">{{ request.status }}</v-chip>
+        </ItemCardComponent>
+
+        <ReportableSalesActivitySchedulesComponent :assigned-customer="assignedCustomer" />
+      </section>
+      <section class="page-section" style="min-width: 48%;">
+        <h2 class="section-title">Score Distribution</h2>
+        <div class="card flex justify-content-center">
+          <Chart type="doughnut" :data="chartData" :options="chartOptions" class="w-full md:w-30rem" />
+        </div>
+      </section>
     </div>
 
     <VerificationReportSectionComponent :assigned-customer="assignedCustomer" />
@@ -122,7 +132,6 @@ const newActivitySchedule = ref<SalesActivitySchedule>(assignedCustomer.planNewS
 const showAddNewSchedule = ref<boolean>(false)
 
 onMounted(async () => {
-
   const customerVerificationResponse = await userRepository.getUser<CompanyUserRoleInterface>()
     .executeGraphqlQueryInCompany<{ customerVerificationList: PaginationResponseType<CustomerVerificationType> }>(httpRequest, {
       operation: "customerVerificationList",
@@ -166,6 +175,9 @@ onMounted(async () => {
       })
     assignedCustomer.load(response.assignedCustomerDetail)
   }
+
+  chartData.value = setChartData();
+  chartOptions.value = setChartOptions();
 })
 
 const showNewScheduleDialog = ref<boolean>(false)
@@ -186,6 +198,43 @@ const submitNewSchedule = async () => {
 
   showNewScheduleDialog.value = false
 }
+
+//
+import Chart from 'primevue/chart';
+
+const chartData = ref();
+const chartOptions = ref<Object|undefined>(undefined);
+
+const setChartData = () => {
+  const documentStyle = getComputedStyle(document.body);
+
+  return {
+    labels: ['A', 'B', 'C'],
+    datasets: [
+      {
+        data: [540, 325, 702],
+        backgroundColor: [documentStyle.getPropertyValue('--blue-500'), documentStyle.getPropertyValue('--yellow-500'), documentStyle.getPropertyValue('--green-500')],
+        hoverBackgroundColor: [documentStyle.getPropertyValue('--blue-400'), documentStyle.getPropertyValue('--yellow-400'), documentStyle.getPropertyValue('--green-400')]
+      }
+    ]
+  };
+};
+
+const setChartOptions = () => {
+  const documentStyle = getComputedStyle(document.documentElement);
+  const textColor = documentStyle.getPropertyValue('--text-color');
+
+  return {
+    plugins: {
+      legend: {
+        labels: {
+          cutout: '60%',
+          color: textColor
+        }
+      }
+    }
+  };
+};
 
 </script>
 

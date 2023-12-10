@@ -5,6 +5,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import companyRoutes from "./company-routes";
 import { UserRoleInterface } from "@/domain/user-role/role-interfaces";
 import salesRoutes from "./sales-routes";
+import managerRoutes from "./manager-routes";
 
 const routes = [
   {
@@ -34,6 +35,7 @@ const routes = [
       },
       ...companyRoutes,
       ...salesRoutes,
+      ...managerRoutes,
     ],
   },
 ];
@@ -46,7 +48,12 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   console.log(to.name);
-  if (to.name === "landing-page" || to.name === "login" || to.name === "admin-login" || to.name === "home") {
+  if (
+    to.name === "landing-page" ||
+    to.name === "login" ||
+    to.name === "admin-login" ||
+    to.name === "home"
+  ) {
   } else {
     const userRepository = inject<UserRepository>("userRepository");
     if (

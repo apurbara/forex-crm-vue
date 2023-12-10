@@ -6,7 +6,7 @@ const salesRoutes = [
   {
     path: "sales-dashboard",
     name: "sales-dashboard",
-    component: () => import("@/pages/SalesDashboard.vue"),
+    component: () => import("@/pages/sales-role/SalesDashboard.vue"),
     // component: () => import('@/resources/components/BlankComponent.vue'),
     beforeEnter: () => {
       inject<UserRepository>("userRepository")
@@ -27,17 +27,6 @@ const salesRoutes = [
         path: "",
         name: "schedule-list",
         component: () => import("@/pages/sales-role/schedule/List.vue"),
-      },
-      {
-        path: "add",
-        name: "add-schedule",
-        component: () => import("@/pages/sales-role/schedule/Register.vue"),
-      },
-      {
-        path: ":scheduleId",
-        name: "schedule-detail",
-        props: true,
-        component: () => import("@/pages/sales-role/schedule/Detail.vue"),
       },
     ],
   },

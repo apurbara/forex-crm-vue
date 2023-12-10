@@ -48,7 +48,7 @@ export default class ClosingRequest {
   //
   toGraphqlVariables() {
     return {
-      transactionValue: { type: "Int", value: parseInt(this.transactionValue) },
+      transactionValue: { type: "Int", value: parseInt(this.transactionValue.toString()) },
       note: this.note,
     };
   }

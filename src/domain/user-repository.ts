@@ -4,6 +4,7 @@ import AdminRole, { AdminRoleType } from "./user-role/admin-role";
 import Guest from "./user-role/guest";
 import PersonnelRole, { PersonnelRoleType } from "./user-role/personnel-role";
 import SalesRole, { SalesRoleType } from "./user-role/personnel/sales-role";
+import ManagerRole, { ManagerRoleType } from "./user-role/personnel/manager-role";
 
 export type StoreableAuthInfo = {
   type: string;
@@ -32,6 +33,12 @@ export default class UserRepository {
           const personnel = new PersonnelRole(salesRoleData.personnelRole);
           const sales = personnel.authorizeAsSales(salesRoleData);
           this.user = sales;
+          break;
+        case ManagerRole.getRoleType():
+          const managerRoleData = userData as unknown as ManagerRoleType;
+          // const personnel = new PersonnelRole(managerRoleData.personnelRole);
+          const manager = new PersonnelRole(managerRoleData.personnelRole).authorizeAsManager(managerRoleData);
+          this.user = manager;
           break;
         default:
           this.user = new Guest();

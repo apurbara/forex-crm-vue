@@ -1,6 +1,6 @@
 <template>
   <section class="page-section">
-    <h2 class="section-title">Completed Sales Activity</h2>
+    <h2 class="section-title">Sales Activity History</h2>
     <div class="card-list">
       <ItemCardComponent class="ma-2" style="min-height: 150px; width: 300px;"
         v-for="(schedule, key) in assignedCustomer.completedSchedules()" :key="key" :item="{

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <section>
+  <h1 class="page-title">Sales Dashboard</h1>
+  <!-- <section>
       <h2>Target Realization</h2>
       <div>
         <v-progress-linear model-value="45" color="light-green" height="25">
@@ -9,108 +9,162 @@
           </template>
         </v-progress-linear>
       </div>
-    </section>
+    </section> -->
+  <section class="page-section ma-2 calendar-container is-light-mode">
+    <Qalendar :events="calendarSchedules" :config="config" />
+  </section>
 
-    <section class="my-8">
-      <h2>Agenda</h2>
-      <div class="d-flex justify-space-between">
-        <section class="pa-2" style="min-width: 50%;">
-          <h3>Upcoming Agenda</h3>
-          <v-card v-for="(upcomingMission, key) in upcomingMissions" :key="upcomingMission.id ?? key"
-            class="d-flex justify-space-between align-center my-1 px-1"
-            :to="`/customer-summary/${upcomingMission.managedCustomer.customer.id}`">
-            <div class="d-flex justify-start align-center">
-              <v-avatar size="50" class="avatar-center mr-4" :image="'https://i.pravatar.cc/100'" />
-              <v-card-title class="flex-grow-0 flex-shrink-0" style="width: 200px;">
-                <p>{{ upcomingMission.managedCustomer.customer.name }}</p>
-                <v-chip>{{ upcomingMission.managedCustomer.customer.priority }}</v-chip>
-                <v-chip>{{ upcomingMission.managedCustomer.customer.status }}</v-chip>
-              </v-card-title>
-              <v-card-subtitle class="flex-grow-1 flex-shrink-1" style="min-width: 200px;">{{
-                limitString(upcomingMission.description, 30) }}</v-card-subtitle>
-            </div>
-            <v-card-text class="flex-grow-0 flex-shrink-0" style="min-width: 100px;">{{ upcomingMission.startTime
-            }}</v-card-text>
-          </v-card>
-        </section>
-        <section class="pa-2" style="min-width: 50%;">
-          <h3>Neglected Agenda</h3>
-          <v-card v-for="(neglectedMission, key) in pastMissions" :key="neglectedMission.id ?? key"
-            class="d-flex justify-space-between align-center my-1 px-1"
-            :to="`/customer-summary/${neglectedMission.managedCustomer.customer.id}`">
-            <div class="d-flex justify-start align-center">
-              <v-avatar size="50" class="avatar-center mr-4" :image="'https://i.pravatar.cc/100'" />
-              <v-card-title class="flex-grow-0 flex-shrink-0" style="width: 200px;">
-                <p>{{ neglectedMission.managedCustomer.customer.name }}</p>
-                <v-chip>{{ neglectedMission.managedCustomer.customer.priority }}</v-chip>
-                <v-chip>{{ neglectedMission.managedCustomer.customer.status }}</v-chip>
-              </v-card-title>
-              <v-card-subtitle class="flex-grow-1 flex-shrink-1" style="min-width: 200px;">{{
-                limitString(neglectedMission.description, 30) }}</v-card-subtitle>
-            </div>
-            <v-card-text class="flex-grow-0 flex-shrink-0" style="min-width: 100px;">{{ neglectedMission.startTime
-            }}</v-card-text>
-          </v-card>
-        </section>
-      </div>
+  <div class="d-flex justify-space-between wrap">
+    <section class="page-section ma-2" style="min-width: 48%;">
+      <h2 class="section-title">Upcoming Activities</h2>
+      <p v-if="upcomingActivitySchedules.length < 1">
+        You dont have any activity plan
+      </p>
+      <v-card v-else variant="tonal" v-for="(upcomingSchedule, key) in upcomingActivitySchedules"
+        :key="upcomingSchedule.id ?? key" class="d-flex justify-space-between align-center ma-2 px-1"
+        :to="`/assigned-customer/${upcomingSchedule.assignedCustomer?.id}`">
+        <div class="d-flex justify-start align-center">
+          <v-card-title class="flex-grow-0 flex-shrink-0" style="width: 200px;">
+            <p>{{ upcomingSchedule.assignedCustomer?.customer?.name }}</p>
+            <v-chip>{{ upcomingSchedule.assignedCustomer?.customer?.area?.name }}</v-chip>
+            <v-chip>{{ upcomingSchedule.assignedCustomer?.customerJourney?.name }}</v-chip>
+          </v-card-title>
+          <v-card-text class="flex-grow-1 flex-shrink-1" style="min-width: 200px;">
+            <p>{{ limitString(String(upcomingSchedule.salesActivity?.name), 30) }}</p>
+            <v-chip>{{ upcomingSchedule.startTime }}</v-chip>
+          </v-card-text>
+        </div>
+      </v-card>
     </section>
-
-    <section>
-      <h2>Schedule</h2>
-      <div>
-        <pro-calendar />
-        <!-- <pro-calendar :loading="false" view="month" @calendarClosed="void 0"
-          @fetchEvents="void 0" /> -->
-      </div>
-    </section>
-
-    <section class="my-8">
-      <h2>Last Sales Mission Report</h2>
-      <v-table>
-        <thead>
-          <tr>
-            <th>customer</th>
-            <th>sales mission</th>
-            <th>submit time</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(report, key) in lastSalesMissionReport" :key="report.id ?? key"
-            @click="$router.push(`/sales-mission-report/${report.id}`)" style="cursor: pointer;">
-            <td>{{ report.customer.name }}</td>
-            <td>{{ report.salesMission.name }}</td>
-            <td>{{ report.submitTime }}</td>
-          </tr>
-        </tbody>
-      </v-table>
+    <section class="page-section ma-2" style="min-width: 48%;">
+      <h2 class="section-title">Report Required</h2>
+      <p v-if="reportRequiredActivitySchedules.length < 1">
+        You have completed all reports for past activities
+      </p>
+      <v-card v-else variant="tonal" v-for="(reportRequiredActivity, key) in reportRequiredActivitySchedules"
+        :key="reportRequiredActivity.id ?? key" class="d-flex justify-space-between align-center my-1 px-1"
+        :to="`/assigned-customer/${reportRequiredActivity.assignedCustomer?.id}`">
+        <div class="d-flex justify-start align-center">
+          <v-card-title class="flex-grow-0 flex-shrink-0" style="width: 200px;">
+            <p>{{ reportRequiredActivity.assignedCustomer?.customer?.name }}</p>
+            <v-chip>{{ reportRequiredActivity.assignedCustomer?.customer?.area?.name }}</v-chip>
+            <v-chip>{{ reportRequiredActivity.assignedCustomer?.customerJourney?.name }}</v-chip>
+          </v-card-title>
+        </div>
+        <v-card-text class="flex-grow-1 flex-shrink-1" style="min-width: 200px;">
+          <p>{{ limitString(String(reportRequiredActivity.salesActivity?.name), 30) }}</p>
+          <v-chip>{{ reportRequiredActivity.endTime }}</v-chip>
+        </v-card-text>
+      </v-card>
     </section>
   </div>
+
+  <section class="page-section ma-2">
+    <h2 class="section-title">Assignment Without Plan</h2>
+    <div>
+      <!-- <pro-calendar /> -->
+      <!-- <pro-calendar :loading="false" view="month" @calendarClosed="void 0"
+          @fetchEvents="void 0" /> -->
+    </div>
+  </section>
 </template>
 
 <script lang="ts" setup>
-import "vue-pro-calendar/style";
-import PersonCardComponent from '@/shared/components/person-card-component.vue';
+// import "vue-pro-calendar/style";
 import { ref } from 'vue';
-import { useStringLimiter } from "@/resources/composables/typography";
+import { useStringLimiter, useIsoToLocalTimeFormat, useTimeIntervalDifferenceCounter } from "@/resources/composables/typography";
+import { useDependencyInjection } from "@/shared/composables/dependency-injection";
+import CursorPagination from "@/resources/components/cursor-pagination";
+import { SalesActivityScheduleSummaryType, SalesActivityScheduleType } from "@/domain/model/personnel/manager/sales/assigned-customer/sales-activity-schedule";
+import SalesRole from "@/domain/user-role/personnel/sales-role";
+import { PaginationResponseType } from "@/resources/components/abstract-pagination";
+import { onMounted } from "vue";
+import { Qalendar } from "qalendar";
+import { computed } from "vue";
 
-const upcomingMissions = ref([
-  { id: 1, managedCustomer: { id: 1, customer: { id: 1, name: 'customer one', location: 'Bandung', priority: "high", status: "new" } }, startTime: "2023-10-05 15:00:00", endTime: "2023-10-05 16:00:00", type: "call", description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pretium cursus nulla at lacinia. Fusce egestas egestas vulputate. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque pulvinar commodo justo ac luctus. Nullam quis semper.' },
-  { id: 2, managedCustomer: { id: 2, customer: { id: 2, name: 'customer two', location: 'Jakarta', priority: "medium", status: "follow up" } }, startTime: "2023-10-05 16:00:00", endTime: "2023-10-05 17:00:00", type: "meeting", description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pretium cursus nulla at lacinia. Fusce egestas egestas vulputate. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque pulvinar commodo justo ac luctus. Nullam quis semper.' },
-  { id: 3, managedCustomer: { id: 3, customer: { id: 3, name: 'customer three', location: 'Semarang', priority: "low", status: "prospect" } }, startTime: "2023-10-05 17:00:00", endTime: "2023-10-05 18:00:00", type: "other", description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pretium cursus nulla at lacinia. Fusce egestas egestas vulputate. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque pulvinar commodo justo ac luctus. Nullam quis semper.' },
-]);
-const pastMissions = ref([
-  { id: 1, managedCustomer: { id: 1, customer: { id: 1, name: 'customer one', location: 'Bandung', priority: "high", status: "new" } }, startTime: "2023-08-05 15:00:00", endTime: "2023-08-05 16:00:00", type: "call", description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pretium cursus nulla at lacinia. Fusce egestas egestas vulputate. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque pulvinar commodo justo ac luctus. Nullam quis semper.' },
-  { id: 2, managedCustomer: { id: 2, customer: { id: 2, name: 'customer two', location: 'Bandung', priority: "medium", status: "follow up" } }, startTime: "2023-08-05 16:00:00", endTime: "2023-08-05 17:00:00", type: "meeting", description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pretium cursus nulla at lacinia. Fusce egestas egestas vulputate. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque pulvinar commodo justo ac luctus. Nullam quis semper.' },
-  { id: 3, managedCustomer: { id: 3, customer: { id: 3, name: 'customer three', location: 'Jakarta', priority: "low", status: "prospect" } }, startTime: "2023-08-05 17:00:00", endTime: "2023-08-05 18:00:00", type: "other", description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pretium cursus nulla at lacinia. Fusce egestas egestas vulputate. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque pulvinar commodo justo ac luctus. Nullam quis semper.' },
-]);
+const { httpRequest, userRepository } = useDependencyInjection()
 
-const lastSalesMissionReport = ref([
-  { id: 1, customer: { id: 1, name: 'customer one' }, salesMission: { id: 1, name: 'sales mission one' }, submitTime: "2022-03-04" },
-  { id: 2, customer: { id: 2, name: 'customer two' }, salesMission: { id: 2, name: 'sales mission two' }, submitTime: "2022-03-04" },
-  { id: 3, customer: { id: 1, name: 'customer one' }, salesMission: { id: 2, name: 'sales mission two' }, submitTime: "2022-03-04" },
-  { id: 4, customer: { id: 1, name: 'customer one' }, salesMission: { id: 3, name: 'sales mission three' }, submitTime: "2022-03-04" },
-  { id: 5, customer: { id: 2, name: 'customer two' }, salesMission: { id: 3, name: 'sales mission four' }, submitTime: "2022-03-04" },
-]);
+const upcomingActivitySchedules = ref<SalesActivityScheduleType[]>([])
+const reportRequiredActivitySchedules = ref<SalesActivityScheduleType[]>([])
+const salesActivityScheduleSummaryList = ref<SalesActivityScheduleSummaryType[]>([])
+
+const calendarSchedules = computed(() => {
+  return salesActivityScheduleSummaryList.value.map((list) => {
+    const { diffStatus } = useTimeIntervalDifferenceCounter(list.startTime!, list.endTime!)
+    return {
+      id: list.startTime! + list.status!,
+      title: `${list.total} ` + (diffStatus === 'UPCOMING' ? ' upcoming' : diffStatus === 'ONGOING' ? " ongoing" : list.status === "COMPLETED" ? ' completed' : ' need report'),
+      time: { start: useIsoToLocalTimeFormat(list.startTime!), end: useIsoToLocalTimeFormat(list.endTime!) },
+      color: diffStatus === 'UPCOMING' ? 'blue' : diffStatus === 'ONGOING' ? "orange" : list.status === "COMPLETED" ? 'green' : 'red'
+    }
+  })
+})
+const config = ref({
+  defaultMode: 'month',
+});
+
+onMounted(async () => {
+  const currentTime = new Date()
+  const currentTimeString = `${currentTime.getFullYear()}-${currentTime.getMonth() + 1}-${currentTime.getDate()} ${currentTime.getHours()}:00:00`
+  const response = await userRepository.getUser<SalesRole>()
+    .executeSalesGraphqlQuery<{
+      upcomingActivies: PaginationResponseType<SalesActivityScheduleType>,
+      reportRequiredActivities: PaginationResponseType<SalesActivityScheduleType>,
+      salesActivityScheduleSummaryList: SalesActivityScheduleSummaryType[]
+    }>(httpRequest, [
+      {
+        operation: { name: "salesActivityScheduleList", alias: "upcomingActivies" },
+        variables: {
+          upcomingFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "SalesActivitySchedule.status", value: 'SCHEDULED' },
+              { column: "SalesActivitySchedule.endTime", value: currentTimeString, comparisonType: 'GTE' }
+            ]
+          }
+        },
+        fields: CursorPagination.wrapResultFields([
+          "id", "status", "startTime",
+          { assignedCustomer: ["id", { customerJourney: ["name"] }, { customer: ["name", { area: ["name"] }] }] },
+          { salesActivity: ["name", "duration"] }
+        ])
+      },
+      {
+        operation: { name: "salesActivityScheduleList", alias: "reportRequiredActivities" },
+        variables: {
+          reportRequiredFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "SalesActivitySchedule.status", value: 'SCHEDULED' },
+              { column: "SalesActivitySchedule.endTime", value: currentTimeString, comparisonType: 'LT' }
+            ]
+          }
+        },
+        fields: CursorPagination.wrapResultFields([
+          "id", "status", "endTime",
+          { assignedCustomer: ["id", { customerJourney: ["name"] }, { customer: ["name", { area: ["name"] }] }] },
+          { salesActivity: ["name", "duration"] }
+        ])
+      },
+      {
+        operation: "salesActivityScheduleSummaryList",
+        variables: {},
+        // variables: {
+        //   summaryFilters: {
+        //     type: "[FilterInput]", name: "filters",
+        //     value: [
+        //       { column: "SalesActivitySchedule.startTime", value: currentTimeString, comparisonType: 'GTE' },
+        //       { column: "SalesActivitySchedule.endTime", value: currentTimeString, comparisonType: 'LTE' }
+        //     ]
+        //   }
+        // },
+        fields: ["total", "startTime", "endTime", "status"],
+      }
+    ])
+  upcomingActivitySchedules.value = response.upcomingActivies.list
+  reportRequiredActivitySchedules.value = response.reportRequiredActivities.list
+  salesActivityScheduleSummaryList.value = response.salesActivityScheduleSummaryList
+})
 
 const limitString = (string: string, size: number) => useStringLimiter(string, size) 
 </script>
@@ -121,4 +175,6 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style>
+  @import "qalendar/dist/style.css";
+</style>

@@ -11,7 +11,11 @@
         <v-card-subtitle>report required</v-card-subtitle>
       </v-card>
     </div>
-    <CursorPaginationComponent :pagination="schedulePagination">
+    <div></div>
+    <v-btn @click="calendarView = !calendarView">switch view</v-btn>
+    <pro-calendar v-if="calendarView" :events="evts" :loading="false" :config="cfg" view="month"
+      date="2022-11-10T00:00:00.000Z" @calendarClosed="void 0" @fetchEvents="void 0" />
+    <CursorPaginationComponent v-else :pagination="schedulePagination">
       <template v-slot:editSection>
         <v-btn prepend-icon="mdi-account-plus-outline" variant="tonal" to="/schedule/register">Add Schedule</v-btn>
       </template>
@@ -31,7 +35,7 @@
 <script lang="ts" setup>
 import { KeywordSearch, PaginationResponseType } from '@/resources/components/abstract-pagination';
 import EnumFilter from '@/resources/components/pagination/enum-filter';
-import { reactive } from 'vue';
+import { Ref, reactive } from 'vue';
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
@@ -41,11 +45,14 @@ import CursorPaginationComponent from '@/resources/components/CursorPaginationCo
 import { SalesActivityScheduleType } from '@/domain/model/personnel/manager/sales/assigned-customer/sales-activity-schedule';
 import ItemCardComponent from '@/shared/components/item-card-component.vue';
 import { ref } from 'vue';
+//
+import "vue-pro-calendar/style";
+import type { Configs, Appointment } from "vue-pro-calendar";
 
 const { httpRequest, userRepository } = useDependencyInjection();
-const router = useRouter();
 const totalUpcomingSchedule = ref<number>(0)
 const totalPastScheduleWithoutReport = ref<number>(0)
+const calendarView = ref<boolean>(true)
 
 const schedulePagination = reactive(new CursorPagination<SalesActivityScheduleType>(
   async (pagination) => {
@@ -74,7 +81,7 @@ onMounted(async () => {
 
 const viewSummary = async () => {
   const currentTime = new Date()
-  const currentTimeString = `${currentTime.getFullYear()}-${currentTime.getMonth()}-${currentTime.getDate()} ${currentTime.getHours}:00:00`
+  const currentTimeString = `${currentTime.getFullYear()}-${currentTime.getMonth() + 1}-${currentTime.getDate()} ${currentTime.getHours()}:00:00`
   const response = await userRepository.getUser<SalesRole>()
     .executeSalesGraphqlQuery<{ totalUpcomingSchedule: number, totalPastScheduleWithoutReport: number }>(httpRequest, [
       {
@@ -107,6 +114,32 @@ const viewSummary = async () => {
   totalUpcomingSchedule.value = response.totalUpcomingSchedule
   totalPastScheduleWithoutReport.value = response.totalPastScheduleWithoutReport
 }
+
+//
+const cfg = ref<Configs>({
+  viewEvent: undefined,
+  reportEvent: {
+    icon: true,
+    text: "",
+  },
+  searchPlaceholder: "",
+  eventName: "",
+  closeText: "",
+  nativeDatepicker: true,
+  // todayButton: true,
+  // firstDayOfWeek: 1,
+});
+
+const evts: Ref<Appointment[]> = ref([
+  {
+    date: "2022-11-19T14:00:00.000Z",
+    comment: "",
+    id: "cl32rbkjk1700101o53e3e3uhn",
+    keywords: "Projet BAMBA",
+    name: "MONTCHO Kévin",
+  },
+  //...
+]);
 
 </script>
 

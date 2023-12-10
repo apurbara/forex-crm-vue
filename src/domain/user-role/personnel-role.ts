@@ -12,11 +12,13 @@ import AbstractPagination, {
 } from "@/resources/components/abstract-pagination";
 import SalesRole, { SalesRoleType } from "./personnel/sales-role";
 import { LoginAuthInfo } from "./login-payload";
+import ManagerRole, { ManagerRoleType } from "./personnel/manager-role";
 
 const PERSONNEL_ROLE_TYPE = "PERSONNEL";
 
 export type PersonnelRoleType = {
   salesAssignments?: PaginationResponseType<SalesRoleType>;
+  managerAssignments?: PaginationResponseType<ManagerRoleType>;
 } & LoginAuthInfo;
 
 export default class PersonnelRole
@@ -39,6 +41,10 @@ export default class PersonnelRole
 
   authorizeAsSales(params: SalesRoleType) {
     return new SalesRole(this, params);
+  }
+
+  authorizeAsManager(params: ManagerRoleType) {
+    return new ManagerRole(this, params);
   }
 
   //
