@@ -12,10 +12,7 @@
       </v-card>
     </div>
     <div></div>
-    <v-btn @click="calendarView = !calendarView">switch view</v-btn>
-    <pro-calendar v-if="calendarView" :events="evts" :loading="false" :config="cfg" view="month"
-      date="2022-11-10T00:00:00.000Z" @calendarClosed="void 0" @fetchEvents="void 0" />
-    <CursorPaginationComponent v-else :pagination="schedulePagination">
+    <CursorPaginationComponent :pagination="schedulePagination">
       <template v-slot:editSection>
         <v-btn prepend-icon="mdi-account-plus-outline" variant="tonal" to="/schedule/register">Add Schedule</v-btn>
       </template>
@@ -46,7 +43,6 @@ import { SalesActivityScheduleType } from '@/domain/model/personnel/manager/sale
 import ItemCardComponent from '@/shared/components/item-card-component.vue';
 import { ref } from 'vue';
 //
-import "vue-pro-calendar/style";
 import type { Configs, Appointment } from "vue-pro-calendar";
 
 const { httpRequest, userRepository } = useDependencyInjection();

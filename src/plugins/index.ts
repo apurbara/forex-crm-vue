@@ -21,11 +21,9 @@ import ConfirmationService from "primevue/confirmationservice";
 // Types
 import Toast from "primevue/toast";
 import ConfirmPopup from "primevue/confirmpopup";
-import { ProCalendar } from "vue-pro-calendar";
 
 export function registerPlugins(app: App) {
   app.use(vuetify).use(router).use(pinia).use(PrimeVue);
-  app.use(ProCalendar);
 
   // register primevue component
   app.component("Toast", Toast);

@@ -22,13 +22,6 @@
   resolved "https://registry.npmjs.org/@babel/parser/-/parser-7.23.0.tgz"
   integrity sha512-vvPKKdMemU85V9WE/l5wZEmImpCtLqbnTvqDS2U1fJ96KrxoW7KrXhNsNCblQlg8Ck4b85yxdTyelsMUgFUXiw==
 
-"@babel/runtime@^7.21.0":
-  version "7.23.1"
-  resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.23.1.tgz"
-  integrity sha512-hC2v6p8ZSI/W0HUzh3V8C5g+NwSKzKPtJwSpTjwl0o297GP9+ZLQSkdvHz46CM3LqyoXxq+5G9komY+eSqSO0g==
-  dependencies:
-    regenerator-runtime "^0.14.0"
-
 "@babel/types@^7.21.4":
   version "7.23.0"
   resolved "https://registry.npmjs.org/@babel/types/-/types-7.23.0.tgz"
@@ -185,35 +178,28 @@
   resolved "https://registry.npmjs.org/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-6.4.2.tgz"
   integrity sha512-1DgP7f+XQIJbLFCTX1V2QnxVmpLdKdzzo2k8EmvDOePfchaIGQ9eCHj2up3/jNEbZuBqel5OxiaOJf37TWauRA==
 
-"@fortawesome/fontawesome-svg-core@^6.2.0", "@fortawesome/fontawesome-svg-core@^6.3.0":
+"@fortawesome/fontawesome-svg-core@^6.3.0":
   version "6.4.2"
   resolved "https://registry.npmjs.org/@fortawesome/fontawesome-svg-core/-/fontawesome-svg-core-6.4.2.tgz"
   integrity sha512-gjYDSKv3TrM2sLTOKBc5rH9ckje8Wrwgx1CxAPbN5N3Fm4prfi7NsJVWd1jklp7i5uSCVwhZS5qlhMXqLrpAIg==
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.4.2"
 
-"@fortawesome/free-brands-svg-icons@^6.2.0":
-  version "6.4.2"
-  resolved "https://registry.npmjs.org/@fortawesome/free-brands-svg-icons/-/free-brands-svg-icons-6.4.2.tgz"
-  integrity sha512-LKOwJX0I7+mR/cvvf6qIiqcERbdnY+24zgpUSouySml+5w8B4BJOx8EhDR/FTKAu06W12fmUIcv6lzPSwYKGGg==
-  dependencies:
-    "@fortawesome/fontawesome-common-types" "6.4.2"
-
-"@fortawesome/free-regular-svg-icons@^6.2.0", "@fortawesome/free-regular-svg-icons@^6.3.0":
+"@fortawesome/free-regular-svg-icons@^6.3.0":
   version "6.4.2"
   resolved "https://registry.npmjs.org/@fortawesome/free-regular-svg-icons/-/free-regular-svg-icons-6.4.2.tgz"
   integrity sha512-0+sIUWnkgTVVXVAPQmW4vxb9ZTHv0WstOa3rBx9iPxrrrDH6bNLsDYuwXF9b6fGm+iR7DKQvQshUH/FJm3ed9Q==
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.4.2"
 
-"@fortawesome/free-solid-svg-icons@^6.2.0", "@fortawesome/free-solid-svg-icons@^6.3.0":
+"@fortawesome/free-solid-svg-icons@^6.3.0":
   version "6.4.2"
   resolved "https://registry.npmjs.org/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-6.4.2.tgz"
   integrity sha512-sYwXurXUEQS32fZz9hVCUUv/xu49PEJEyUOsA51l6PU/qVgfbTb2glsTEaJngVVT8VqBATRIdh7XVgV1JF1LkA==
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.4.2"
 
-"@fortawesome/vue-fontawesome@^3.0.1", "@fortawesome/vue-fontawesome@^3.0.3":
+"@fortawesome/vue-fontawesome@^3.0.3":
   version "3.0.3"
   resolved "https://registry.npmjs.org/@fortawesome/vue-fontawesome/-/vue-fontawesome-3.0.3.tgz"
   integrity sha512-KCPHi9QemVXGMrfuwf3nNnNo129resAIQWut9QTAMXmXqL2ErABC6ohd2yY5Ipq0CLWNbKHk8TMdTXL/Zf3ZhA==
@@ -236,27 +222,6 @@
   version "1.2.1"
   resolved "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
-
-"@intlify/core-base@9.5.0":
-  version "9.5.0"
-  resolved "https://registry.npmjs.org/@intlify/core-base/-/core-base-9.5.0.tgz"
-  integrity sha512-y3ufM1RJbI/DSmJf3lYs9ACq3S/iRvaSsE3rPIk0MGH7fp+JxU6rdryv/EYcwfcr3Y1aHFlCBir6S391hRZ57w==
-  dependencies:
-    "@intlify/message-compiler" "9.5.0"
-    "@intlify/shared" "9.5.0"
-
-"@intlify/message-compiler@9.5.0":
-  version "9.5.0"
-  resolved "https://registry.npmjs.org/@intlify/message-compiler/-/message-compiler-9.5.0.tgz"
-  integrity sha512-CAhVNfEZcOVFg0/5MNyt+OFjvs4J/ARjCj2b+54/FvFP0EDJI5lIqMTSDBE7k0atMROSP0SvWCkwu/AZ5xkK1g==
-  dependencies:
-    "@intlify/shared" "9.5.0"
-    source-map-js "^1.0.2"
-
-"@intlify/shared@9.5.0":
-  version "9.5.0"
-  resolved "https://registry.npmjs.org/@intlify/shared/-/shared-9.5.0.tgz"
-  integrity sha512-tAxV14LMXZDZbu32XzLMTsowNlgJNmLwWHYzvMUl6L8gvQeoYiZONjY7AUsqZW8TOZDX9lfvF6adPkk9FSRdDA==
 
 "@jridgewell/sourcemap-codec@^1.4.15":
   version "1.4.15"
@@ -294,25 +259,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@popperjs/core@2.4.0":
-  version "2.4.0"
-  resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.4.0.tgz"
-  integrity sha512-NMrDy6EWh9TPdSRiHmHH2ye1v5U0gBD7pRYwSwJvomx7Bm4GG04vu63dYiVzebLOx2obPpJugew06xVP0Nk7hA==
-
-"@popperjs/core@^2.11.7":
-  version "2.11.8"
-  resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz"
-  integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
-
 "@types/json-schema@^7.0.9":
   version "7.0.13"
   resolved "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.13.tgz"
   integrity sha512-RbSSoHliUbnXj3ny0CNFOoxrIDV6SUGyStHsvDqosw6CkdPV8TtWGlfecuK4ToyMEAql6pzNxgCFKanovUzlgQ==
-
-"@types/lodash@^4.14.165":
-  version "4.14.199"
-  resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.199.tgz"
-  integrity sha512-Vrjz5N5Ia4SEzWWgIVwnHNEnb1UE1XMkvY5DGXrAeOGE9imk0hgTHh5GyDjLDJi9OTCn9oo9dXH1uToK1VRfrg==
 
 "@types/luxon@^3.3.7":
   version "3.3.7"
@@ -774,18 +724,6 @@ csstype@^3.1.1:
   version "3.1.2"
   resolved "https://registry.npmjs.org/csstype/-/csstype-3.1.2.tgz"
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
-
-date-fns-tz@^1.0.12:
-  version "1.3.8"
-  resolved "https://registry.npmjs.org/date-fns-tz/-/date-fns-tz-1.3.8.tgz"
-  integrity sha512-qwNXUFtMHTTU6CFSFjoJ80W8Fzzp24LntbjFFBgL/faqds4e5mo9mftoRLgr3Vi1trISsg4awSpYVsOQCRnapQ==
-
-date-fns@^2.16.1:
-  version "2.30.0"
-  resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.30.0.tgz"
-  integrity sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==
-  dependencies:
-    "@babel/runtime" "^7.21.0"
 
 de-indent@^1.0.2:
   version "1.0.2"
@@ -1401,7 +1339,7 @@ lodash.merge@^4.6.2:
   resolved "https://registry.npmjs.org/lodash.merge/-/lodash.merge-4.6.2.tgz"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
-lodash@^4.17.20, lodash@^4.17.21:
+lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -1620,7 +1558,7 @@ picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.3.1:
   resolved "https://registry.npmjs.org/picomatch/-/picomatch-2.3.1.tgz"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
 
-pinia@^2.0.0, pinia@^2.0.23:
+pinia@^2.0.0:
   version "2.1.6"
   resolved "https://registry.npmjs.org/pinia/-/pinia-2.1.6.tgz"
   integrity sha512-bIU6QuE5qZviMmct5XwCesXelb5VavdOWKWaB17ggk++NUwQWWbP5YnsONTk3b752QkW9sACiR81rorpeOMSvQ==
@@ -1716,11 +1654,6 @@ readdirp@~3.6.0:
   dependencies:
     picomatch "^2.2.1"
 
-regenerator-runtime@^0.14.0:
-  version "0.14.0"
-  resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.14.0.tgz"
-  integrity sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==
-
 regexp.prototype.flags@^1.2.0:
   version "1.5.1"
   resolved "https://registry.npmjs.org/regexp.prototype.flags/-/regexp.prototype.flags-1.5.1.tgz"
@@ -1766,7 +1699,7 @@ run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
-sass@^1.56.0, sass@^1.60.0:
+sass@^1.60.0:
   version "1.68.0"
   resolved "https://registry.npmjs.org/sass/-/sass-1.68.0.tgz"
   integrity sha512-Lmj9lM/fef0nQswm1J2HJcEsBUba4wgNx2fea6yJHODREoMFnwRpZydBnX/RjyXw2REIwdkbqE4hrTo4qfDBUA==
@@ -1918,22 +1851,6 @@ util-deprecate@^1.0.2:
   resolved "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
 
-v-calendar@3.0.0-alpha.7:
-  version "3.0.0-alpha.7"
-  resolved "https://registry.npmjs.org/v-calendar/-/v-calendar-3.0.0-alpha.7.tgz"
-  integrity sha512-gvEuH1TULdOhHSRzasih4acJ5bMBF5u1qvA3oR+TXmNmX1311piNyy1i/9Q8/KdTrrOrFvknc9awlbnW11jitw==
-  dependencies:
-    "@popperjs/core" "2.4.0"
-    "@types/lodash" "^4.14.165"
-    date-fns "^2.16.1"
-    date-fns-tz "^1.0.12"
-    lodash "^4.17.20"
-
-vite-plugin-i18n-resources@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/vite-plugin-i18n-resources/-/vite-plugin-i18n-resources-1.0.3.tgz"
-  integrity sha512-ohB4Cvao6QBaO7eAxH2IgVUNyB+QStxhU0OEOdH2ZIKhcx8TVCu1kG5eLnv5SH9GqeOfRijTpSeC1JJfk98IjA==
-
 vite-plugin-vuetify@^1.0.0:
   version "1.0.2"
   resolved "https://registry.npmjs.org/vite-plugin-vuetify/-/vite-plugin-vuetify-1.0.2.tgz"
@@ -1972,33 +1889,6 @@ vue-eslint-parser@^9.1.1, vue-eslint-parser@^9.3.1:
     lodash "^4.17.21"
     semver "^7.3.6"
 
-vue-i18n@^9.2.2:
-  version "9.5.0"
-  resolved "https://registry.npmjs.org/vue-i18n/-/vue-i18n-9.5.0.tgz"
-  integrity sha512-NiI3Ph1qMstNf7uhYh8trQBOBFLxeJgcOxBq51pCcZ28Vs18Y7BDS58r8HGDKCYgXdLUYqPDXdKatIF4bvBVZg==
-  dependencies:
-    "@intlify/core-base" "9.5.0"
-    "@intlify/shared" "9.5.0"
-    "@vue/devtools-api" "^6.5.0"
-
-vue-pro-calendar@^1.1.8-r.2:
-  version "1.1.8-r.2"
-  resolved "https://registry.npmjs.org/vue-pro-calendar/-/vue-pro-calendar-1.1.8-r.2.tgz"
-  integrity sha512-lK+ZP8FUCwETINg+pPbQow1Qe2BKDECWwNcSqTPg5xde+th/gOybCX2gGRimbSIT28Ac/u6Mse5Vfem8Z/i0mg==
-  dependencies:
-    "@fortawesome/fontawesome-svg-core" "^6.2.0"
-    "@fortawesome/free-brands-svg-icons" "^6.2.0"
-    "@fortawesome/free-regular-svg-icons" "^6.2.0"
-    "@fortawesome/free-solid-svg-icons" "^6.2.0"
-    "@fortawesome/vue-fontawesome" "^3.0.1"
-    "@popperjs/core" "^2.11.7"
-    pinia "^2.0.23"
-    sass "^1.56.0"
-    v-calendar "3.0.0-alpha.7"
-    vite-plugin-i18n-resources "^1.0.3"
-    vue "^3.2.41"
-    vue-i18n "^9.2.2"
-
 vue-router@^4.0.0:
   version "4.2.5"
   resolved "https://registry.npmjs.org/vue-router/-/vue-router-4.2.5.tgz"
@@ -2023,7 +1913,7 @@ vue-tsc@^1.2.0:
     "@vue/typescript" "1.8.15"
     semver "^7.3.8"
 
-vue@^3.2.0, vue@^3.2.41:
+vue@^3.2.0:
   version "3.3.4"
   resolved "https://registry.npmjs.org/vue/-/vue-3.3.4.tgz"
   integrity sha512-VTyEYn3yvIeY1Py0WaYGZsXnz3y5UnGi62GjVEqvEGPl6nxbOrCXbVOTQWBEJUqAyTUk2uJ5JLVnYJ6ZzGbrSw==
