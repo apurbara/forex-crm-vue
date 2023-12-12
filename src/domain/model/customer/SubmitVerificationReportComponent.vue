@@ -1,6 +1,8 @@
 <template>
-  <p>{{ verificationReport.customerVerification.label.name }}</p>
-  <p>{{ verificationReport.customerVerification.label.description }}</p>
+  <div class="mb-4">
+    <p class="font-20 font-weight-bold">{{ verificationReport.customerVerification.label.name }}</p>
+    <p class="font-14">{{ verificationReport.customerVerification.label.description }}</p>
+  </div>
   <v-textarea label="note" v-model="verificationReport.note"></v-textarea>
 </template>
 

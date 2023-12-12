@@ -1,8 +1,8 @@
 <template>
   <div class="d-flex justify-space-between">
-    <v-select label="select activity" class="mx-2" :items="salesActivityList" item-title="name" return-object
+    <v-select label="select activity" :items="salesActivityList" item-title="name" return-object
       @update:model-value="selectSalesActivity" hide-details></v-select>
-    <Calendar id="calendar-24h" v-model="salesActivitySchedule.startTime" showTime hourFormat="24" />
+    <Calendar id="calendar-24h" v-model="salesActivitySchedule.startTime" showTime hourFormat="24" class="ml-4" />
   </div>
 </template>
 

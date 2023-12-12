@@ -1,15 +1,5 @@
 <template>
   <h1 class="page-title">Sales Dashboard</h1>
-  <!-- <section>
-      <h2>Target Realization</h2>
-      <div>
-        <v-progress-linear model-value="45" color="light-green" height="25">
-          <template v-slot:default="{ value }">
-            <strong>45 / 100</strong>
-          </template>
-        </v-progress-linear>
-      </div>
-    </section> -->
   <section class="page-section ma-2 calendar-container is-light-mode">
     <Qalendar :events="calendarSchedules" :config="config" />
   </section>
@@ -20,19 +10,18 @@
       <p v-if="upcomingActivitySchedules.length < 1">
         You dont have any activity plan
       </p>
-      <v-card v-else variant="tonal" v-for="(upcomingSchedule, key) in upcomingActivitySchedules"
-        :key="upcomingSchedule.id ?? key" class="d-flex justify-space-between align-center ma-2 px-1"
+      <v-card v-else variant="outlined" v-for="(upcomingSchedule, key) in upcomingActivitySchedules"
+        :key="upcomingSchedule.id ?? key" class="ma-2"
         :to="`/assigned-customer/${upcomingSchedule.assignedCustomer?.id}`">
-        <div class="d-flex justify-start align-center">
-          <v-card-title class="flex-grow-0 flex-shrink-0" style="width: 200px;">
-            <p>{{ upcomingSchedule.assignedCustomer?.customer?.name }}</p>
-            <v-chip>{{ upcomingSchedule.assignedCustomer?.customer?.area?.name }}</v-chip>
-            <v-chip>{{ upcomingSchedule.assignedCustomer?.customerJourney?.name }}</v-chip>
+        <div class="d-flex flex-wrap justify-start align-center">
+          <v-card-title>
+            <p class="font-16 font-weight-bold">{{ upcomingSchedule.assignedCustomer?.customer?.name }}</p>
           </v-card-title>
-          <v-card-text class="flex-grow-1 flex-shrink-1" style="min-width: 200px;">
-            <p>{{ limitString(String(upcomingSchedule.salesActivity?.name), 30) }}</p>
-            <v-chip>{{ upcomingSchedule.startTime }}</v-chip>
-          </v-card-text>
+          <v-chip :color="upcomingScheduleTimeColor(upcomingSchedule.startTime!, upcomingSchedule.endTime!)">{{ calculateTimeDiff(upcomingSchedule.startTime!, upcomingSchedule.endTime!) }}</v-chip>
+        </div>
+        <div class="d-flex flex-wrap justify-start align-center">
+          <InfoComponentSmall :info="{label: 'activity', value: upcomingSchedule.salesActivity?.name!, icon: 'mdi-human-greeting-proximity'}" />
+          <InfoComponentSmall :info="{label: 'customer journey', value: upcomingSchedule.assignedCustomer?.customerJourney?.name!, icon: 'mdi-progress-star'}" />
         </div>
       </v-card>
     </section>
@@ -41,32 +30,28 @@
       <p v-if="reportRequiredActivitySchedules.length < 1">
         You have completed all reports for past activities
       </p>
-      <v-card v-else variant="tonal" v-for="(reportRequiredActivity, key) in reportRequiredActivitySchedules"
-        :key="reportRequiredActivity.id ?? key" class="d-flex justify-space-between align-center my-1 px-1"
+      <v-card v-else variant="outlined" v-for="(reportRequiredActivity, key) in reportRequiredActivitySchedules"
+        :key="reportRequiredActivity.id ?? key" class="ma-2"
         :to="`/assigned-customer/${reportRequiredActivity.assignedCustomer?.id}`">
-        <div class="d-flex justify-start align-center">
-          <v-card-title class="flex-grow-0 flex-shrink-0" style="width: 200px;">
-            <p>{{ reportRequiredActivity.assignedCustomer?.customer?.name }}</p>
-            <v-chip>{{ reportRequiredActivity.assignedCustomer?.customer?.area?.name }}</v-chip>
-            <v-chip>{{ reportRequiredActivity.assignedCustomer?.customerJourney?.name }}</v-chip>
+        <div class="d-flex flex-wrap justify-start align-center">
+          <v-card-title>
+            <p class="font-16 font-weight-bold">{{ reportRequiredActivity.assignedCustomer?.customer?.name }}</p>
           </v-card-title>
+          <v-chip color="red">{{ calculateTimeDiff(reportRequiredActivity.startTime!, reportRequiredActivity.endTime!) }}</v-chip>
         </div>
-        <v-card-text class="flex-grow-1 flex-shrink-1" style="min-width: 200px;">
-          <p>{{ limitString(String(reportRequiredActivity.salesActivity?.name), 30) }}</p>
-          <v-chip>{{ reportRequiredActivity.endTime }}</v-chip>
-        </v-card-text>
+        <div class="d-flex flex-wrap justify-start align-center">
+          <InfoComponentSmall :info="{label: 'activity', value: reportRequiredActivity.salesActivity?.name!, icon: 'mdi-human-greeting-proximity'}" />
+          <InfoComponentSmall :info="{label: 'customer journey', value: reportRequiredActivity.assignedCustomer?.customerJourney?.name!, icon: 'mdi-progress-star'}" />
+        </div>
       </v-card>
     </section>
   </div>
 
-  <section class="page-section ma-2">
+  <!-- <section class="page-section ma-2">
     <h2 class="section-title">Assignment Without Plan</h2>
     <div>
-      <!-- <pro-calendar /> -->
-      <!-- <pro-calendar :loading="false" view="month" @calendarClosed="void 0"
-          @fetchEvents="void 0" /> -->
     </div>
-  </section>
+  </section> -->
 </template>
 
 <script lang="ts" setup>
@@ -81,6 +66,7 @@ import { PaginationResponseType } from "@/resources/components/abstract-paginati
 import { onMounted } from "vue";
 import { Qalendar } from "qalendar";
 import { computed } from "vue";
+import InfoComponentSmall from '@/shared/components/info-component-small.vue';
 
 const { httpRequest, userRepository } = useDependencyInjection()
 
@@ -95,7 +81,7 @@ const calendarSchedules = computed(() => {
       id: list.startTime! + list.status!,
       title: `${list.total} ` + (diffStatus === 'UPCOMING' ? ' upcoming' : diffStatus === 'ONGOING' ? " ongoing" : list.status === "COMPLETED" ? ' completed' : ' need report'),
       time: { start: useIsoToLocalTimeFormat(list.startTime!), end: useIsoToLocalTimeFormat(list.endTime!) },
-      color: diffStatus === 'UPCOMING' ? 'blue' : diffStatus === 'ONGOING' ? "orange" : list.status === "COMPLETED" ? 'green' : 'red'
+      color: diffStatus === 'UPCOMING' ? 'blue' : diffStatus === 'ONGOING' ? "yellow" : list.status === "COMPLETED" ? 'green' : 'red'
     }
   })
 })
@@ -119,7 +105,7 @@ onMounted(async () => {
             type: "[FilterInput]", name: "filters",
             value: [
               { column: "SalesActivitySchedule.status", value: 'SCHEDULED' },
-              { column: "SalesActivitySchedule.endTime", value: currentTimeString, comparisonType: 'GTE' }
+              { column: "SalesActivitySchedule.endTime", value: currentTimeString, comparisonType: 'GT' }
             ]
           }
         },
@@ -136,7 +122,7 @@ onMounted(async () => {
             type: "[FilterInput]", name: "filters",
             value: [
               { column: "SalesActivitySchedule.status", value: 'SCHEDULED' },
-              { column: "SalesActivitySchedule.endTime", value: currentTimeString, comparisonType: 'LT' }
+              { column: "SalesActivitySchedule.endTime", value: currentTimeString, comparisonType: 'LTE' }
             ]
           }
         },
@@ -166,7 +152,16 @@ onMounted(async () => {
   salesActivityScheduleSummaryList.value = response.salesActivityScheduleSummaryList
 })
 
-const limitString = (string: string, size: number) => useStringLimiter(string, size) 
+const limitString = (string: string, size: number): string => useStringLimiter(string, size)
+const calculateTimeDiff = (startTime: string, endTime: string): string => {
+  const { differenceDescription } = useTimeIntervalDifferenceCounter(startTime, endTime)
+  return differenceDescription;
+}
+const upcomingScheduleTimeColor = (startTime: string, endTime: string): string => {
+  const { diffStatus } = useTimeIntervalDifferenceCounter(startTime, endTime)
+  return diffStatus === 'UPCOMING' ? 'blue' : "orange";
+}
+
 </script>
 
 <script lang="ts">
@@ -176,5 +171,5 @@ export default {
 </script>
 
 <style>
-  @import "qalendar/dist/style.css";
+@import "qalendar/dist/style.css";
 </style>

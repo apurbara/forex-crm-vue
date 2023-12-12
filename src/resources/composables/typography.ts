@@ -53,16 +53,16 @@ export function useTimeIntervalDifferenceCounter(
       : undefined;
 
   const differenceLenght: string = difference?.years
-    ? difference.years + " years"
+    ? Math.abs(difference.years) + " years"
     : difference?.months
-    ? difference.months + " months"
+    ? Math.abs(difference.months) + " months"
     : difference?.weeks
-    ? difference.weeks + " weeks"
+    ? Math.abs(difference.weeks) + " weeks"
     : difference?.days
-    ? difference.days + " days"
+    ? Math.abs(difference.days) + " days"
     : difference?.hours
-    ? difference.hours + " hours"
-    : (difference?.minutes ?? 0) + " minutes";
+    ? Math.abs(difference.hours) + " hours and " + Math.floor(Math.abs(difference?.minutes ?? 0)) + " minutes"
+    : Math.floor(Math.abs(difference?.minutes ?? 0)) + " minutes";
 
   const differenceDescription =
     diffStatus === "UPCOMING"

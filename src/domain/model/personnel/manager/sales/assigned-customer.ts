@@ -80,6 +80,15 @@ export default class AssignedCustomer {
     }
   }
 
+  addClosingRequest(closingRequest: ClosingRequest) {
+    this.closingRequests.push(closingRequest);
+  }
+  
+  addRecycleRequest(recycleRequest: RecycleRequest) {
+    this.recycleRequests.push(recycleRequest);
+  }
+
+  //
   completedSchedules(): SalesActivitySchedule[] {
     return this.salesActivitySchedules.filter(
       (schedule: SalesActivitySchedule) => schedule.status == "COMPLETED"

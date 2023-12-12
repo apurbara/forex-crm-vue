@@ -2,66 +2,85 @@
   <div>
     <h1 class="page-title">Assigned Customer Detail</h1>
     <div class="d-flex justify-space-between wrap">
+      <div style="min-width: 48%;">
+        <section class="page-section ma-2">
+          <div class="mb-4">
+            <p class="font-20 font-weight-bold text-center">{{ assignedCustomer.customer.name }}</p>
+          </div>
+          <div class="d-flex align-center justify-start flex-wrap">
+            <InfoComponent style="min-width: 40%;"
+              :info="{ label: `phone`, value: assignedCustomer.customer.phone, icon: `mdi-phone-classic` }" />
+            <InfoComponent style="min-width: 40%;"
+              :info="{ label: `email`, value: assignedCustomer.customer.email, icon: `mdi-email-outline` }" />
+            <InfoComponent style="min-width: 40%;"
+              :info="{ label: `area`, value: assignedCustomer.customer.area.label.name, icon: `mdi-map-marker-outline` }" />
+            <InfoComponent style="min-width: 40%;"
+              :info="{ label: `journey`, value: assignedCustomer.customerJourney.label.name, icon: `mdi-progress-star` }" />
+          </div>
 
-      <section class="page-section ma-2" style="min-width: 48%;">
-        <h2 class="section-title">Customer Profile</h2>
-        <PersonCardComponent style="width: 25%;" :person="{
-          name: assignedCustomer.customer.name,
-          bio: `${assignedCustomer.customer.phone} - ${assignedCustomer.customer.email}`
-        }">
-          <v-chip color="primary">{{ assignedCustomer.customer.area.label.name }}</v-chip>
-          <v-chip color="success">{{ assignedCustomer.customerJourney.label.name }}</v-chip>
-          <v-chip color="blue">{{ assignedCustomer.status }}</v-chip>
-        </PersonCardComponent>
+          <div class="mt-4" v-if="canSubmitNewSchedulePlan">
+            <v-btn @click="showNewScheduleDialog = true">
+              plan new activity</v-btn>
+          </div>
 
-        <div class="mt-4">
-          <v-btn @click="showNewScheduleDialog = true" v-if="assignedCustomer.canSubmitNewSchedulePlan()">
-            plan new activity</v-btn>
-        </div>
+          <v-card v-if="upcomingSchedules.length > 0" v-for="(schedule, key) in upcomingSchedules" :key="key"
+            class="mx-auto" title="Upcoming Sales Activity" density="compact" variant="tonal">
+            <v-card-text>
+              <div class="d-flex align-center justify-start flex-wrap">
+                <InfoComponent
+                  :info="{ label: `time`, value: calculateTimeDiff(schedule.startTime, schedule.endTime), icon: `mdi-clock-time-three-outline` }" />
+                <InfoComponent
+                  :info="{ label: `activity`, value: schedule.salesActivity.label.name, icon: `mdi-checkbox-marked-circle-plus-outline` }" />
+                <InfoComponent style="min-width: 100%;"
+                  :info="{ label: `description`, value: schedule.salesActivity.label.description ?? '-', icon: `mdi-note-edit-outline` }" />
+              </div>
+            </v-card-text>
+          </v-card>
 
-        <ItemCardComponent class="mt-4" style="min-height: 150px; width: 300px;"
-          v-if="assignedCustomer.upcomingSchedules().length > 0"
-          v-for="(schedule, key) in assignedCustomer.upcomingSchedules()" :key="key" :item="{
-            name: schedule.salesActivity.label.name,
-            description: schedule.salesActivity.label.description
-          }">
-          <template v-slot>
-            <p>{{ schedule.startTime }} - {{ schedule.endTime }}</p>
-          </template>
-        </ItemCardComponent>
+          <v-card v-if="pendingClosingRequests.length > 0" v-for="(request, key) in pendingClosingRequests" :key="key"
+            class="mx-auto" title="Pending Closing Request" density="compact" variant="tonal">
+            <v-card-text>
+              <div class="d-flex align-center justify-start flex-wrap">
+                <InfoComponent
+                  :info="{ label: `submit time`, value: calculateTimeDiff(request.createdTime, request.createdTime), icon: `mdi-clock-time-three-outline` }" />
+                <InfoComponent
+                  :info="{ label: `transaction value`, value: request.transactionValue, icon: `mdi-checkbox-marked-circle-plus-outline` }" />
+                <div class="ma-2">
+                  <p class="font-14 font-weight-thin">note</p>
+                  <p class="font-16">{{ request.note }}</p>
+                </div>
+              </div>
+            </v-card-text>
+          </v-card>
+          
+          <v-card v-if="pendingRecycleRequests.length > 0" v-for="(request, key) in pendingRecycleRequests" :key="key"
+            class="mx-auto" title="Pending Recycle Request" density="compact" variant="tonal">
+            <v-card-text>
+              <div class="d-flex align-center justify-start flex-wrap">
+                <InfoComponent
+                :info="{ label: `submit time`, value: calculateTimeDiff(request.createdTime, request.createdTime), icon: `mdi-clock-time-three-outline` }" />
+                <div class="ma-2">
+                  <p class="font-14 font-weight-thin">note</p>
+                  <p class="font-16">{{ request.note }}</p>
+                </div>
+              </div>
+            </v-card-text>
+          </v-card>
 
-        <ItemCardComponent class="mt-4" style="min-height: 150px; width: 300px;"
-          v-if="assignedCustomer.activeClosingRequest().length > 0"
-          v-for="(request, key) in assignedCustomer.activeClosingRequest()" :key="key" :item="{
-            name: `Pending Closing Request`,
-            description: `
-              value: ${request.transactionValue}
-                                            submit time: ${request.createdTime}
-            `
-          }">
-          <v-chip color="primary">{{ request.status }}</v-chip>
-        </ItemCardComponent>
+          <ReportableSalesActivitySchedulesComponent :assigned-customer="assignedCustomer" />
+        </section>
+        <VerificationReportSectionComponent :assigned-customer="assignedCustomer" />
+      </div>
 
-        <ItemCardComponent class="mt-4" style="min-height: 150px; width: 300px;"
-          v-if="assignedCustomer.activeRecycleRequest().length > 0"
-          v-for="(request, key) in assignedCustomer.activeClosingRequest()" :key="key" :item="{
-            name: `Pending Recycle Request`,
-            description: `submit time: ${request.createdTime}`
-          }">
-          <v-chip color="primary">{{ request.status }}</v-chip>
-        </ItemCardComponent>
 
-        <ReportableSalesActivitySchedulesComponent :assigned-customer="assignedCustomer" />
-      </section>
       <section class="page-section" style="min-width: 48%;">
         <h2 class="section-title">Score Distribution</h2>
         <div class="card flex justify-content-center">
           <Chart type="doughnut" :data="chartData" :options="chartOptions" class="w-full md:w-30rem" />
         </div>
       </section>
-    </div>
 
-    <VerificationReportSectionComponent :assigned-customer="assignedCustomer" />
+    </div>
 
     <SalesActivityScheduleSectionComponent :assigned-customer="assignedCustomer" />
 
@@ -93,11 +112,12 @@
     </div>
   </div>
 
-  <Dialog v-model:visible="showNewScheduleDialog" style="width: 600px;" modal dismissable-mask>
+  <Dialog v-model:visible="showNewScheduleDialog" style="width: 600px;" modal>
     <div class="ma-4">
+      <p class="text-center font-20 font-weight-bold mb-8">Submit New Activity Schedule</p>
       <SubmitSalesActivityScheduleComponent :sales-activity-schedule="newActivitySchedule" />
       <div class="d-flex justify-end mt-4">
-        <v-btn @click="submitNewSchedule" class="ml-4">Submit</v-btn>
+        <v-btn block @click="submitNewSchedule" variant="tonal">Submit</v-btn>
       </div>
     </div>
   </Dialog>
@@ -111,17 +131,19 @@ import SalesRole from '@/domain/user-role/personnel/sales-role';
 import { CompanyUserRoleInterface } from '@/domain/user-role/role-interfaces';
 import { PaginationResponseType } from '@/resources/components/abstract-pagination';
 import CursorPagination from '@/resources/components/cursor-pagination';
-import PersonCardComponent from '@/shared/components/person-card-component.vue';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 import { reactive } from 'vue';
 import VerificationReportSectionComponent from './detail/VerificationReportSectionComponent.vue';
 import SalesActivityScheduleSectionComponent from './detail/SalesActivityScheduleSectionComponent.vue';
-import ItemCardComponent from '@/shared/components/item-card-component.vue';
 import ReportableSalesActivitySchedulesComponent from './detail/ReportableSalesActivitySchedulesComponent.vue';
 import SubmitSalesActivityScheduleComponent from '@/domain/model/personnel/manager/sales/assigned-customer/SubmitSalesActivityScheduleComponent.vue';
 import Dialog from 'primevue/dialog';
+import Chart from 'primevue/chart';
+import InfoComponent from '@/shared/components/info-component.vue';
+import { useTimeIntervalDifferenceCounter } from '@/resources/composables/typography';
+import { computed } from 'vue';
 
 const { httpRequest, userRepository, cache } = useDependencyInjection()
 
@@ -129,7 +151,11 @@ const assignedCustomer = reactive(new AssignedCustomer())
 const props = defineProps<{ assignedCustomerId: string }>()
 
 const newActivitySchedule = ref<SalesActivitySchedule>(assignedCustomer.planNewSchedule())
-const showAddNewSchedule = ref<boolean>(false)
+const canSubmitNewSchedulePlan = computed(() => assignedCustomer.canSubmitNewSchedulePlan())
+const upcomingSchedules = computed(() => assignedCustomer.upcomingSchedules())
+const pastSchedulesWithoutReport = computed(() => assignedCustomer.pastSchedulesWithoutReport())
+const pendingClosingRequests = computed(() => assignedCustomer.activeClosingRequest())
+const pendingRecycleRequests = computed(() => assignedCustomer.activeRecycleRequest())
 
 onMounted(async () => {
   const customerVerificationResponse = await userRepository.getUser<CompanyUserRoleInterface>()
@@ -180,6 +206,11 @@ onMounted(async () => {
   chartOptions.value = setChartOptions();
 })
 
+const calculateTimeDiff = (startTime: string, endTime: string) => {
+  const { differenceDescription } = useTimeIntervalDifferenceCounter(startTime, endTime)
+  return differenceDescription;
+}
+
 const showNewScheduleDialog = ref<boolean>(false)
 const submitNewSchedule = async () => {
   const response = await userRepository.getUser<SalesRole>()
@@ -199,11 +230,8 @@ const submitNewSchedule = async () => {
   showNewScheduleDialog.value = false
 }
 
-//
-import Chart from 'primevue/chart';
-
 const chartData = ref();
-const chartOptions = ref<Object|undefined>(undefined);
+const chartOptions = ref<Object | undefined>(undefined);
 
 const setChartData = () => {
   const documentStyle = getComputedStyle(document.body);

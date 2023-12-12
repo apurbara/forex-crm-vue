@@ -13,11 +13,13 @@ import RecycleRequestComponent from '@/domain/model/personnel/manager/sales/assi
 import RecycleRequest, { RecycleRequestType } from '@/domain/model/personnel/manager/sales/assigned-customer/recycle-request';
 import SalesRole from '@/domain/user-role/personnel/sales-role';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
+import { assignmentExpression } from '@babel/types';
 import { reactive } from 'vue';
 
 const { httpRequest, userRepository } = useDependencyInjection()
 const props = defineProps<{ assignedCustomer: AssignedCustomer }>()
 const recycleRequest = reactive<RecycleRequest>(new RecycleRequest(props.assignedCustomer))
+const emit = defineEmits(['recycleRequestSubmitted'])
 
 const submit = async () => {
   const response = await userRepository.getUser<SalesRole>()
@@ -31,6 +33,8 @@ const submit = async () => {
       }]
     })
   recycleRequest.load(response.assignedCustomer.submitRecycleRequest)
+  props.assignedCustomer.addRecycleRequest(recycleRequest)
+  emit('recycleRequestSubmitted')
 }
 </script>
 

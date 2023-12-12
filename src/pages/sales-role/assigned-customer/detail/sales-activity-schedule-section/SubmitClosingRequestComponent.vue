@@ -3,7 +3,7 @@ import ClosingRequestComponent from '@/domain/model/personnel/manager/sales/assi
 <template>
   <ClosingRequestComponent :closing-request="closingRequest" />
   <div class="d-flex justify-center">
-    <v-btn @click="submit" :disabled="!closingRequest.isValidToSubmit()">submit</v-btn>
+    <v-btn @click="submitClosingRequest" :disabled="!closingRequest.isValidToSubmit()">submit</v-btn>
   </div>
 </template>
 
@@ -18,8 +18,9 @@ import { reactive } from 'vue';
 const { httpRequest, userRepository } = useDependencyInjection()
 const props = defineProps<{ assignedCustomer: AssignedCustomer }>()
 const closingRequest = reactive<ClosingRequest>(new ClosingRequest(props.assignedCustomer))
+const emit = defineEmits(['closingRequestSubmitted'])
 
-const submit = async () => {
+const submitClosingRequest = async () => {
   const response = await userRepository.getUser<SalesRole>()
     .executeSalesGraphqlMutation<{ assignedCustomer: { submitClosingRequest: ClosingRequestType } }>(httpRequest, {
       operation: "assignedCustomer",
@@ -31,6 +32,8 @@ const submit = async () => {
       }]
     })
   closingRequest.load(response.assignedCustomer.submitClosingRequest)
+  props.assignedCustomer.addClosingRequest(closingRequest)
+  emit('closingRequestSubmitted')
 }
 </script>
 

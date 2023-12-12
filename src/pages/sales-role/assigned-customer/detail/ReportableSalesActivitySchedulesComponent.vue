@@ -1,59 +1,62 @@
 <template>
-  <div class="card-list" v-if="assignedCustomer.pastSchedulesWithoutReport().length > 0">
-    <ItemCardComponent class="ma-2" style="min-height: 150px; width: 300px;"
-      v-for="(schedule, key) in assignedCustomer.pastSchedulesWithoutReport()" :key="key" :item="{
-        name: schedule.salesActivity.label.name,
-        description: schedule.salesActivity.label.description
-      }">
-      <template v-slot>
-        <p>{{ schedule.startTime }} - {{ schedule.endTime }}</p>
-        <div class="d-flex justify-end">
-          <v-btn @click="showSubmitSalesActivityForm(schedule)">report</v-btn>
-        </div>
-      </template>
-    </ItemCardComponent>
-  </div>
+  <v-card v-for="(schedule, key) in pastSchedulesWithoutReport" :key="key" class="mx-auto"
+    title="Submit Sales Activity Report" density="compact" variant="tonal">
+    <v-card-text>
+      <div class="d-flex align-center justify-start flex-wrap">
+        <InfoComponent
+          :info="{ label: `time`, value: calculateTimeDiff(schedule.startTime, schedule.endTime), icon: `mdi-clock-time-three-outline` }" />
+        <InfoComponent
+          :info="{ label: `activity`, value: schedule.salesActivity.label.name, icon: `mdi-checkbox-marked-circle-plus-outline` }" />
+        <InfoComponent style="min-width: 100%;"
+          :info="{ label: `description`, value: schedule.salesActivity.label.description ?? '', icon: `mdi-note-edit-outline` }" />
+      </div>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn block @click="showSubmitSalesActivityForm(schedule)">submit</v-btn>
+    </v-card-actions>
+  </v-card>
 
-  <Dialog v-model:visible="displaySalesActivityReportForm" style="width: 800px;" modal dismissable-mask>
-    <v-stepper :items="['Submit Report', 'Plan New Schedule Or Conclude']">
-      <template v-slot:item.1>
-        <div v-if="!!toReportSchedule?.salesActivityReport.id">report submitted</div>
-        <div v-else class="mt-4">
-          <v-select :items="customerJourneyList" item-title="name" return-object
-            @update:model-value="selectCustomerJourney"></v-select>
-          <SalesActivityReportComponent :sales-activity-report="toReportSchedule?.salesActivityReport!" />
-          <div class="d-flex justify-center">
-            <v-btn @click="submitSalesActivityReport"
-              :disabled="!toReportSchedule?.salesActivityReport.isValidToSubmit()">submit</v-btn>
+  <v-dialog v-model="displaySalesActivityReportForm" width="600px">
+    <v-card>
+      <v-card-title class="mt-6 text-center">Submit Sales Activity Report</v-card-title>
+      <v-card-text class="mt-4">
+        <p class="font-16 mb-2">change customer journey</p>
+        <v-select :items="customerJourneyList" item-title="name" return-object
+          @update:model-value="selectCustomerJourney"></v-select>
+        <p class="font-16 mt-4 mb-2">describe sales activity</p>
+        <SalesActivityReportComponent :sales-activity-report="toReportSchedule?.salesActivityReport!" />
+      </v-card-text>
+      <div class="d-flex justify-center ma-6">
+        <v-btn block @click="submitSalesActivityReport" variant="tonal"
+          :disabled="!toReportSchedule?.salesActivityReport.isValidToSubmit()">submit</v-btn>
+      </div>
+    </v-card>
+  </v-dialog>
+
+  <Dialog v-model:visible="displayNextActionDialog" style="width: 600px;" modal :closable="false">
+    <div class="ma-4">
+      <p class="text-center font-20 font-weight-bold mb-8">Plan Next Activity</p>
+      <div class="mt-4">
+        <v-select label="next step" :items="nextStepItems" v-model="nextStep"></v-select>
+        <div v-if="nextStep === nextStepItems[0]">
+          <SubmitSalesActivityScheduleComponent :sales-activity-schedule="newActivitySchedule" />
+          <div class="d-flex justify-end mt-4">
+            <v-btn @click="submitNewSchedule" class="ml-4">Submit</v-btn>
           </div>
         </div>
-      </template>
-
-      <template v-slot:item.2>
-        <div class="mt-4">
-          <v-select label="next step" :items="nextStepItems" v-model="nextStep"></v-select>
-          <div v-if="nextStep === nextStepItems[0]">
-            <SubmitSalesActivityScheduleComponent :sales-activity-schedule="newActivitySchedule" />
-            <div class="d-flex justify-end mt-4">
-              <v-btn @click="submitNewSchedule" class="ml-4">Submit</v-btn>
-            </div>
-          </div>
-          <div v-if="nextStep === nextStepItems[1]">
-            <SubmitClosingRequestComponent :assigned-customer="assignedCustomer" />
-          </div>
-          <div v-if="nextStep === nextStepItems[2]">
-            <SubmitRecycleRequestComponent :assigned-customer="assignedCustomer" />
-          </div>
+        <div v-if="nextStep === nextStepItems[1]">
+          <SubmitClosingRequestComponent :assigned-customer="assignedCustomer" @closing-request-submitted="displayNextActionDialog = false" />
         </div>
-      </template>
-
-    </v-stepper>
+        <div v-if="nextStep === nextStepItems[2]">
+          <SubmitRecycleRequestComponent :assigned-customer="assignedCustomer" @recycle-request-submitted="displayNextActionDialog = false" />
+        </div>
+      </div>
+    </div>
   </Dialog>
 </template>
 
 <script lang="ts" setup>
 
-import { VStepper } from 'vuetify/labs/VStepper'
 import Dialog from 'primevue/dialog';
 
 import AssignedCustomer, { AssignedCustomerType } from '@/domain/model/personnel/manager/sales/assigned-customer';
@@ -61,7 +64,6 @@ import SubmitSalesActivityScheduleComponent from '@/domain/model/personnel/manag
 import SalesActivitySchedule, { SalesActivityScheduleType } from '@/domain/model/personnel/manager/sales/assigned-customer/sales-activity-schedule';
 import { SalesActivityReportType } from '@/domain/model/personnel/manager/sales/assigned-customer/sales-activity-schedule/sales-activity-report';
 import SalesRole from '@/domain/user-role/personnel/sales-role';
-import ItemCardComponent from '@/shared/components/item-card-component.vue';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, ref } from 'vue';
 import SalesActivityReportComponent from '@/domain/model/personnel/manager/sales/assigned-customer/sales-activity-schedule/SalesActivityReportComponent.vue';
@@ -69,6 +71,9 @@ import SubmitClosingRequestComponent from './sales-activity-schedule-section/Sub
 import SubmitRecycleRequestComponent from './sales-activity-schedule-section/SubmitRecycleRequestComponent.vue';
 import { CompanyUserRoleInterface } from '@/domain/user-role/role-interfaces';
 import { CustomerJourneyType } from '@/domain/model/customer-journey';
+import { useTimeIntervalDifferenceCounter } from '@/resources/composables/typography';
+import InfoComponent from '@/shared/components/info-component.vue';
+import { computed } from 'vue';
 
 const props = defineProps<{ assignedCustomer: AssignedCustomer }>()
 const { httpRequest, userRepository, cache } = useDependencyInjection()
@@ -79,7 +84,14 @@ onMounted(async () => {
   const response = await userRepository.getUser<CompanyUserRoleInterface>()
     .executeGraphqlQueryInCompany<{ customerJourneyList: { list: CustomerJourneyType[] } }>(httpRequest, {
       operation: "customerJourneyList",
-      variables: { filters: { type: "[FilterInput]", value: [{ column: "CustomerJourney.disabled", value: false }] } },
+      variables: {
+        filters: {
+          type: "[FilterInput]",
+          value: [
+            { column: "CustomerJourney.disabled", value: false }
+          ]
+        }
+      },
       fields: [{ list: ["id", "name"] }]
     })
   customerJourneyList.value.push(...response.customerJourneyList.list)
@@ -91,14 +103,23 @@ const selectCustomerJourney = (customerJourneyData: any) => {
 
 const toReportSchedule = ref<SalesActivitySchedule>();
 const displaySalesActivityReportForm = ref<boolean>(false)
+const displayNextActionDialog = ref<boolean>(false)
+const pastSchedulesWithoutReport = computed(() => props.assignedCustomer.pastSchedulesWithoutReport())
+
 const showSubmitSalesActivityForm = (schedule: SalesActivitySchedule) => {
   displaySalesActivityReportForm.value = true;
   toReportSchedule.value = schedule
 }
 
+const calculateTimeDiff = (startTime: string, endTime: string) => {
+  const { differenceDescription } = useTimeIntervalDifferenceCounter(startTime, endTime)
+  return differenceDescription;
+}
+
 const submitSalesActivityReport = async () => {
+  type ResponseType = { updateJourney: AssignedCustomerType, salesActivitySchedule: { submitReport: SalesActivityReportType } }
   const response = await userRepository.getUser<SalesRole>()
-    .executeSalesGraphqlMutation<{ updateJourney: AssignedCustomerType, salesActivitySchedule: { submitReport: SalesActivityReportType } }>(httpRequest, [
+    .executeSalesGraphqlMutation<ResponseType>(httpRequest, [
       {
         operation: "updateJourney",
         variables: {
@@ -113,12 +134,14 @@ const submitSalesActivityReport = async () => {
         fields: [{
           operation: "submitReport",
           variables: toReportSchedule.value?.salesActivityReport.toGraphqlVariables(),
-          fields: ["id", "submitTime", "content"],
+          fields: ["id", "submitTime", "content", { salesActivitySchedule: ['status'] }],
         }]
       }
     ])
   props.assignedCustomer.customerJourney.load(response.updateJourney.customerJourney!)
   toReportSchedule.value?.salesActivityReport.load(response.salesActivitySchedule.submitReport)
+  displaySalesActivityReportForm.value = false
+  displayNextActionDialog.value = true
 }
 
 const nextStepItems = ref(['plan next activity', 'request closing', 'request recycle'])
@@ -138,10 +161,8 @@ const submitNewSchedule = async () => {
   const submittedActivitySchedule = props.assignedCustomer.planNewSchedule();
   submittedActivitySchedule.load(response.assignedCustomer.submitSalesActivitySchedule)
   props.assignedCustomer.salesActivitySchedules.push(submittedActivitySchedule)
-
-  displaySalesActivityReportForm.value = false
+  displayNextActionDialog.value = false
 }
-
 
 </script>
 

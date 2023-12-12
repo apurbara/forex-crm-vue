@@ -43,8 +43,6 @@ import { SalesActivityScheduleType } from '@/domain/model/personnel/manager/sale
 import ItemCardComponent from '@/shared/components/item-card-component.vue';
 import { ref } from 'vue';
 //
-import type { Configs, Appointment } from "vue-pro-calendar";
-
 const { httpRequest, userRepository } = useDependencyInjection();
 const totalUpcomingSchedule = ref<number>(0)
 const totalPastScheduleWithoutReport = ref<number>(0)
@@ -111,31 +109,6 @@ const viewSummary = async () => {
   totalPastScheduleWithoutReport.value = response.totalPastScheduleWithoutReport
 }
 
-//
-const cfg = ref<Configs>({
-  viewEvent: undefined,
-  reportEvent: {
-    icon: true,
-    text: "",
-  },
-  searchPlaceholder: "",
-  eventName: "",
-  closeText: "",
-  nativeDatepicker: true,
-  // todayButton: true,
-  // firstDayOfWeek: 1,
-});
-
-const evts: Ref<Appointment[]> = ref([
-  {
-    date: "2022-11-19T14:00:00.000Z",
-    comment: "",
-    id: "cl32rbkjk1700101o53e3e3uhn",
-    keywords: "Projet BAMBA",
-    name: "MONTCHO Kévin",
-  },
-  //...
-]);
 
 </script>
 
