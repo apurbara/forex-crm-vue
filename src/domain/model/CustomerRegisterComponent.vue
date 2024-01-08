@@ -2,7 +2,7 @@
   <v-text-field ref="focus" label="Name" v-model="customer.name" :rules="[customer.isValidName()]" />
   <v-text-field label="email" v-model="customer.email" :rules="[customer.isValidEmail()]" />
   <v-text-field label="phone" v-model="customer.phone" :rules="[customer.isValidPhone()]" />
-  <v-select :items="areaList" item-title="name" return-object @update:model-value="selectArea"></v-select>
+  <v-autocomplete variant="outlined" :items="areaList" item-title="name" return-object @update:model-value="selectArea"></v-autocomplete>
 </template>
 
 <script lang="ts" setup>
@@ -21,12 +21,13 @@ const { focus } = useFocus();
 
 onMounted(async () => {
   const response = await userRepository.getUser<CompanyUserRoleInterface>()
-    .executeGraphqlQueryInCompany<{ areaList: { list: AreaType[] } }>(httpRequest, {
-      operation: "areaList",
+    .executeGraphqlQueryInCompany<{ allAreaList: AreaType[] }>(httpRequest, {
+      operation: "allAreaList",
       variables: { filters: { type: "[FilterInput]", value: [{ column: "Area.disabled", value: false }] } },
-      fields: [{ list: ["id", "name"] }]
+      fields: ["id", "name"]
     })
-  areaList.value.push(...response.areaList.list)
+  areaList.value.push(...response.allAreaList)
+console.log(areaList.value);
 })
 
 const selectArea = (areaData: any) => { props.customer.loadArea(areaData) }
