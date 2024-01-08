@@ -32,7 +32,7 @@ export class OffsetLimit {
     return {
       pageSize: this.pageSize,
       page: this.page,
-      orders: [this.appliedOrder],
+      orders: this.appliedOrder ? [this.appliedOrder] : [],
     };
   }
 

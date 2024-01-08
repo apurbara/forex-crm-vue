@@ -6,11 +6,11 @@
         <p>Personnel Info</p>
         <p>name: {{ sales.personnel?.accountInfo.name }}</p>
       </div>
-      <v-select menu-icon="mdi-chevron-down" return-object :items="areaList" item-title="name" label="select area"
-        @update:model-value="areaSelected" />
-      <v-select menu-icon="mdi-chevron-down" return-object :items="managerList" item-title="personnel.name"
-        label="select manager" @update:model-value="managerSelected">
-      </v-select>
+      <v-autocomplete variant="outlined" menu-icon="mdi-chevron-down" return-object :items="areaList" item-title="name"
+        label="select area" @update:model-value="areaSelected" />
+      <v-autocomplete variant="outlined" menu-icon="mdi-chevron-down" return-object :items="managerList"
+        item-title="personnel.name" label="select manager" @update:model-value="managerSelected">
+      </v-autocomplete>
       <v-select menu-icon="mdi-chevron-down" :items="['IN_HOUSE', 'FREELANCE']" label="select sales type"
         v-model="sales.type">
       </v-select>
@@ -61,8 +61,8 @@ onMounted(async () => {
   sales.value.manager = new Manager()
   //
   const areaResponseList = await userRepository.getUser<CompanyUserRoleInterface>()
-    .executeGraphqlQueryInCompany<{ areaList: { list: AreaType[] } }>(httpRequest, {
-      operation: "areaList",
+    .executeGraphqlQueryInCompany<{ allAreaList: AreaType[] }>(httpRequest, {
+      operation: "allAreaList",
       variables: {
         filters: {
           type: "[FilterInput]", value: [
@@ -70,9 +70,9 @@ onMounted(async () => {
           ]
         }
       },
-      fields: [{ list: ['id', 'name', 'description'] }]
+      fields: ['id', 'name', 'description']
     })
-  areaList.value = areaResponseList.areaList.list
+  areaList.value = areaResponseList.allAreaList
   //
   const managerResponseList = await userRepository.getUser<CompanyUserRoleInterface>()
     .executeGraphqlQueryInCompany<{ managerList: { list: ManagerType[] } }>(httpRequest, {
