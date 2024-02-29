@@ -22,7 +22,7 @@ export type AssignedCustomerType = {
   sales?: SalesType;
   customer?: CustomerType;
   customerJourney?: CustomerJourneyType;
-  schedules?: PaginationResponseType<SalesActivityScheduleType>;
+  salesActivitySchedules?: PaginationResponseType<SalesActivityScheduleType>;
   closingRequests?: PaginationResponseType<ClosingRequestType>;
   recycleRequests?: PaginationResponseType<RecycleRequestType>;
 };
@@ -55,8 +55,8 @@ export default class AssignedCustomer {
       this.customerJourney.load(data.customerJourney);
     }
 
-    if (data.schedules) {
-      data.schedules.list.forEach((scheduleData) => {
+    if (data.salesActivitySchedules) {
+      data.salesActivitySchedules.list.forEach((scheduleData) => {
         const schedule = new SalesActivitySchedule(this);
         schedule.load(scheduleData);
         this.salesActivitySchedules.push(schedule);

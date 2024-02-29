@@ -2,6 +2,7 @@ import { GraphqlBuilderOptions } from "@/resources/types/graphql";
 import HttpRequestInterface from "./http-request-interface";
 import LayoutInterface from "@/resources/components/layout-interface";
 import UserRepository from "../user-repository";
+import RestRequestInterface from "./rest-request-interface";
 
 // export type UserRoleDataType = {
 //   token: string;
@@ -36,4 +37,19 @@ export interface CompanyUserRoleInterface extends UserRoleInterface {
     httpRequest: HttpRequestInterface,
     options: GraphqlBuilderOptions
   ): Promise<ResponseType>;
+
+  uploadFile<ResponseType>(
+    restRequest: RestRequestInterface,
+    url: string,
+    file: string | Blob,
+    onUploadProgress: any
+  ): Promise<ResponseType>;
+
+  downloadStream(
+    restRequest: RestRequestInterface,
+    url: string,
+    params?: object,
+    fileType?: string,
+    label?: string
+  ): Promise<void>;
 }

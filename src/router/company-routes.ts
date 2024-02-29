@@ -238,6 +238,22 @@ const companyRoutes = [
       },
     ],
   },
+  {
+    path: "customer/",
+    // component: () => import('@/resources/components/BlankComponent.vue'),
+    beforeEnter: () => {
+      inject<UserRepository>("userRepository")
+        ?.getUser<UserRoleInterface>()
+        .canAccess("customer");
+    },
+    children: [
+      {
+        path: "",
+        name: "customer-list",
+        component: () => import("@/pages/customer/List.vue"),
+      },
+    ],
+  },
 ];
 
 export default companyRoutes;

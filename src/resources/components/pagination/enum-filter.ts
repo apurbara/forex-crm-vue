@@ -35,6 +35,17 @@ export default class EnumFilter {
         }
       : undefined;
   }
+  toQueryParams(): FilterType | undefined {
+    return this.selectedItems.length > 0
+      ? {
+          column: this.column,
+          comparisonType: this.comparisonType,
+          value: this.selectedItems.map(
+            (selectedItem) => selectedItem[this.itemValue]
+          ),
+        }
+      : undefined;
+  }
 
   //
   async initItems(): Promise<void> {

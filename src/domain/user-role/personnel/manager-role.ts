@@ -12,6 +12,7 @@ import {
 } from "@/shared/components/default-layout";
 import LayoutInterface from "@/resources/components/layout-interface";
 import Fields from "gql-query-builder/build/Fields";
+import RestRequestInterface from "../rest-request-interface";
 
 export type ManagerRoleType = {
   id?: string;
@@ -42,7 +43,11 @@ export default class ManagerRole
   }
 
   canAccess(menu: string): boolean {
-    return ["manager-dashboard", "schedule", "assigned-customer"].includes(menu);
+    return [
+      "manager-dashboard",
+      "manager-customer-assignment",
+      "customer",
+    ].includes(menu);
   }
 
   getLayout(userRepository: UserRepository): LayoutInterface {
@@ -53,10 +58,14 @@ export default class ManagerRole
         this.personnelRole.name
       ),
       navBarMenuItems: [
-        // {
-        //   title: "request",
-        //   to: "/request",
-        // },
+        {
+          title: "customer assignment",
+          to: "/manager-customer-assignment",
+        },
+        {
+          title: "customer",
+          to: "/customer",
+        },
       ],
     };
   }
@@ -113,7 +122,9 @@ export default class ManagerRole
       "manager",
       {
         operation: "manager",
-        variables: { managerId: { type: "ID", required: true, value: this.id } },
+        variables: {
+          managerId: { type: "ID", required: true, value: this.id },
+        },
         fields: fields,
       },
       this.personnelRole.token
@@ -130,11 +141,44 @@ export default class ManagerRole
       "manager",
       {
         operation: "manager",
-        variables: { managerId: { type: "ID", required: true, value: this.id } },
+        variables: {
+          managerId: { type: "ID", required: true, value: this.id },
+        },
         fields: fields,
       },
       this.personnelRole.token
     );
     return response.manager;
+  }
+
+  async uploadFile<ResponseType>(
+    restRequest: RestRequestInterface,
+    url: string,
+    file: string | Blob,
+    onUploadProgress: any
+  ): Promise<ResponseType> {
+    const response = await this.personnelRole.uploadFile<ResponseType>(
+      restRequest,
+      url,
+      file,
+      onUploadProgress
+    );
+    return response;
+  }
+
+  async downloadStream(
+    restRequest: RestRequestInterface,
+    url: string,
+    params?: object,
+    fileType?: string,
+    label?: string
+  ): Promise<void> {
+    const response = await this.personnelRole.downloadStream(
+      restRequest,
+      url,
+      params,
+      fileType,
+      label
+    );
   }
 }

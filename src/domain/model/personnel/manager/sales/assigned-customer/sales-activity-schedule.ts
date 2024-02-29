@@ -65,7 +65,7 @@ export default class SalesActivitySchedule {
   //
   toGraphqlVariables() {
     return {
-      salesActivityId: {
+      SalesActivity_id: {
         type: "ID",
         required: true,
         value: this.salesActivity.id,

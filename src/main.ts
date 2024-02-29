@@ -20,6 +20,7 @@ import UserRepository from "./domain/user-repository";
 
 // Styles
 import "./assets/styles/main.scss";
+import AxiosRestRequest from "./infrastructure/axios/axios-rest-request";
 
 const app = createApp(App);
 
@@ -32,7 +33,9 @@ const userRepository = reactive(new UserRepository());
 app.provide("userRepository", userRepository);
 
 const httpRequest = new AxiosHttpRequest();
+const restRequest = new AxiosRestRequest();
 app.provide("httpRequest", httpRequest);
+app.provide("restRequest", restRequest);
 
 const cache = new InMemoryCache();
 app.provide("cache", cache);

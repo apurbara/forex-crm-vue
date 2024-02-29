@@ -1,6 +1,10 @@
 import { ValidationResult } from "@/resources/types/custom-types";
 import Area, { AreaType } from "./area-structure/area";
-import { isEmail, isNotEmpty, isPhone } from "@/resources/composables/validator";
+import {
+  isEmail,
+  isNotEmpty,
+  isPhone,
+} from "@/resources/composables/validator";
 import { PaginationResponseType } from "@/resources/components/abstract-pagination";
 import VerificationReport, {
   VerificationReportType,
@@ -11,9 +15,12 @@ import CustomerVerification, {
 
 export type CustomerType = {
   id?: string;
+  createdTime?: string;
   email?: string;
   name?: string;
   phone?: string;
+  source?: string;
+  verificationScore?: number;
   area?: AreaType;
   verificationReports?: PaginationResponseType<VerificationReportType>;
 };
@@ -25,6 +32,7 @@ export default class Customer {
     public email: string = "",
     public name: string = "",
     public phone: string = "",
+    public source: string = "",
     public area: Area = new Area()
   ) {}
 
@@ -33,6 +41,7 @@ export default class Customer {
     this.email = data.email ?? this.email;
     this.name = data.name ?? this.name;
     this.phone = data.phone ?? this.phone;
+    this.source = data.source ?? this.source;
     if (data.area) {
       this.area.load(data.area);
     }
@@ -40,8 +49,8 @@ export default class Customer {
       data.verificationReports.list.forEach((verificationReportData) => {
         const associateReport = this.verificationReports.find(
           (verificationReport) =>
-            (verificationReport.customerVerification.id ==
-              verificationReportData.CustomerVerification_id)
+            verificationReport.customerVerification.id ==
+            verificationReportData.CustomerVerification_id
         );
         associateReport?.load(verificationReportData);
       });
@@ -62,13 +71,36 @@ export default class Customer {
     });
   }
 
+  getVerifiedReportList(): VerificationReport[] {
+    return this.verificationReports.filter(
+      (verificationReport) => !!verificationReport.id
+    );
+  }
+
+  getUnverifiedReportList(): VerificationReport[] {
+    return this.verificationReports.filter(
+      (verificationReport) => !verificationReport.id
+    );
+  }
+
+  countTotalVerifiedReportWeight(): number {
+    let totalWeight: number = 0;
+    this.getVerifiedReportList().forEach((verificationReport) => {
+      totalWeight += verificationReport.id
+        ? verificationReport.customerVerification.weight ?? 0
+        : 0;
+    });
+    return totalWeight;
+  }
+
   //
   toGraphqlVariables() {
     return {
-      areaId: { type: "ID", required: true, value: this.area.id },
+      Area_id: { type: "ID", required: true, value: this.area.id },
       name: this.name,
       email: this.email,
       phone: this.phone,
+      source: this.source,
     };
   }
 

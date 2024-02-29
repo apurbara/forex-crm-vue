@@ -1,5 +1,5 @@
 import RegularException from "@/resources/exception/regular-exception";
-import axios from "axios";
+import axios, { AxiosProgressEvent } from "axios";
 import { mutation, query } from "gql-query-builder";
 import HttpRequestInterface from "@/domain/user-role/http-request-interface";
 import { GraphqlBuilderOptions } from "@/resources/types/graphql";

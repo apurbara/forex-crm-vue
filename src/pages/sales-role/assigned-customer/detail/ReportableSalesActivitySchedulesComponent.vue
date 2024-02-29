@@ -45,10 +45,12 @@
           </div>
         </div>
         <div v-if="nextStep === nextStepItems[1]">
-          <SubmitClosingRequestComponent :assigned-customer="assignedCustomer" @closing-request-submitted="displayNextActionDialog = false" />
+          <SubmitClosingRequestComponent :assigned-customer="assignedCustomer"
+            @closing-request-submitted="displayNextActionDialog = false" />
         </div>
         <div v-if="nextStep === nextStepItems[2]">
-          <SubmitRecycleRequestComponent :assigned-customer="assignedCustomer" @recycle-request-submitted="displayNextActionDialog = false" />
+          <SubmitRecycleRequestComponent :assigned-customer="assignedCustomer"
+            @recycle-request-submitted="displayNextActionDialog = false" />
         </div>
       </div>
     </div>
@@ -117,29 +119,28 @@ const calculateTimeDiff = (startTime: string, endTime: string) => {
 }
 
 const submitSalesActivityReport = async () => {
-  type ResponseType = { updateJourney: AssignedCustomerType, salesActivitySchedule: { submitReport: SalesActivityReportType } }
+  type ResponseType = { updateAssignedCustomerJourney: AssignedCustomerType, submitSalesActivityReport: SalesActivityReportType }
   const response = await userRepository.getUser<SalesRole>()
     .executeSalesGraphqlMutation<ResponseType>(httpRequest, [
       {
-        operation: "updateJourney",
+        operation: "updateAssignedCustomerJourney",
         variables: {
           id: { type: "ID", required: true, value: props.assignedCustomer.id },
-          customerJourneyId: { type: "ID", required: true, value: props.assignedCustomer.customerJourney.id }
+          CustomerJourney_id: { type: "ID", required: true, value: props.assignedCustomer.customerJourney.id }
         },
         fields: [{ customerJourney: ['id', 'name', 'description', 'initial'] }]
       },
       {
-        operation: "salesActivitySchedule",
-        variables: { salesActivityScheduleId: { type: "ID", required: true, value: toReportSchedule.value?.id } },
-        fields: [{
-          operation: "submitReport",
-          variables: toReportSchedule.value?.salesActivityReport.toGraphqlVariables(),
-          fields: ["id", "submitTime", "content", { salesActivitySchedule: ['status'] }],
-        }]
+        operation: "submitSalesActivityReport",
+        variables: {
+          SalesActivitySchedule_id: { type: "ID", required: true, value: toReportSchedule.value?.id },
+          ...toReportSchedule.value?.salesActivityReport.toGraphqlVariables(),
+        },
+        fields: ["id", "submitTime", "content", { salesActivitySchedule: ['status'] }],
       }
     ])
-  props.assignedCustomer.customerJourney.load(response.updateJourney.customerJourney!)
-  toReportSchedule.value?.salesActivityReport.load(response.salesActivitySchedule.submitReport)
+  props.assignedCustomer.customerJourney.load(response.updateAssignedCustomerJourney.customerJourney!)
+  toReportSchedule.value?.salesActivityReport.load(response.submitSalesActivityReport)
   displaySalesActivityReportForm.value = false
   displayNextActionDialog.value = true
 }
@@ -149,17 +150,21 @@ const nextStep = ref(nextStepItems.value[0])
 
 const submitNewSchedule = async () => {
   const response = await userRepository.getUser<SalesRole>()
-    .executeSalesGraphqlMutation<{ assignedCustomer: { submitSalesActivitySchedule: SalesActivityScheduleType } }>(httpRequest, {
-      operation: "assignedCustomer",
-      variables: { assignedCustomerId: { type: "ID", required: true, value: props.assignedCustomer.id } },
-      fields: [{
-        operation: "submitSalesActivitySchedule",
-        variables: newActivitySchedule.value.toGraphqlVariables(),
-        fields: ["id", "status", "startTime", "endTime", { salesActivity: ["name", "duration"] }]
-      }]
+    .executeSalesGraphqlMutation<{ submitSalesActivitySchedule: SalesActivityScheduleType }>(httpRequest, {
+      operation: "submitSalesActivitySchedule",
+      variables: {
+        AssignedCustomer_id: { type: "ID", required: true, value: props.assignedCustomer.id },
+        ...newActivitySchedule.value.toGraphqlVariables(),
+      },
+      fields: ["id", "status", "startTime", "endTime", { salesActivity: ["name", "duration"] }]
+      // fields: [{
+      //   operation: "submitSalesActivitySchedule",
+      //   variables: newActivitySchedule.value.toGraphqlVariables(),
+      //   fields: ["id", "status", "startTime", "endTime", { salesActivity: ["name", "duration"] }]
+      // }]
     })
   const submittedActivitySchedule = props.assignedCustomer.planNewSchedule();
-  submittedActivitySchedule.load(response.assignedCustomer.submitSalesActivitySchedule)
+  submittedActivitySchedule.load(response.submitSalesActivitySchedule)
   props.assignedCustomer.salesActivitySchedules.push(submittedActivitySchedule)
   displayNextActionDialog.value = false
 }

@@ -11,6 +11,8 @@
           <tr>
             <th>name</th>
             <th>description</th>
+            <th>weight</th>
+            <th>position</th>
             <th>disabled</th>
             <th>createdTime</th>
             <th></th>
@@ -30,6 +32,8 @@
             @dblclick="toDetail(customerVerification.id!)">
             <td>{{ customerVerification.name }}</td>
             <td>{{ customerVerification.description }}</td>
+            <td>{{ customerVerification.weight }}</td>
+            <td>{{ customerVerification.position }}</td>
             <td>{{ customerVerification.disabled }}</td>
             <td>{{ customerVerification.createdTime }}</td>
             <td><v-btn variant="text" icon="mdi-store-remove-outline" size="x-small"
@@ -65,7 +69,7 @@ const pagination = reactive(new OffsetPagination<CustomerVerificationType>(
       .executeGraphqlQueryInCompany<{ customerVerificationList: PaginationResponseType<CustomerVerificationType> }>(httpRequest, {
         operation: 'customerVerificationList',
         variables: pagination.toGraphqlVariables(),
-        fields: OffsetPagination.wrapResultFields(['id', 'name', 'description', 'disabled', 'createdTime'])
+        fields: OffsetPagination.wrapResultFields(['id', 'name', 'description', 'disabled', 'createdTime', 'weight', 'position'])
       })!
     return response.customerVerificationList;
   },

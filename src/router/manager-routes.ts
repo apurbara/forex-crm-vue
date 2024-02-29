@@ -14,6 +14,26 @@ const managerRoutes = [
         .canAccess("manager-dashboard");
     },
   },
+  {
+    path: "manager-customer-assignment/",
+    beforeEnter: () => {
+      inject<UserRepository>("userRepository")
+        ?.getUser<UserRoleInterface>()
+        .canAccess("manager-customer-assignment");
+    },
+    children: [
+      {
+        path: "",
+        name: "manager-customer-assignment-list",
+        component: () => import("@/pages/manager-role/customer-assignment/List.vue"),
+      },
+      {
+        path: "distribute",
+        name: "distribute-customer-assignment",
+        component: () => import("@/pages/manager-role/customer-assignment/Distribute.vue"),
+      },
+    ],
+  },
   // {
   //   path: "sales/",
   //   // component: () => import('@/resources/components/BlankComponent.vue'),

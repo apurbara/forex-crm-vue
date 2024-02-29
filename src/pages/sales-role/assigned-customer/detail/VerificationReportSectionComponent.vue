@@ -1,30 +1,44 @@
 <template>
   <div class="page-section ma-2">
-    <h2 class="section-title">Customer Verification</h2>
-    <v-table density="compact" style="width: 100%;" class="datatable px-2">
+    <div class="d-flex justify-space-between">
+      <h2 class="section-title">Customer Verification</h2>
+      <v-chip>{{ assignedCustomer.customer.countTotalVerifiedReportWeight() }}</v-chip>
+    </div>
+    <div v-if="assignedCustomer.customer.getVerifiedReportList().length > 0" class="ma-4">
+      <ul>
+        <li v-for="(verificationReport, index) in assignedCustomer.customer.getVerifiedReportList()"
+          :key="verificationReport.id ?? index">
+          {{ verificationReport.customerVerification.label.name }} {{ verificationReport.note ? `:
+          ${verificationReport.note}` : `` }}
+        </li>
+      </ul>
+    </div>
+    <v-table density="compact" style="width: 100%;" class="datatable px-2"
+      v-if="assignedCustomer.customer.getUnverifiedReportList().length > 0">
       <thead>
         <tr>
-          <th>verified</th>
           <th>desciption</th>
+          <th>bobot</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(verificationReport, index) in assignedCustomer.customer.verificationReports"
+        <tr v-for="(verificationReport, index) in assignedCustomer.customer.getUnverifiedReportList()"
           :key="verificationReport.id ?? index">
-          <td>
-            <v-icon v-if="verificationReport.id" icon="mdi-checkbox-marked-outline" color="success"></v-icon>
-            <v-icon v-else icon="mdi-checkbox-blank-off-outline" color="warning"></v-icon>
-          </td>
           <td>
             <p class="font-14">{{ limitString(verificationReport.customerVerification.label.name, 30) }}</p>
             <p class="font-12">{{ limitString(verificationReport.customerVerification.label.description, 40) }}</p>
           </td>
           <td>
+            <p class="font-14">{{ verificationReport.customerVerification.weight}}</p>
+          </td>
+          <td>
             <v-btn variant="text" icon="mdi-cloud-upload-outline" size="small"
               @click="showVerificationReportSubmission(verificationReport)"></v-btn>
-            <v-btn v-if="verificationReport.id" variant="text" icon="mdi-note-check-outline" size="small"
-              @click="showVerificationNote($event, verificationReport)"></v-btn>
+            <v-btn variant="text" icon="mdi-check-circle-outline" size="small"
+              @click="submitVerificationWithoutNote(verificationReport)"></v-btn>
+            <!-- <v-btn v-if="verificationReport.id" variant="text" icon="mdi-note-check-outline" size="small"
+              @click="showVerificationNote($event, verificationReport)"></v-btn> -->
           </td>
         </tr>
       </tbody>
@@ -62,6 +76,7 @@ const { httpRequest, userRepository } = useDependencyInjection()
 
 const toSubmitVerificationReport = ref<VerificationReport>()
 const displayVerificationReportSubmissionDialog = ref<boolean>(false)
+const verifiedReportCount = ref<number>(props.assignedCustomer.customer.getVerifiedReportList().length)
 const op = ref()
 const opMessage = ref()
 
@@ -73,20 +88,31 @@ const verificationReportNote = ref<string>("")
 
 const submitVerificationReport = async () => {
   const response = await userRepository.getUser<SalesRole>()
-    .executeSalesGraphqlMutation<{ assignedCustomer: { submitCustomerVerificationReport: VerificationReportType } }>(httpRequest, {
-      operation: "assignedCustomer",
-      variables: { assignedCustomerId: { type: "ID", required: true, value: props.assignedCustomer.id } },
-      fields: [{
-        operation: "submitCustomerVerificationReport",
-        variables: {
-          customerVerificationId: { type: "ID", required: true, value: toSubmitVerificationReport.value?.customerVerification.id },
-          ...toSubmitVerificationReport.value?.toGraphqlVariables()
-        },
-        fields: ["id", "note", "createdTime"]
-      }],
+    .executeSalesGraphqlMutation<{ submitCustomerVerificationReport: VerificationReportType }>(httpRequest, {
+      operation: "submitCustomerVerificationReport",
+      variables: {
+        AssignedCustomer_id: { type: "ID", required: true, value: props.assignedCustomer.id },
+        CustomerVerification_id: { type: "ID", required: true, value: toSubmitVerificationReport.value?.customerVerification.id },
+        ...toSubmitVerificationReport.value?.toGraphqlVariables()
+      },
+      fields: ["id", "note", "createdTime"],
     })
-  toSubmitVerificationReport.value?.load(response.assignedCustomer.submitCustomerVerificationReport)
+  toSubmitVerificationReport.value?.load(response.submitCustomerVerificationReport)
   displayVerificationReportSubmissionDialog.value = false
+}
+
+const submitVerificationWithoutNote = async (verificationReport: VerificationReport) => {
+  const response = await userRepository.getUser<SalesRole>()
+    .executeSalesGraphqlMutation<{ submitCustomerVerificationReport: VerificationReportType }>(httpRequest, {
+      operation: "submitCustomerVerificationReport",
+      variables: {
+        AssignedCustomer_id: { type: "ID", required: true, value: props.assignedCustomer.id },
+        CustomerVerification_id: { type: "ID", required: true, value: verificationReport.customerVerification.id },
+        ...verificationReport.toGraphqlVariables()
+      },
+      fields: ["id", "note", "createdTime"],
+    })
+  verificationReport.load(response.submitCustomerVerificationReport)
 }
 
 const limitString = (string: string | undefined, length: number) => {

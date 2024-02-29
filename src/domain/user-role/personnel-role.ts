@@ -13,6 +13,8 @@ import AbstractPagination, {
 import SalesRole, { SalesRoleType } from "./personnel/sales-role";
 import { LoginAuthInfo } from "./login-payload";
 import ManagerRole, { ManagerRoleType } from "./personnel/manager-role";
+import RestRequestInterface from "./rest-request-interface";
+import { file } from "@babel/types";
 
 const PERSONNEL_ROLE_TYPE = "PERSONNEL";
 
@@ -118,5 +120,36 @@ export default class PersonnelRole
   ): Promise<ResponseType> {
     const response = await httpRequest.query("company", options, this.token);
     return response;
+  }
+
+  async uploadFile<ResponseType>(
+    restRequest: RestRequestInterface,
+    url: string,
+    file: string | Blob,
+    onUploadProgress: any
+  ): Promise<ResponseType> {
+    const response = await restRequest.uploadFile(
+      url,
+      file,
+      this.token,
+      onUploadProgress
+    );
+    return response;
+  }
+
+  async downloadStream(
+    restRequest: RestRequestInterface,
+    url: string,
+    params?: object,
+    fileType?: string,
+    label?: string
+  ): Promise<void> {
+    const response = await restRequest.downloadStream(
+      url,
+      this.token,
+      params,
+      fileType,
+      label
+    );
   }
 }

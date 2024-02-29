@@ -19,16 +19,14 @@ const salesActivityReport = reactive<SalesActivityReport>(new SalesActivityRepor
 
 const submit = async () => {
   const response = await userRepository.getUser<SalesRole>()
-    .executeSalesGraphqlMutation<{ salesActivitySchedule: { submitReport: SalesActivityReportType } }>(httpRequest, {
-      operation: "salesActivitySchedule",
-      variables: { salesActivityScheduleId: { type: "ID", required: true, value: salesActivityReport.id } },
-      fields: [{
-        operation: "submitReport",
-        variables: salesActivityReport.toGraphqlVariables(),
-        fields: ["id", "submitTime", "content"],
-      }]
+    .executeSalesGraphqlMutation<{ submitSalesActivitySchedule: SalesActivityReportType }>(httpRequest, {
+      operation: "submitSalesActivitySchedule",
+      variables: {
+        SalesActivitySchedule_id: { type: "ID", required: true, value: salesActivityReport.id },
+        ...salesActivityReport.toGraphqlVariables(),
+      },
     })
-  salesActivityReport.load(response.salesActivitySchedule.submitReport)
+  salesActivityReport.load(response.submitSalesActivitySchedule)
 }
 </script>
 

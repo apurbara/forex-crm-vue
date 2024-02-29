@@ -7,7 +7,7 @@ export type PaginationResponseType<ResultType> = {
   list: Array<ResultType>;
   cursorLimit?: CursorLimitType;
   offsetLimit?: OffsetLimitType;
-}
+};
 
 export class KeywordSearch {
   public value?: string = undefined;
@@ -70,6 +70,20 @@ export default abstract class AbstractPagination<ResultType> {
         type: "KeywordSearchInput",
       },
       filters: { value: filters, type: "[FilterInput]" },
+    };
+  }
+
+  toQueryParams() {
+    const filters: Array<FilterType> = [];
+    this.availableFilters.forEach((availableFilter) => {
+      const filter = availableFilter.toQueryParams();
+      if (filter) {
+        filters.push(filter);
+      }
+    });
+    return {
+      keywordSearch: this.keywordSearch?.value ? this.keywordSearch : null,
+      filters: filters,
     };
   }
 

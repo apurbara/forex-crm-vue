@@ -52,13 +52,13 @@
               </div>
             </v-card-text>
           </v-card>
-          
+
           <v-card v-if="pendingRecycleRequests.length > 0" v-for="(request, key) in pendingRecycleRequests" :key="key"
             class="mx-auto" title="Pending Recycle Request" density="compact" variant="tonal">
             <v-card-text>
               <div class="d-flex align-center justify-start flex-wrap">
                 <InfoComponent
-                :info="{ label: `submit time`, value: calculateTimeDiff(request.createdTime, request.createdTime), icon: `mdi-clock-time-three-outline` }" />
+                  :info="{ label: `submit time`, value: calculateTimeDiff(request.createdTime, request.createdTime), icon: `mdi-clock-time-three-outline` }" />
                 <div class="ma-2">
                   <p class="font-14 font-weight-thin">note</p>
                   <p class="font-16">{{ request.note }}</p>
@@ -162,7 +162,7 @@ onMounted(async () => {
     .executeGraphqlQueryInCompany<{ customerVerificationList: PaginationResponseType<CustomerVerificationType> }>(httpRequest, {
       operation: "customerVerificationList",
       variables: { filters: { type: "[FilterInput]", value: [{ column: 'CustomerVerification.disabled', value: false }] } },
-      fields: CursorPagination.wrapResultFields(["id", "name", "description"])
+      fields: CursorPagination.wrapResultFields(["id", "name", "description", "weight", "position"])
     })
   assignedCustomer.customer.registerCustomerVerificationReports(customerVerificationResponse.customerVerificationList.list)
 
@@ -173,7 +173,7 @@ onMounted(async () => {
     const response = await userRepository?.getUser<SalesRole>()
       .executeSalesGraphqlQuery<{ assignedCustomerDetail: AssignedCustomerType }>(httpRequest, {
         operation: 'assignedCustomerDetail',
-        variables: { assignedCustomerId: { type: 'ID', required: true, value: props.assignedCustomerId } },
+        variables: { id: { type: 'ID', required: true, value: props.assignedCustomerId } },
         fields: [
           'id', 'status', 'createdTime',
           { customerJourney: ["id", "name", "description", "initial"] },
@@ -185,7 +185,7 @@ onMounted(async () => {
             ]
           },
           {
-            schedules: CursorPagination.wrapResultFields([
+            salesActivitySchedules: CursorPagination.wrapResultFields([
               "id", "startTime", "endTime", "status",
               { salesActivity: ["name", "description", "duration", "initial", "disabled"] },
               { salesActivityReport: ["id", "submitTime", "content"] },
@@ -214,17 +214,16 @@ const calculateTimeDiff = (startTime: string, endTime: string) => {
 const showNewScheduleDialog = ref<boolean>(false)
 const submitNewSchedule = async () => {
   const response = await userRepository.getUser<SalesRole>()
-    .executeSalesGraphqlMutation<{ assignedCustomer: { submitSalesActivitySchedule: SalesActivityScheduleType } }>(httpRequest, {
-      operation: "assignedCustomer",
-      variables: { assignedCustomerId: { type: "ID", required: true, value: assignedCustomer.id } },
-      fields: [{
-        operation: "submitSalesActivitySchedule",
-        variables: newActivitySchedule.value.toGraphqlVariables(),
-        fields: ["id", "status", "startTime", "endTime", { salesActivity: ["name", "duration"] }]
-      }]
+    .executeSalesGraphqlMutation<{ submitSalesActivitySchedule: SalesActivityScheduleType }>(httpRequest, {
+      operation: "submitSalesActivitySchedule",
+      variables: {
+        AssignedCustomer_id: { type: "ID", required: true, value: assignedCustomer.id },
+        ...newActivitySchedule.value.toGraphqlVariables(),
+      },
+      fields: ["id", "status", "startTime", "endTime", { salesActivity: ["name", "duration"] }]
     })
   const submittedActivitySchedule = assignedCustomer.planNewSchedule();
-  submittedActivitySchedule.load(response.assignedCustomer.submitSalesActivitySchedule)
+  submittedActivitySchedule.load(response.submitSalesActivitySchedule)
   assignedCustomer.salesActivitySchedules.push(submittedActivitySchedule)
 
   showNewScheduleDialog.value = false

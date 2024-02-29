@@ -35,7 +35,7 @@ const submit = async () => {
         "id", "status", "createdTime", 
         { customer: ["id", "name", "email", "phone", { area: ["name"] }] },
         { customerJourney: ["id", "name", "description", "initial"] },
-        { schedules: CursorPagination.wrapResultFields(['id', 'createdTime', 'status', 'startTime', 'endTime']) }
+        { salesActivitySchedules: CursorPagination.wrapResultFields(['id', 'createdTime', 'status', 'startTime', 'endTime']) }
       ]
     })
   const data = response.registerNewCustomer
