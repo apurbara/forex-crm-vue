@@ -27,7 +27,7 @@ onMounted(async () => {
       fields: ["id", "name"]
     })
   areaList.value.push(...response.allAreaList)
-console.log(areaList.value);
+// console.log(areaList.value);
 })
 
 const selectArea = (areaData: any) => { props.customer.loadArea(areaData) }

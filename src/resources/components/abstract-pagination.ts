@@ -82,7 +82,7 @@ export default abstract class AbstractPagination<ResultType> {
       }
     });
     return {
-      keywordSearch: this.keywordSearch?.value ? this.keywordSearch : null,
+      keywordSearch: this.keywordSearch?.value ? this.keywordSearch.toJSON() : null,
       filters: filters,
     };
   }

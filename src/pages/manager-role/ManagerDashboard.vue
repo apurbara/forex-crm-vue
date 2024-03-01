@@ -76,6 +76,21 @@
       </tbody>
     </v-table>
   </section>
+  <!--  -->
+  <ConfirmPopup group="recycleRequest">
+    <template #container="{ message, onAccept, onReject }">
+      <div class="border-round p-3">
+        <span>{{ message.message }}</span>
+        <div class="flex align-items-center gap-2 mt-3">
+          <v-text-field label="remark" v-model="remark" />
+          <div class="d-flex justify-space-between">
+            <v-btn variant="outlined" color="warning" @click="onReject">cancel</v-btn>
+            <v-btn variant="outlined" @click="onAccept">continue</v-btn>
+          </div>
+        </div>
+      </div>
+    </template>
+  </ConfirmPopup>
 </template>
 
 <script lang="ts" setup>
@@ -87,7 +102,7 @@ import ManagerRole from "@/domain/user-role/personnel/manager-role";
 import { PaginationResponseType } from "@/resources/components/abstract-pagination";
 import { onMounted } from "vue";
 import { ClosingRequestType } from "@/domain/model/personnel/manager/sales/assigned-customer/closing-request";
-import { RecycleRequestType } from "@/domain/model/personnel/manager/sales/assigned-customer/recycle-request";
+import RecycleRequest, { RecycleRequestType } from "@/domain/model/personnel/manager/sales/assigned-customer/recycle-request";
 import { useConfirm } from "primevue/useconfirm";
 
 const { httpRequest, userRepository } = useDependencyInjection()
@@ -175,6 +190,7 @@ const approveClosingRequestConfirmation = (event: Event, closingRequestId: strin
 const rejectRecycleRequestConfirmation = (event: Event, recycleRequestId: string) => {
   confirm.require({
     target: event.currentTarget as HTMLElement,
+    group: "recycleRequest",
     message: 'Do you want to reject this recycle request?',
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
@@ -187,6 +203,7 @@ const rejectRecycleRequestConfirmation = (event: Event, recycleRequestId: string
 const approveRecycleRequestConfirmation = (event: Event, recycleRequestId: string) => {
   confirm.require({
     target: event.currentTarget as HTMLElement,
+    group: "recycleRequest",
     message: 'Do you want to approve this recycle request?',
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-success',
@@ -207,6 +224,8 @@ const approveClosingRequest = async (closingRequestId: string) => {
       //remove from pending list
     })
 }
+
+const remark = ref<string>('')
 const rejectClosingRequest = async (closingRequestId: string) => {
   userRepository.getUser<ManagerRole>()
     .executeManagerGraphqlMutation<{ rejectClosingRequest: ClosingRequestType }>(httpRequest, {
@@ -223,7 +242,7 @@ const approveRecycleRequest = async (recycleRequestId: string) => {
   userRepository.getUser<ManagerRole>()
     .executeManagerGraphqlMutation<{ approveRecycleRequest: RecycleRequestType }>(httpRequest, {
       operation: "approveRecycleRequest",
-      variables: { id: { type: "ID!", value: recycleRequestId } },
+      variables: { id: { type: "ID!", value: recycleRequestId }, remark: remark.value },
       fields: ['status']
     }).then((result) => {
       //remove from pending list
@@ -233,14 +252,14 @@ const rejectRecycleRequest = async (recycleRequestId: string) => {
   userRepository.getUser<ManagerRole>()
     .executeManagerGraphqlMutation<{ rejectRecycleRequest: RecycleRequestType }>(httpRequest, {
       operation: "rejectRecycleRequest",
-      variables: { id: { type: "ID!", value: recycleRequestId } },
+      variables: { id: { type: "ID!", value: recycleRequestId }, remark: remark.value },
       fields: ['status']
     }).then((result) => {
       //remove from pending list
     })
 }
 
-const limitString = (string: string|undefined, size: number) => useStringLimiter(string, size) 
+const limitString = (string: string | undefined, size: number) => useStringLimiter(string, size) 
 </script>
 
 <script lang="ts">

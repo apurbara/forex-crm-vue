@@ -46,11 +46,11 @@
         </div>
         <div v-if="nextStep === nextStepItems[1]">
           <SubmitClosingRequestComponent :assigned-customer="assignedCustomer"
-            @closing-request-submitted="displayNextActionDialog = false" />
+            @closing-request-submitted="closeDisplayNextActionDialog()" />
         </div>
         <div v-if="nextStep === nextStepItems[2]">
           <SubmitRecycleRequestComponent :assigned-customer="assignedCustomer"
-            @recycle-request-submitted="displayNextActionDialog = false" />
+            @recycle-request-submitted="closeDisplayNextActionDialog()" />
         </div>
       </div>
     </div>
@@ -166,6 +166,11 @@ const submitNewSchedule = async () => {
   const submittedActivitySchedule = props.assignedCustomer.planNewSchedule();
   submittedActivitySchedule.load(response.submitSalesActivitySchedule)
   props.assignedCustomer.salesActivitySchedules.push(submittedActivitySchedule)
+  displayNextActionDialog.value = false
+}
+
+const closeDisplayNextActionDialog = () => {
+  console.log('close me')
   displayNextActionDialog.value = false
 }
 

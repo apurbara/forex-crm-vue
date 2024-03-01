@@ -157,10 +157,10 @@ export default class ManagerRole
     file: string | Blob,
     onUploadProgress: any
   ): Promise<ResponseType> {
-    const response = await this.personnelRole.uploadFile<ResponseType>(
-      restRequest,
+    const response = await restRequest.uploadFile<ResponseType>(
       url,
       file,
+      this.personnelRole.token,
       onUploadProgress
     );
     return response;
@@ -173,9 +173,9 @@ export default class ManagerRole
     fileType?: string,
     label?: string
   ): Promise<void> {
-    const response = await this.personnelRole.downloadStream(
-      restRequest,
+    await restRequest.downloadStream(
       url,
+      this.personnelRole.token,
       params,
       fileType,
       label

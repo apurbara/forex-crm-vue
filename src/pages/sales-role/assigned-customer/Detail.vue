@@ -4,19 +4,40 @@
     <div class="d-flex justify-space-between wrap">
       <div style="min-width: 48%;">
         <section class="page-section ma-2">
-          <div class="mb-4">
-            <p class="font-20 font-weight-bold text-center">{{ assignedCustomer.customer.name }}</p>
-          </div>
-          <div class="d-flex align-center justify-start flex-wrap">
-            <InfoComponent style="min-width: 40%;"
-              :info="{ label: `phone`, value: assignedCustomer.customer.phone, icon: `mdi-phone-classic` }" />
-            <InfoComponent style="min-width: 40%;"
-              :info="{ label: `email`, value: assignedCustomer.customer.email, icon: `mdi-email-outline` }" />
-            <InfoComponent style="min-width: 40%;"
-              :info="{ label: `area`, value: assignedCustomer.customer.area.label.name, icon: `mdi-map-marker-outline` }" />
-            <InfoComponent style="min-width: 40%;"
-              :info="{ label: `journey`, value: assignedCustomer.customerJourney.label.name, icon: `mdi-progress-star` }" />
-          </div>
+          <section>
+            <div class="d-flex justify-end">
+              <v-btn v-if="!editingCustomerBio" variant="text" icon="mdi-cog-outline" size="x-small"
+                @click="editCustomerBio()"></v-btn>
+              <v-btn v-else variant="text" icon="mdi-close-circle-outline" size="x-small"
+                @click="cancelEdit()"></v-btn>
+            </div>
+            <p v-if="!editingCustomerBio" class="font-20 font-weight-bold text-center">{{ assignedCustomer.customer.name
+            }}</p>
+            <v-text-field v-else label="name" v-model="assignedCustomer.customer.name"
+              :rules="[assignedCustomer.customer.isValidName()]" density="compact" />
+            <div class="d-flex align-center justify-start flex-wrap">
+              <InfoComponent style="min-width: 40%;"
+                :info="{ label: `phone`, value: assignedCustomer.customer.phone, icon: `mdi-phone-classic` }" />
+              <InfoComponent style="min-width: 40%;"
+                :info="{ label: `journey`, value: assignedCustomer.customerJourney.label.name, icon: `mdi-progress-star` }" />
+              <InfoComponent v-if="!editingCustomerBio" style="min-width: 40%;"
+                :info="{ label: `email`, value: assignedCustomer.customer.email, icon: `mdi-email-outline` }" />
+              <div v-else style="min-width: 100%;">
+                <v-text-field label="email" v-model="assignedCustomer.customer.email"
+                  :rules="[assignedCustomer.customer.isValidEmail()]" />
+              </div>
+              <InfoComponent v-if="!editingCustomerBio" style="min-width: 40%;"
+                :info="{ label: `area`, value: assignedCustomer.customer.area.label.name, icon: `mdi-map-marker-outline` }" />
+              <div v-else style="min-width: 100%;">
+                <v-autocomplete label="area" variant="outlined" :items="areaList" item-title="name" return-object
+                  @update:model-value="selectArea"></v-autocomplete>
+              </div>
+            </div>
+            <div v-if="editingCustomerBio" class="d-flex justify-end mb-4">
+              <v-btn :disabled="!assignedCustomer.customer.isValidToRegister()" variant="tonal"
+                @click="updateCustomerBio">update</v-btn>
+            </div>
+          </section>
 
           <div class="mt-4" v-if="canSubmitNewSchedulePlan">
             <v-btn @click="showNewScheduleDialog = true">
@@ -84,7 +105,7 @@
 
     <SalesActivityScheduleSectionComponent :assigned-customer="assignedCustomer" />
 
-    <div class="page-section" v-if="assignedCustomer.completedClosingRequest.length > 0">
+    <div class="page-section" v-if="assignedCustomer.completedClosingRequest().length > 0">
       <h2 class="section-title">Closing Requests History</h2>
       <div class="card-list">
         <v-card class="card-list__item" v-for="(closingRequest, key) in assignedCustomer.completedClosingRequest()">
@@ -98,7 +119,7 @@
       </div>
     </div>
 
-    <div class="page-section" v-if="assignedCustomer.completedRecycleRequest.length > 0">
+    <div class="page-section" v-if="assignedCustomer.completedRecycleRequest().length > 0">
       <h2 class="section-title">Recycle Requests History</h2>
       <div class="card-list">
         <v-card class="card-list__item" v-for="(recycleRequest, key) in assignedCustomer.completedRecycleRequest()">
@@ -144,6 +165,9 @@ import Chart from 'primevue/chart';
 import InfoComponent from '@/shared/components/info-component.vue';
 import { useTimeIntervalDifferenceCounter } from '@/resources/composables/typography';
 import { computed } from 'vue';
+import { AreaType } from '@/domain/model/area-structure/area';
+import { query } from 'gql-query-builder';
+import { CustomerType } from '@/domain/model/customer';
 
 const { httpRequest, userRepository, cache } = useDependencyInjection()
 
@@ -195,7 +219,7 @@ onMounted(async () => {
             closingRequests: CursorPagination.wrapResultFields(["id", "status", "createdTime", "transactionValue", "note"])
           },
           {
-            recycleRequests: CursorPagination.wrapResultFields(["id", "status", "createdTime", "note"])
+            recycleRequests: CursorPagination.wrapResultFields(["id", "status", "createdTime", "concludedTime", "note"])
           },
         ],
       })
@@ -205,6 +229,48 @@ onMounted(async () => {
   chartData.value = setChartData();
   chartOptions.value = setChartOptions();
 })
+
+const editingCustomerBio = ref<boolean>(false);
+const areaList = ref<AreaType[]>([]);
+const customerSnapValue = ref<string>('');
+
+const editCustomerBio = async () => {
+  customerSnapValue.value = JSON.stringify(assignedCustomer.customer)
+  editingCustomerBio.value = true
+
+  if (areaList.value.length < 1) {
+    const response = await userRepository.getUser<CompanyUserRoleInterface>()
+      .executeGraphqlQueryInCompany<{ allAreaList: AreaType[] }>(httpRequest, {
+        operation: "allAreaList",
+        variables: { filters: { type: "[FilterInput]", value: [{ column: "Area.disabled", value: false }] } },
+        fields: ["id", "name"]
+      })
+    areaList.value.push(...response.allAreaList)
+  }
+}
+const selectArea = (areaData: any) => { assignedCustomer.customer.loadArea(areaData) }
+const cancelEdit = () => {
+  assignedCustomer.customer.load(JSON.parse(customerSnapValue.value))
+  editingCustomerBio.value = false
+}
+const updateCustomerBio = async () => {
+  const response = await userRepository.getUser<SalesRole>()
+    .executeSalesGraphqlMutation<{ updateCustomerBio: AssignedCustomerType }>(httpRequest, {
+      operation: "updateCustomerBio",
+      variables: {
+        id: { type: "ID", required: true, value: assignedCustomer.id },
+        customer: {
+          type: "CustomerInput", value: {
+            ...assignedCustomer.customer.toGraphqlVariables(),
+            Area_id: assignedCustomer.customer.area.id,
+          }
+        },
+      },
+      fields: [{ customer: ["name", "email", { area: ["id", "name"] }] }]
+    })
+  assignedCustomer.customer.load(response.updateCustomerBio.customer!)
+  editingCustomerBio.value = false;
+}
 
 const calculateTimeDiff = (startTime: string, endTime: string) => {
   const { differenceDescription } = useTimeIntervalDifferenceCounter(startTime, endTime)

@@ -12,6 +12,7 @@ import {
 } from "@/shared/components/default-layout";
 import LayoutInterface from "@/resources/components/layout-interface";
 import Fields from "gql-query-builder/build/Fields";
+import RestRequestInterface from "../rest-request-interface";
 
 export type SalesRoleType = {
   id?: string;
@@ -124,11 +125,11 @@ export default class SalesRole
     );
     return response.sales;
   }
-  
+
   async executeSalesGraphqlQuery<ResponseType>(
     httpRequest: HttpRequestInterface,
     options: GraphqlBuilderOptions | Fields
-    ): Promise<ResponseType> {
+  ): Promise<ResponseType> {
     const fields = options instanceof Array ? options : [options];
     const response = await httpRequest.query<{ sales: ResponseType }>(
       "sales",

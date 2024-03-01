@@ -56,18 +56,22 @@ import OffsetPaginationComponent from '@/resources/components/OffsetPaginationCo
 import { ref } from 'vue';
 import { AxiosProgressEvent } from 'axios';
 import RestRequestInterface from '@/domain/user-role/rest-request-interface';
+import ManagerRole from '@/domain/user-role/personnel/manager-role';
 
 const httpRequest = inject<HttpRequestInterface>('httpRequest')!
 const restRequest = inject<RestRequestInterface>('restRequest')!
-const user = inject<UserRepository>('userRepository')?.getUser<CompanyUserRoleInterface>()
+const userRepository = inject<UserRepository>('userRepository');
+// const user = inject<UserRepository>('userRepository')?.getUser<CompanyUserRoleInterface>()
+// const manager = inject<UserRepository>('userRepository')?.getUser<ManagerRole>()
 
 const customerPagination = reactive(new OffsetPagination<CustomerType>(
   async (pagination) => {
-    const response = await user?.executeGraphqlQueryInCompany<{ customerList: PaginationResponseType<CustomerType> }>(httpRequest, {
-      operation: 'customerList',
-      variables: pagination.toGraphqlVariables(),
-      fields: OffsetPagination.wrapResultFields(['id', 'name', 'phone', 'email', 'source', 'verificationScore'])
-    })!
+    const response = await userRepository?.getUser<CompanyUserRoleInterface>()
+      .executeGraphqlQueryInCompany<{ customerList: PaginationResponseType<CustomerType> }>(httpRequest, {
+        operation: 'customerList',
+        variables: pagination.toGraphqlVariables(),
+        fields: OffsetPagination.wrapResultFields(['id', 'name', 'phone', 'email', 'source', 'verificationScore'])
+      })!
     return response.customerList;
   },
   [],
@@ -92,14 +96,16 @@ const handleFileImport = async () => {
 
 const onFileChange = async (e: any) => {
   const file = e.target.files[0]
-  const failedList = await user?.uploadFile(restRequest, '/import-customer-from-csv', file, (event: AxiosProgressEvent) => { progress.value = Math.round((100 * event.loaded) / event.total!) })
+  const failedList = await userRepository?.getUser<ManagerRole>()
+    .uploadFile(restRequest, '/import-customer-from-csv', file, (event: AxiosProgressEvent) => { progress.value = Math.round((100 * event.loaded) / event.total!) })
   console.log(failedList);
   await customerPagination.loadPage();
 }
 
 const exportCustomer = async () => {
   const params = customerPagination.toQueryParams();
-  user?.downloadStream(restRequest, "/export-customer-to-csv", params, 'text/csv', 'customer');
+  await userRepository?.getUser<ManagerRole>()
+    .downloadStream(restRequest, "/export-customer-to-csv", params, 'text/csv', 'customer');
 }
 
 </script>

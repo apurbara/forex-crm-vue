@@ -38,18 +38,18 @@ export interface CompanyUserRoleInterface extends UserRoleInterface {
     options: GraphqlBuilderOptions
   ): Promise<ResponseType>;
 
-  uploadFile<ResponseType>(
-    restRequest: RestRequestInterface,
-    url: string,
-    file: string | Blob,
-    onUploadProgress: any
-  ): Promise<ResponseType>;
+  // uploadFile<ResponseType>(
+  //   restRequest: RestRequestInterface,
+  //   url: string,
+  //   file: string | Blob,
+  //   onUploadProgress: any
+  // ): Promise<ResponseType>;
 
-  downloadStream(
-    restRequest: RestRequestInterface,
-    url: string,
-    params?: object,
-    fileType?: string,
-    label?: string
-  ): Promise<void>;
+  // downloadStream(
+  //   restRequest: RestRequestInterface,
+  //   url: string,
+  //   params?: object,
+  //   fileType?: string,
+  //   label?: string
+  // ): Promise<void>;
 }

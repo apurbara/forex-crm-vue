@@ -12,7 +12,9 @@
     
     <template v-slot:navigation>
       <div class="d-flex justify-space-between align-center">
-        <slot name="navigation"></slot>
+        <div>
+          <slot name="navigation"></slot>
+        </div>
         <section class="pagination__page-navigation d-flex justify-end align-center">
           <div class="d-flex justify-right align-center">
             <span class="mr-4">Page Size</span>

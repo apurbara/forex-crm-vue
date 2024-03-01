@@ -22,16 +22,15 @@ const emit = defineEmits(['closingRequestSubmitted'])
 
 const submitClosingRequest = async () => {
   const response = await userRepository.getUser<SalesRole>()
-    .executeSalesGraphqlMutation<{ assignedCustomer: { submitClosingRequest: ClosingRequestType } }>(httpRequest, {
-      operation: "assignedCustomer",
-      variables: { assignedCustomerId: { type: "ID", required: true, value: props.assignedCustomer.id } },
-      fields: [{
-        operation: "submitClosingRequest",
-        variables: closingRequest.toGraphqlVariables(),
-        fields: ["id", 'status', "createdTime", "transactionValue", "note"]
-      }]
+    .executeSalesGraphqlMutation<{ submitClosingRequest: ClosingRequestType }>(httpRequest, {
+      operation: "submitClosingRequest",
+      variables: {
+        AssignedCustomer_id: { type: "ID", required: true, value: props.assignedCustomer.id },
+        ...closingRequest.toGraphqlVariables()
+      },
+      fields: ["id", 'status', "createdTime", "transactionValue", "note"]
     })
-  closingRequest.load(response.assignedCustomer.submitClosingRequest)
+  closingRequest.load(response.submitClosingRequest)
   props.assignedCustomer.addClosingRequest(closingRequest)
   emit('closingRequestSubmitted')
 }

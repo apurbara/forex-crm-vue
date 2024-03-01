@@ -121,35 +121,4 @@ export default class PersonnelRole
     const response = await httpRequest.query("company", options, this.token);
     return response;
   }
-
-  async uploadFile<ResponseType>(
-    restRequest: RestRequestInterface,
-    url: string,
-    file: string | Blob,
-    onUploadProgress: any
-  ): Promise<ResponseType> {
-    const response = await restRequest.uploadFile(
-      url,
-      file,
-      this.token,
-      onUploadProgress
-    );
-    return response;
-  }
-
-  async downloadStream(
-    restRequest: RestRequestInterface,
-    url: string,
-    params?: object,
-    fileType?: string,
-    label?: string
-  ): Promise<void> {
-    const response = await restRequest.downloadStream(
-      url,
-      this.token,
-      params,
-      fileType,
-      label
-    );
-  }
 }

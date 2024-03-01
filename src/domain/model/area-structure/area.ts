@@ -46,9 +46,16 @@ export default class Area {
     }
   }
 
+  //
   toGraphqlVariables() {
     return {
       ...this.label,
+    };
+  }
+  toJSON() {
+    return {
+      ...this.label,
+      id: this.id,
     };
   }
 

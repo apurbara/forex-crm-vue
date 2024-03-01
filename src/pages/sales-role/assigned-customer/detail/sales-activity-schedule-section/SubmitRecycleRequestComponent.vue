@@ -13,7 +13,6 @@ import RecycleRequestComponent from '@/domain/model/personnel/manager/sales/assi
 import RecycleRequest, { RecycleRequestType } from '@/domain/model/personnel/manager/sales/assigned-customer/recycle-request';
 import SalesRole from '@/domain/user-role/personnel/sales-role';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
-import { assignmentExpression } from '@babel/types';
 import { reactive } from 'vue';
 
 const { httpRequest, userRepository } = useDependencyInjection()
@@ -23,16 +22,15 @@ const emit = defineEmits(['recycleRequestSubmitted'])
 
 const submit = async () => {
   const response = await userRepository.getUser<SalesRole>()
-    .executeSalesGraphqlMutation<{ assignedCustomer: { submitRecycleRequest: RecycleRequestType } }>(httpRequest, {
-      operation: "assignedCustomer",
-      variables: { assignedCustomerId: { type: "ID", required: true, value: props.assignedCustomer.id } },
-      fields: [{
-        operation: "submitRecycleRequest",
-        variables: recycleRequest.toGraphqlVariables(),
-        fields: ["id", 'status', "createdTime", "note"]
-      }]
+    .executeSalesGraphqlMutation<{ submitRecycleRequest: RecycleRequestType }>(httpRequest, {
+      operation: "submitRecycleRequest",
+      variables: {
+        AssignedCustomer_id: { type: "ID", required: true, value: props.assignedCustomer.id },
+        ...recycleRequest.toGraphqlVariables(),
+      },
+      fields: ["id", 'status', "createdTime", "note"]
     })
-  recycleRequest.load(response.assignedCustomer.submitRecycleRequest)
+  recycleRequest.load(response.submitRecycleRequest)
   props.assignedCustomer.addRecycleRequest(recycleRequest)
   emit('recycleRequestSubmitted')
 }

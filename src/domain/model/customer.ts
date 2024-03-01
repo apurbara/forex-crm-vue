@@ -103,6 +103,15 @@ export default class Customer {
       source: this.source,
     };
   }
+  toJSON() {
+    return {
+      area: this.area,
+      name: this.name,
+      email: this.email,
+      phone: this.phone,
+      source: this.source,
+    };
+  }
 
   //
   isValidName(): ValidationResult {

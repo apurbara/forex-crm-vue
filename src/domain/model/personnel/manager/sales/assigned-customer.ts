@@ -14,6 +14,7 @@ import CustomerJourney, {
   CustomerJourneyType,
 } from "@/domain/model/customer-journey";
 import { scheduler } from "timers/promises";
+import { labeledStatement } from "@babel/types";
 
 export type AssignedCustomerType = {
   id?: string;
@@ -83,15 +84,23 @@ export default class AssignedCustomer {
   addClosingRequest(closingRequest: ClosingRequest) {
     this.closingRequests.push(closingRequest);
   }
-  
+
   addRecycleRequest(recycleRequest: RecycleRequest) {
     this.recycleRequests.push(recycleRequest);
   }
 
   //
   completedSchedules(): SalesActivitySchedule[] {
+    const lastRejectedRecycleRequest = this.completedRecycleRequest().reduce(
+      (prev, current) => {
+        return prev.concludedTime > current.concludedTime ? prev : current;
+      }
+    );
     return this.salesActivitySchedules.filter(
-      (schedule: SalesActivitySchedule) => schedule.status == "COMPLETED"
+      (schedule: SalesActivitySchedule) =>
+        schedule.status == "COMPLETED" &&
+        schedule.startTime >
+          (lastRejectedRecycleRequest?.concludedTime ?? -Infinity)
     );
   }
   upcomingSchedules(): SalesActivitySchedule[] {

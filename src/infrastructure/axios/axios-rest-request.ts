@@ -71,10 +71,12 @@ export default class AxiosRestRequest implements RestRequestInterface {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          ...(params ?? {}),
+          params: params,
         }
-      : params;
-
+      : params
+      ? { params: params }
+      : undefined;
+    console.log(config);
     const response = await this.axios
       .get<ResponseType>(url, config)
       .then((response) => {
@@ -82,7 +84,7 @@ export default class AxiosRestRequest implements RestRequestInterface {
           type: fileType ?? "text/csv",
         });
         const link = document.createElement("a");
-        link.download = label ?? 'download';
+        link.download = label ?? "download";
         link.href = URL.createObjectURL(blob);
         link.click();
         URL.revokeObjectURL(link.href);
