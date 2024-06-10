@@ -11,9 +11,9 @@ import AbstractPagination, {
   PaginationResponseType,
 } from "@/resources/components/abstract-pagination";
 import SalesRole, { SalesRoleType } from "./personnel/sales-role";
-import { LoginAuthInfo } from "./login-payload";
+import { LoginResponseType } from "../../user-bc/pages/login-payload";
 import ManagerRole, { ManagerRoleType } from "./personnel/manager-role";
-import RestRequestInterface from "./rest-request-interface";
+import RestRequestInterface from "../../infrastructure/rest-request-interface";
 import { file } from "@babel/types";
 
 const PERSONNEL_ROLE_TYPE = "PERSONNEL";
@@ -21,7 +21,7 @@ const PERSONNEL_ROLE_TYPE = "PERSONNEL";
 export type PersonnelRoleType = {
   salesAssignments?: PaginationResponseType<SalesRoleType>;
   managerAssignments?: PaginationResponseType<ManagerRoleType>;
-} & LoginAuthInfo;
+} & LoginResponseType;
 
 export default class PersonnelRole
   implements StoreableAuthInfo, UserRoleInterface, CompanyUserRoleInterface

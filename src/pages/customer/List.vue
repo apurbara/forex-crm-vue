@@ -55,7 +55,7 @@ import { CustomerType } from '@/domain/model/customer';
 import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
 import { ref } from 'vue';
 import { AxiosProgressEvent } from 'axios';
-import RestRequestInterface from '@/domain/user-role/rest-request-interface';
+import RestRequestInterface from '@/infrastructure/rest-request-interface';
 import ManagerRole from '@/domain/user-role/personnel/manager-role';
 
 const httpRequest = inject<HttpRequestInterface>('httpRequest')!

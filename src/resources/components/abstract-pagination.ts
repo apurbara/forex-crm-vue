@@ -1,7 +1,8 @@
 import { OptionalString, PrimitiveTypes } from "../types/custom-types";
 import { CursorLimitType } from "./cursor-pagination";
 import { OffsetLimitType } from "./offset-pagination";
-import EnumFilter, { FilterType } from "./pagination/enum-filter";
+import EnumFilter, { EnumFilterType } from "./pagination/enum-filter";
+import { FilterType } from "./pagination/filter";
 
 export type PaginationResponseType<ResultType> = {
   list: Array<ResultType>;
@@ -14,7 +15,7 @@ export class KeywordSearch {
   constructor(
     public columns: string[],
     public comparisonType: OptionalString = "LIKE"
-  ) {}
+  ) { }
 
   //
   toJSON() {
@@ -27,13 +28,15 @@ export class KeywordSearch {
 }
 
 export default abstract class AbstractPagination<ResultType> {
+  hiddenFilters: FilterType[] = [];
+
   constructor(
     public viewListCallback: (
       pagination: AbstractPagination<ResultType>
     ) => Promise<PaginationResponseType<ResultType>>,
     public availableFilters: Array<EnumFilter> = [],
     public keywordSearch: KeywordSearch | undefined = undefined
-  ) {}
+  ) { }
 
   //
   noAppliedFilter(): boolean {
@@ -55,9 +58,13 @@ export default abstract class AbstractPagination<ResultType> {
     this.resetList();
   }
 
+  addHiddenFilter(filter: FilterType): void {
+    this.hiddenFilters.push(filter);
+  }
+
   //
   toGraphqlVariables() {
-    const filters: Array<FilterType> = [];
+    const filters: Array<EnumFilterType> = [];
     this.availableFilters.forEach((availableFilter) => {
       const filter = availableFilter.toGraphqlVariables();
       if (filter) {
@@ -69,12 +76,12 @@ export default abstract class AbstractPagination<ResultType> {
         value: this.keywordSearch?.value ? this.keywordSearch : null,
         type: "KeywordSearchInput",
       },
-      filters: { value: filters, type: "[FilterInput]" },
+      filters: { value: [...filters, ...this.hiddenFilters], type: "[FilterInput]" },
     };
   }
 
   toQueryParams() {
-    const filters: Array<FilterType> = [];
+    const filters: Array<EnumFilterType> = [];
     this.availableFilters.forEach((availableFilter) => {
       const filter = availableFilter.toQueryParams();
       if (filter) {

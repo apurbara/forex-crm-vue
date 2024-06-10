@@ -18,7 +18,7 @@ export default class AreaStructure {
     public disabled: boolean = false,
     public createdTime: OptionalString = undefined,
     public label: Label = new Label()
-  ) {}
+  ) { }
 
   load(data: AreaStructureType) {
     this.id = data.id ?? this.id;

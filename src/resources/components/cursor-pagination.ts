@@ -1,4 +1,3 @@
-import { FieldOptions } from "@babel/types";
 import { OptionalString } from "../types/custom-types";
 import AbstractPagination, {
   KeywordSearch,
@@ -21,7 +20,7 @@ export class CursorLimit {
   public cursor?: string = undefined;
 
   constructor(
-    public pageSize: number = 20,
+    public pageSize: number = 10,
     public availableOrders: Array<OrderType> = []
   ) {}
 

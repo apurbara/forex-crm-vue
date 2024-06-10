@@ -1,6 +1,6 @@
 import RegularException from "@/resources/exception/regular-exception";
-import axios from "axios";
-import RestRequestInterface from "@/domain/user-role/rest-request-interface";
+import axios, { AxiosRequestConfig } from "axios";
+import RestRequestInterface from "../rest-request-interface";
 
 export default class AxiosRestRequest implements RestRequestInterface {
   protected axios;
@@ -16,6 +16,51 @@ export default class AxiosRestRequest implements RestRequestInterface {
     });
   }
 
+  async get<ResponseType = {}>(url: string, queryParameters: any, token?: string): Promise<ResponseType> {
+    const config: AxiosRequestConfig = {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+      params: queryParameters,
+    }
+    const response = await this.axios.get(url, config)
+      .catch((error) => {
+        console.log(error)
+        if (error.response) {
+          throw new RegularException(
+            error.response.status,
+            error.response.statusText,
+            error.response.errors[0]
+          );
+        } else {
+          throw error;
+        }
+      });
+    return response.data;
+  }
+
+  async post<ResponseType = {}>(url: string, data?: any, token?: string): Promise<ResponseType> {
+    const config: AxiosRequestConfig = {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+      },
+    }
+    const response = await this.axios.post(url, data, config)
+      .catch((error) => {
+        console.log(error)
+        if (error.response) {
+          throw new RegularException(
+            error.response.status,
+            error.response.statusText,
+            error.response.errors[0]
+          );
+        } else {
+          throw error;
+        }
+      });
+    return response.data;
+  }
+
   async uploadFile<ResponseType = {}>(
     url: string,
     file: string | Blob,
@@ -25,18 +70,18 @@ export default class AxiosRestRequest implements RestRequestInterface {
     this.axios.defaults.baseURL = import.meta.env.VITE_VINOV_REST_API;
     const config = token
       ? {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress,
-        }
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress,
+      }
       : {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress,
-        };
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress,
+      };
 
     let formData = new FormData();
     formData.append("file", file);
@@ -68,14 +113,14 @@ export default class AxiosRestRequest implements RestRequestInterface {
     this.axios.defaults.baseURL = import.meta.env.VITE_VINOV_REST_API;
     const config = token
       ? {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: params,
-        }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: params,
+      }
       : params
-      ? { params: params }
-      : undefined;
+        ? { params: params }
+        : undefined;
     console.log(config);
     const response = await this.axios
       .get<ResponseType>(url, config)

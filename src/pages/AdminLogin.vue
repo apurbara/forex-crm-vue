@@ -9,7 +9,7 @@ import AdminRole, { AdminRoleType } from '@/domain/user-role/admin-role';
 
 const loginPayload = reactive(new LoginPayload());
 
-const { httpRequest, userRepository } = useDependencyInjection();
+const { httpRequest, userRepository, companyUserRepository } = useDependencyInjection();
 const { focus } = useFocus();
 
 const login = async () => {
@@ -22,6 +22,7 @@ const login = async () => {
     });
   const adminData = response.adminLogin;
   userRepository.logUserIn(new AdminRole(adminData))
+  companyUserRepository.logUserIn(adminData)
 }
 </script>
 

@@ -1,6 +1,6 @@
-import { OptionalString, PrimitiveTypes } from "@/resources/types/custom-types";
+  import { OptionalString, PrimitiveTypes } from "@/resources/types/custom-types";
 
-export type FilterType = {
+export type EnumFilterType = {
   column: string;
   comparisonType: string;
   value: Array<any>;
@@ -24,7 +24,7 @@ export default class EnumFilter {
   ) {}
 
   //
-  toGraphqlVariables(): FilterType | undefined {
+  toGraphqlVariables(): EnumFilterType | undefined {
     return this.selectedItems.length > 0
       ? {
           column: this.column,
@@ -35,7 +35,7 @@ export default class EnumFilter {
         }
       : undefined;
   }
-  toQueryParams(): FilterType | undefined {
+  toQueryParams(): EnumFilterType | undefined {
     return this.selectedItems.length > 0
       ? {
           column: this.column,

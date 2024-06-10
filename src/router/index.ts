@@ -1,23 +1,23 @@
 // Composables
-import UserRepository from "@/domain/user-repository";
+// import UserRepository from "@/domain/user-repository";
 import { inject } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
-import companyRoutes from "./company-routes";
-import { UserRoleInterface } from "@/domain/user-role/role-interfaces";
-import salesRoutes from "./sales-routes";
-import managerRoutes from "./manager-routes";
+import companyRoutes from "@/company-bc/router";
+import userRoutes from "@/user-bc/router";
+import UserRepository from "@/user-bc/role/user-repository";
+import salesRoutes from "@/sales-bc/router";
 
 const routes = [
-  {
-    path: "/login",
-    name: "login",
-    component: () => import("@/pages/Login.vue"),
-  },
-  {
-    path: "/admin-login",
-    name: "admin-login",
-    component: () => import("@/pages/AdminLogin.vue"),
-  },
+  // {
+  //   path: "/login",
+  //   name: "login",
+  //   component: () => import("@/pages/Login.vue"),
+  // },
+  // {
+  //   path: "/admin-login",
+  //   name: "admin-login",
+  //   component: () => import("@/pages/AdminLogin.vue"),
+  // },
   // { path: "/", redirect: "/lading-page" },
   {
     path: "/",
@@ -34,8 +34,10 @@ const routes = [
         component: () => import("@/pages/Home.vue"),
       },
       ...companyRoutes,
+      ...userRoutes,
       ...salesRoutes,
-      ...managerRoutes,
+      // ...salesRoutes,
+      // ...managerRoutes,
     ],
   },
 ];
@@ -47,19 +49,15 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-  console.log(to.name);
-  if (
-    to.name === "landing-page" ||
-    to.name === "login" ||
-    to.name === "admin-login" ||
-    to.name === "home"
-  ) {
+  if (to.name === "landing-page" || to.name === "home") {
+  } else if (to.name === "login" || to.name === "admin-login" || to.name === "manager-login") {
+    const userRepository = inject<UserRepository>("userRepository");
+    if (userRepository?.getUser().isAuthenticated()) {
+      return { name: "landing-page" };
+    }
   } else {
     const userRepository = inject<UserRepository>("userRepository");
-    if (
-      !userRepository?.getUser<UserRoleInterface>().isAuthenticated() &&
-      to.name !== "login"
-    ) {
+    if (!userRepository?.getUser().isAuthenticated() && to.name !== "login") {
       return { name: "login" };
     }
   }

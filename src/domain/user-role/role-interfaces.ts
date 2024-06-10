@@ -2,7 +2,7 @@ import { GraphqlBuilderOptions } from "@/resources/types/graphql";
 import HttpRequestInterface from "./http-request-interface";
 import LayoutInterface from "@/resources/components/layout-interface";
 import UserRepository from "../user-repository";
-import RestRequestInterface from "./rest-request-interface";
+import RestRequestInterface from "../../infrastructure/rest-request-interface";
 
 // export type UserRoleDataType = {
 //   token: string;

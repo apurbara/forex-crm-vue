@@ -7,13 +7,13 @@ import {
   generateBaseAppBarMenuItems,
   baseHome,
 } from "@/shared/components/default-layout";
-import { LoginAuthInfo } from "./login-payload";
+import { LoginResponseType } from "../../user-bc/pages/login-payload";
 
 const ADMIN_ROLE_TYPE = "ADMIN";
 
 export type AdminRoleType = {
   aSuperUser?: boolean;
-} & LoginAuthInfo;
+} & LoginResponseType;
 
 export default class AdminRole implements StoreableAuthInfo, UserRoleInterface {
   public id: string;

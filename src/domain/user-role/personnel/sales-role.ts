@@ -12,7 +12,7 @@ import {
 } from "@/shared/components/default-layout";
 import LayoutInterface from "@/resources/components/layout-interface";
 import Fields from "gql-query-builder/build/Fields";
-import RestRequestInterface from "../rest-request-interface";
+import RestRequestInterface from "../../../infrastructure/rest-request-interface";
 
 export type SalesRoleType = {
   id?: string;

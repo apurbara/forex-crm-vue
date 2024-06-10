@@ -1,4 +1,4 @@
-import { LoginAuthInfo } from "./../../../../../user-role/login-payload";
+import { LoginResponseType } from "../../../../../../user-bc/pages/login-payload";
 import SalesActivity, {
   SalesActivityType,
 } from "@/domain/model/sales-activity";

@@ -16,7 +16,7 @@ export class OffsetLimit {
   public appliedOrder?: OrderType = undefined;
 
   constructor(
-    public pageSize: number = 20,
+    public pageSize: number = 10,
     public page: number = 1,
     public availableOrders: Array<OrderType> = []
   ) {}
@@ -83,7 +83,6 @@ export default class OffsetPagination<
   async loadPage(): Promise<void> {
     this.resultList.length = 0;
     const response = await this.viewListCallback(this);
-    console.log(response);
     this.resultList = response.list;
     this.offsetLimit.load(response.offsetLimit!);
   }
