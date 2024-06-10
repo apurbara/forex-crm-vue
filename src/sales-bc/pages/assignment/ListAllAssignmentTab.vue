@@ -4,14 +4,13 @@
 
 <script lang="ts" setup>
 import { KeywordSearch, PaginationResponseType } from '@/resources/components/abstract-pagination';
-import CursorPagination from '@/resources/components/cursor-pagination';
 import EnumFilter from '@/resources/components/pagination/enum-filter';
-import { CustomerAssignmentType } from '@/sales-bc/domain-old/model/sales/customer-assignment';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, reactive } from 'vue';
 import ListOffsetTableSection from './ListOffsetTableSection.vue';
 import OffsetPagination from '@/resources/components/offset-pagination';
 import { CustomerAssignmentStatus } from '@/shared-bc/domain/enum/customer-assignment-status';
+import { CustomerAssignmentType } from '@/sales-bc/domain/model/sales/customer-assignment';
 
 const { httpRequest, salesRepository } = useDependencyInjection();
 

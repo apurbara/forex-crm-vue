@@ -8,17 +8,6 @@ import UserRepository from "@/user-bc/role/user-repository";
 import salesRoutes from "@/sales-bc/router";
 
 const routes = [
-  // {
-  //   path: "/login",
-  //   name: "login",
-  //   component: () => import("@/pages/Login.vue"),
-  // },
-  // {
-  //   path: "/admin-login",
-  //   name: "admin-login",
-  //   component: () => import("@/pages/AdminLogin.vue"),
-  // },
-  // { path: "/", redirect: "/lading-page" },
   {
     path: "/",
     component: () => import("@/shared/components/UserLayoutComponent.vue"),
@@ -26,18 +15,11 @@ const routes = [
       {
         path: "",
         name: "landing-page",
-        component: () => import("@/pages/LandingPage.vue"),
-      },
-      {
-        path: "home",
-        name: "home",
-        component: () => import("@/pages/Home.vue"),
+        component: () => import("@/user-bc/pages/LandingPage.vue"),
       },
       ...companyRoutes,
       ...userRoutes,
       ...salesRoutes,
-      // ...salesRoutes,
-      // ...managerRoutes,
     ],
   },
 ];

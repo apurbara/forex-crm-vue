@@ -2,7 +2,7 @@
   <div>
     <h1 class="page-title">Distribute Customer Assignment</h1>
     <OffsetPaginationComponent :pagination="customerPagination">
-      <v-table height="400px" density="compact" style="width: 100%;" class="datatable">
+      <v-table height="240px" density="compact" style="width: 100%;" class="datatable">
         <thead>
           <tr>
             <th>
@@ -41,7 +41,7 @@
     </OffsetPaginationComponent>
 
     <OffsetPaginationComponent :pagination="salesPagination">
-      <v-table height="400px" density="compact" style="width: 100%;" class="datatable">
+      <v-table density="compact" style="width: 100%;" class="datatable">
         <thead>
           <tr>
             <th>
@@ -80,7 +80,6 @@
         <v-btn :disabled="!isValidToSubmit" @click="submit">Submit</v-btn>
       </div>
     </div>
-    {{ payload }}
   </div>
 </template>
 

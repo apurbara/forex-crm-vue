@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
 import OffsetPagination from '@/resources/components/offset-pagination';
-import { CustomerAssignmentType } from '@/sales-bc/domain-old/model/sales/customer-assignment';
+import { CustomerAssignmentType } from '@/sales-bc/domain/model/sales/customer-assignment';
 import { useRouter } from 'vue-router';
 
 defineProps<{ customerAssignmentPagination: OffsetPagination<CustomerAssignmentType> }>()

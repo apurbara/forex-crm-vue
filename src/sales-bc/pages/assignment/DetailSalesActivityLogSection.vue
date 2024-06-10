@@ -1,7 +1,8 @@
 <template>
   <section class="page-section ma-2">
     <h2 class="section-title">Activity Log</h2>
-    <div class="d-flex justify-space-around flex-wrap mb-2">
+    <div v-if="customerAssignment.status === CustomerAssignmentStatus.ACTIVE"
+      class="d-flex justify-space-around flex-wrap mb-2">
       <v-btn v-if="customerAssignment.isIdleAssignment()" @click="displayNewScheduleDialog = true">plan new
         activity</v-btn>
       <v-btn v-if="customerAssignment.isNewAssignment()" @click="displayInitialReportDialog = true">submit initial
@@ -23,8 +24,8 @@
           <td v-if="!activitySchedule.salesActivityReport">
             <v-btn size="small" @click="showActivityReportDialog(activitySchedule)">submit report</v-btn>
           </td>
-          <td v-else> {{ limitString(activitySchedule.salesActivityReport?.content, 120) }}
-            <v-btn v-if="activitySchedule.salesActivityReport?.content?.length! > 120" variant="text"
+          <td v-else> {{ limitString(activitySchedule.salesActivityReport?.content, 50) }}
+            <v-btn v-if="activitySchedule.salesActivityReport?.content?.length! > 50" variant="text"
               icon="mdi-dots-horizontal-circle-outline" size="small"
               @click="showReportContent($event, activitySchedule.salesActivityReport!)"></v-btn>
           </td>
@@ -115,6 +116,7 @@ import RecycleRequest, { RecycleRequestType } from '@/sales-bc/domain/model/sale
 import SalesActivityReportComponent from '@/sales-bc/domain/model/sales/customer-assignment/sales-activity-schedule/SalesActivityReportComponent.vue';
 import SalesActivityReport, { SalesActivityReportType } from '@/sales-bc/domain/model/sales/customer-assignment/sales-activity-schedule/sales-activity-report';
 import SalesActivitySchedule, { SalesActivityScheduleType } from '@/sales-bc/domain/model/sales/customer-assignment/salesActivitySchedule';
+import { CustomerAssignmentStatus } from '@/shared-bc/domain/enum/customer-assignment-status';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import Dialog from 'primevue/dialog';
 import OverlayPanel from 'primevue/overlaypanel';

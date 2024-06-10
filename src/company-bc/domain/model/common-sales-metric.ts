@@ -24,7 +24,7 @@ export default class CommonSalesMetric {
     createdTime?: string = undefined;
     lastModifiedTime?: string = undefined;
     name?: string = undefined;
-    target?: number = undefined;
+    target: number = 0;
     metricType?: MetricType = undefined;
     evaluationType?: EvaluationType = undefined;
     recurrenceType?: RecurrenceType = undefined;

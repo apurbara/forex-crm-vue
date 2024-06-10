@@ -19,36 +19,6 @@ const companyRoutes = [
     },
   },
   {
-    path: "area-structure/",
-    beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("area-structure")
-    },
-    children: [
-      {
-        path: "",
-        name: "area-structure-list",
-        component: () => import("@/company-bc/pages/area-structure/List.vue"),
-      },
-      {
-        path: "add-root",
-        name: "add-root-area-structure",
-        component: () => import("@/company-bc/pages/area-structure/AddRoot.vue"),
-      },
-      {
-        path: ":areaStructureId/add-branch",
-        name: "add-branch-area-structure",
-        props: true,
-        component: () => import("@/company-bc/pages/area-structure/AddBranch.vue"),
-      },
-      {
-        path: ":areaStructureId",
-        name: "area-structure-detail",
-        props: true,
-        component: () => import("@/company-bc/pages/area-structure/Detail.vue"),
-      },
-    ],
-  },
-  {
     path: "common-sales-metric/",
     beforeEnter: () => {
       inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("common-sales-metric")
@@ -285,12 +255,6 @@ const companyRoutes = [
         name: "customer-list",
         component: () => import("@/company-bc/pages/customer/List.vue"),
       },
-      {
-        path: ":customerId",
-        name: "customer-detail",
-        props: true,
-        component: () => import("@/company-bc/pages/customer/Detail.vue"),
-      },
     ],
   },
   {
@@ -308,12 +272,6 @@ const companyRoutes = [
         path: "distribute",
         name: "distribute-customer-assignment",
         component: () => import("@/company-bc/pages/customer-assignment/Distribute.vue"),
-      },
-      {
-        path: ":customerAssignmentId",
-        name: "customer-assignment-detail",
-        props: true,
-        component: () => import("@/company-bc/pages/customer/Detail.vue"),
       },
     ],
   },

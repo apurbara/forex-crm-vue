@@ -4,6 +4,13 @@ import { isNotEmpty } from "@/resources/composables/validator";
 import CustomerAssignment, { CustomerAssignmentType } from "../customer-assignment";
 import SalesActivityReport, { SalesActivityReportType } from "./sales-activity-schedule/sales-activity-report";
 
+export type SalesActivityScheduleSummaryType = {
+  total?: number;
+  status?: string;
+  startTime?: string;
+  endTime?: string;
+};
+
 export type SalesActivityScheduleType = {
   CustomerAssignment_id?: string;
   customerAssignment?: CustomerAssignmentType;

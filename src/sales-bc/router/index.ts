@@ -23,11 +23,6 @@ const salesRoutes = [
         component: () => import("@/sales-bc/pages/assignment/List.vue"),
       },
       {
-        path: "register",
-        name: "register-new-customer",
-        component: () => import("@/sales-bc/pages/customer-assignment/Register.vue"),
-      },
-      {
         path: ":customerAssignmentId",
         name: "sales-customer-assignment-detail",
         props: true,

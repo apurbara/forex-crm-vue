@@ -66,10 +66,6 @@ export default class AdminRole implements UserRole {
 			navBarMenuItems: [
 				// ...asSuperUserNavbarMenus,
 				{
-					title: "area structure",
-					to: "/area-structure",
-				},
-				{
 					title: "common sales metric",
 					to: "/common-sales-metric",
 				},

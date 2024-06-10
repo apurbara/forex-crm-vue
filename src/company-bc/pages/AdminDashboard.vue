@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter()
 
-router.replace("/area-structure")
+router.replace("/sales")
 </script>
 
 <style scoped></style>

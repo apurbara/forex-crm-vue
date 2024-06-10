@@ -24,8 +24,7 @@
             </div>
           </td>
         </tr>
-        <tr v-else v-for="(customerAssignment, index) in pagination.resultList" :key="customerAssignment.id ?? index"
-          @dblclick="toDetail(customerAssignment.id!)">
+        <tr v-else v-for="(customerAssignment, index) in pagination.resultList" :key="customerAssignment.id ?? index">
           <td>{{ customerAssignment.customer?.name }}</td>
           <td>{{ customerAssignment.sales?.name }}</td>
           <td>{{ customerAssignment.customerJourney?.name }}</td>
@@ -76,8 +75,6 @@ const pagination = reactive(new OffsetPagination<CustomerAssignmentType>(
 onMounted(async () => {
   await pagination.loadPage();
 })
-
-const toDetail = (customerAssignmentId: string) => router.push(`/customer-assignment/${customerAssignmentId}`)
 
 </script>
 

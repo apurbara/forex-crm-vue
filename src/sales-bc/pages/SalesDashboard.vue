@@ -29,12 +29,12 @@
 import { useIsoToLocalTimeFormat, useTimeIntervalDifferenceCounter } from "@/resources/composables/typography";
 import { useDependencyInjection } from "@/shared/composables/dependency-injection";
 import { Qalendar } from "qalendar";
-import { SalesActivityScheduleSummaryType, SalesActivityScheduleType } from "../domain-old/model/sales/customer-assignment/sales-activity-schedule";
 import { computed, onMounted, ref } from "vue";
 import SalesDashboardMetricComponent from "./SalesDashboardMetricComponent.vue";
 import { SalesActivityScheduleStatus } from "@/shared-bc/domain/enum/sales-activity-schedule-status";
 import { CustomerAssignmentStatus } from "@/shared-bc/domain/enum/customer-assignment-status";
 import { useRouter } from "vue-router";
+import { SalesActivityScheduleSummaryType } from "../domain/model/sales/customer-assignment/salesActivitySchedule";
 
 const { httpRequest, salesRepository } = useDependencyInjection()
 const salesActivityScheduleSummaryList = ref<SalesActivityScheduleSummaryType[]>([])

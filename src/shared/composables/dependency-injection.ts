@@ -1,5 +1,5 @@
 import CompanyUserRepository from "@/company-bc/role/company-user-repository";
-import CacheInterface from "@/domain/cache-interface";
+import CacheInterface from "@/infrastructure/cache-interface";
 import HttpRequestInterface from "@/infrastructure/http-request-interface";
 import RestRequestInterface from "@/infrastructure/rest-request-interface";
 import SalesRepository from "@/sales-bc/role/sales-repository";

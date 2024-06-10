@@ -11,14 +11,14 @@
 </template>
 
 <script lang="ts" setup>
-import UserRepository from '@/domain/user-repository';
-import { UserRoleInterface } from '@/domain/user-role/role-interfaces';
 import LayoutComponent from '@/resources/components/LayoutComponent.vue';
 import { computed } from 'vue';
 import { inject } from 'vue';
+import { useDependencyInjection } from '../composables/dependency-injection';
 
-const userRepository = inject<UserRepository>('userRepository');
-const layout = computed(() => userRepository?.getUser<UserRoleInterface>().getLayout(userRepository)!);
+const { userRepository } = useDependencyInjection()
+
+const layout = computed(() => userRepository?.getUser().getLayout(userRepository)!);
 </script>
 
 <style lang="scss" scoped></style>

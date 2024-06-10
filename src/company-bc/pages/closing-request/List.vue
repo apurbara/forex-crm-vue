@@ -2,8 +2,6 @@
   <h1 class="page-title">Closing Request List</h1>
   <OffsetPaginationComponent :pagination="pagination">
     <template v-slot:editSection>
-      <v-btn prepend-icon="mdi-account-plus-outline" variant="tonal" to="/closing-request/add">Add
-        Closing Request</v-btn>
     </template>
     <v-table height="400px" density="compact" style="width: 100%;" class="datatable">
       <thead>

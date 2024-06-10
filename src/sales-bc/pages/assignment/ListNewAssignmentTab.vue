@@ -40,11 +40,11 @@
 import CursorPaginationComponent from '@/resources/components/CursorPaginationComponent.vue';
 import { KeywordSearch, PaginationResponseType } from '@/resources/components/abstract-pagination';
 import CursorPagination from '@/resources/components/cursor-pagination';
-import { CustomerAssignmentType } from '@/sales-bc/domain-old/model/sales/customer-assignment';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, reactive } from 'vue';
 import { CustomerAssignmentStatus } from '@/shared-bc/domain/enum/customer-assignment-status';
 import { useRouter } from 'vue-router';
+import { CustomerAssignmentType } from '@/sales-bc/domain/model/sales/customer-assignment';
 
 const { httpRequest, salesRepository } = useDependencyInjection();
 const router = useRouter();
