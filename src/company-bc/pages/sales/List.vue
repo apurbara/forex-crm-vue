@@ -9,10 +9,11 @@
       <thead>
         <tr>
           <th>name</th>
+          <th>manager</th>
           <th>email</th>
           <th>type</th>
           <th>createdTime</th>
-          <th>cancelTime</th>
+          <th>contract terminated time</th>
           <th></th>
         </tr>
       </thead>
@@ -28,13 +29,14 @@
         <tr v-else v-for="(sales, index) in pagination.resultList" :key="sales.id ?? index"
           @dblclick="toDetail(sales.id!)">
           <td>{{ sales.name }}</td>
+          <td>{{ sales.manager?.name }}</td>
           <td>{{ sales.email }}</td>
           <td>{{ sales.type }}</td>
           <td>{{ new Date(sales.createdTime!).toLocaleDateString() }}</td>
-          <td>{{ sales.cancelTime ? new Date(sales.cancelTime).toLocaleDateString() : '' }}</td>
+          <td>{{ sales.contractTerminatedTime ? new Date(sales.contractTerminatedTime).toLocaleDateString() : '' }}</td>
           <td>
-            <v-btn color="green" v-if="!sales.cancelled" variant="text" icon="mdi-toggle-switch-outline"
-              @click="cancelConfirmation($event, sales.id!)"></v-btn>
+            <v-btn color="green" v-if="!sales.contractTerminated" variant="text" icon="mdi-toggle-switch-outline"
+              @click="terminateContractConfirmation($event, sales.id!)"></v-btn>
             <v-btn color="red" v-else variant="text" icon="mdi-toggle-switch-off-outline" disabled></v-btn>
           </td>
         </tr>
@@ -54,24 +56,25 @@ import { useConfirm } from "primevue/useconfirm";
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { SalesType } from '@/company-bc/domain/model/sales';
 
-const { httpRequest, companyUserRepository } = useDependencyInjection()
+const { companyUserRepository } = useDependencyInjection()
 const router = useRouter();
 const confirm = useConfirm();
 
 const pagination = reactive(new OffsetPagination<SalesType>(
   async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewSalesList: PaginationResponseType<SalesType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewSalesList: PaginationResponseType<SalesType> }>({
         operation: 'viewSalesList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
-          'id', 'cancelled', 'name', 'email', 'createdTime', 'cancelTime', 'type',
+          'id', 'contractTerminated', 'name', 'email', 'createdTime', 'contractTerminatedTime', 'type',
+          { manager: ["name"] }
         ])
       })!
     return response.viewSalesList;
   },
   [
-    new EnumFilter('cancelled', 'Sales.cancelled', () => [{ status: true, name: 'cancelled' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
+    new EnumFilter('contractTerminated', 'Sales.contractTerminated', () => [{ status: true, name: 'terminated' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
   ],
   new KeywordSearch(["Sales.name", "Sales.email"])
 ))
@@ -82,22 +85,22 @@ onMounted(async () => {
 
 const toDetail = (salesId: string) => router.push(`/sales/${salesId}`)
 
-const cancelConfirmation = (event: Event, salesId: string) => {
+const terminateContractConfirmation = (event: Event, salesId: string) => {
   confirm.require({
     target: event.currentTarget as HTMLElement,
-    message: 'Do you want to cancel this sales assigment?',
+    message: 'Do you want to terminate this sales contract?',
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ cancelSalesAssignment: SalesType }>(httpRequest, {
-          operation: "cancelSalesAssignment",
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ terminateSalesContract: SalesType }>({
+          operation: "terminateSalesContract",
           variables: { id: { type: "ID", value: salesId } },
-          fields: ['cancelled']
+          fields: ['contractTerminated', 'contractTerminatedTime']
         })
       pagination.resultList.find(
         (sales: SalesType) => sales.id === salesId
-      )!.cancelled = response.cancelSalesAssignment.cancelled
+      )!.contractTerminatedTime = response.terminateSalesContract.contractTerminatedTime
     },
     reject: () => { }
   });

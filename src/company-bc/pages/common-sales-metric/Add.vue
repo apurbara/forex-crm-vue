@@ -24,8 +24,8 @@ const router = useRouter()
 
 
 const submit = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ createCommonSalesMetric: CommonSalesMetricType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ createCommonSalesMetric: CommonSalesMetricType }>({
       operation: 'createCommonSalesMetric',
       variables: commonSalesMetric.toGraphqlVariables(),
       fields: [

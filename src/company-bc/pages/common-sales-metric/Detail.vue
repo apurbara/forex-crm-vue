@@ -34,8 +34,8 @@ onMounted(async () => {
   if (cacheData) {
     commonSalesMetric.load(cacheData);
   } else {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewCommonSalesMetricDetail: CommonSalesMetricType }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewCommonSalesMetricDetail: CommonSalesMetricType }>({
         operation: 'viewCommonSalesMetricDetail',
         variables: { id: { type: 'ID!', value: props.commonSalesMetricId } },
         fields: [
@@ -49,8 +49,8 @@ onMounted(async () => {
 })
 
 const update = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ updateCommonSalesMetric: CommonSalesMetricType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ updateCommonSalesMetric: CommonSalesMetricType }>({
       operation: "updateCommonSalesMetric",
       variables: commonSalesMetric.toGraphqlVariables(),
       fields: [

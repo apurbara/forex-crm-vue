@@ -29,7 +29,7 @@ import AdminRole, { AdminRoleType } from '../role/admin-role';
 
 const loginPayload = reactive(new LoginPayload());
 
-const { httpRequest, userRepository, companyUserRepository } = useDependencyInjection();
+const { httpRequest, adminRepository, companyUserRepository } = useDependencyInjection();
 const { focus } = useFocus();
 const router = useRouter();
 

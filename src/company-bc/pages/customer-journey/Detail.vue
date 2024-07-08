@@ -22,7 +22,7 @@ import CustomerJourney, { CustomerJourneyType } from '@/company-bc/domain/model/
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, reactive, ref } from 'vue';
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection();
+const { companyUserRepository, cache } = useDependencyInjection();
 
 const customerJourney = reactive(new CustomerJourney())
 const props = defineProps<{ customerJourneyId: string }>()
@@ -34,8 +34,8 @@ onMounted(async () => {
   if (cacheData) {
     customerJourney.load(cacheData);
   } else {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ customerJourneyDetail: CustomerJourneyType }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ customerJourneyDetail: CustomerJourneyType }>({
         operation: 'customerJourneyDetail',
         variables: { id: { type: 'ID!', value: props.customerJourneyId } },
         fields: [
@@ -48,8 +48,8 @@ onMounted(async () => {
 })
 
 const update = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ updateCustomerJourney: CustomerJourneyType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ updateCustomerJourney: CustomerJourneyType }>({
       operation: "updateCustomerJourney",
       variables: customerJourney.toGraphqlVariables(),
       fields: [

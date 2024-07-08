@@ -1,7 +1,7 @@
+import CompanyUserRepository from "@/company-bc/role/company-user-repository";
 import HomeInterface from "@/resources/components/layout/home-interface";
 import MenuItemInterface from "@/resources/components/layout/menu-item-interface";
 import { useStringLimiter } from "@/resources/composables/typography";
-import UserRepository from "@/user-bc/role/user-repository";
 
 export const baseHome: HomeInterface = {
   title: "pintar-forex",
@@ -9,17 +9,17 @@ export const baseHome: HomeInterface = {
 };
 
 export const generateBaseAppBarMenuItems = (
-  userRepository: UserRepository,
+  companyUserRepository: CompanyUserRepository,
   name: string | undefined = ""
 ): MenuItemInterface[] => [
-    {
-      icon: "mdi-account-circle-outline",
-      title: useStringLimiter(name, 10),
+  {
+    icon: "mdi-account-circle-outline",
+    title: useStringLimiter(name, 10),
+  },
+  {
+    icon: "mdi-logout",
+    callableAction: () => {
+      companyUserRepository.logUserOut();
     },
-    {
-      icon: "mdi-logout",
-      callableAction: () => {
-        userRepository.logUserOut();
-      },
-    },
-  ];
+  },
+];

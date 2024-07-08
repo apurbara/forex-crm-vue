@@ -51,14 +51,14 @@ import { useConfirm } from "primevue/useconfirm";
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { CustomerVerificationType } from '@/company-bc/domain/model/customer-verification';
 
-const { httpRequest, companyUserRepository } = useDependencyInjection()
+const { companyUserRepository } = useDependencyInjection()
 const router = useRouter();
 const confirm = useConfirm();
 
 const pagination = reactive(new OffsetPagination<CustomerVerificationType>(
   async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ customerVerificationList: PaginationResponseType<CustomerVerificationType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ customerVerificationList: PaginationResponseType<CustomerVerificationType> }>({
         operation: 'customerVerificationList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
@@ -86,8 +86,8 @@ const disableConfirmation = (event: Event, customerVerificationId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ disableCustomerVerification: CustomerVerificationType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ disableCustomerVerification: CustomerVerificationType }>({
           operation: "disableCustomerVerification",
           variables: { id: { type: "ID", value: customerVerificationId } },
           fields: ['disabled']
@@ -106,8 +106,8 @@ const enableConfirmation = (event: Event, customerVerificationId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ enableCustomerVerification: CustomerVerificationType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ enableCustomerVerification: CustomerVerificationType }>({
           operation: "enableCustomerVerification",
           variables: { id: { type: "ID", value: customerVerificationId } },
           fields: ['disabled']

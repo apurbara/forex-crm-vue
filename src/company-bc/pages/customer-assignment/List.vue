@@ -24,8 +24,7 @@
             </div>
           </td>
         </tr>
-        <tr v-else v-for="(customerAssignment, index) in pagination.resultList" :key="customerAssignment.id ?? index"
-          @dblclick="toDetail(customerAssignment.id!)">
+        <tr v-else v-for="(customerAssignment, index) in pagination.resultList" :key="customerAssignment.id ?? index">
           <td>{{ customerAssignment.customer?.name }}</td>
           <td>{{ customerAssignment.sales?.name }}</td>
           <td>{{ customerAssignment.customerJourney?.name }}</td>
@@ -47,13 +46,13 @@ import { useDependencyInjection } from '@/shared/composables/dependency-injectio
 import { CustomerAssignmentType } from '@/company-bc/domain/model/sales/customer-assignment';
 import EnumFilter from '@/resources/components/pagination/enum-filter';
 
-const { httpRequest, companyUserRepository } = useDependencyInjection()
+const { companyUserRepository } = useDependencyInjection()
 const router = useRouter();
 
 const pagination = reactive(new OffsetPagination<CustomerAssignmentType>(
   async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ customerAssignmentList: PaginationResponseType<CustomerAssignmentType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ customerAssignmentList: PaginationResponseType<CustomerAssignmentType> }>({
         operation: 'customerAssignmentList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
@@ -77,7 +76,7 @@ onMounted(async () => {
   await pagination.loadPage();
 })
 
-const toDetail = (customerAssignmentId: string) => router.push(`/customer-assignment/${customerAssignmentId}`)
+// const toDetail = (customerAssignmentId: string) => router.push(`/customer-assignment/${customerAssignmentId}`)
 
 </script>
 

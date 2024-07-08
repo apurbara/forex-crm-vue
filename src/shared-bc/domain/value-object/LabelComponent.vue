@@ -4,9 +4,7 @@
 </template>
 
 <script lang="ts" setup>
-import { read } from 'fs';
 import Label from './label';
-
 
 defineProps<{ label: Label, readonly?: boolean }>()
 </script>

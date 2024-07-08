@@ -1,66 +1,123 @@
 import { GraphqlBuilderOptions } from "@/resources/types/graphql";
-import { CompanyUserRole, CompanyUserRoleType } from "./company-user-repository";
+import CompanyUserRepository, {
+  CompanyUserRole,
+  CompanyUserRoleType,
+} from "./company-user-repository";
 import HttpRequestInterface from "@/infrastructure/http-request-interface";
 import RestRequestInterface from "@/infrastructure/rest-request-interface";
+import {
+  baseHome,
+  generateBaseAppBarMenuItems,
+} from "@/shared/components/default-layout";
+import LayoutInterface from "@/resources/components/layout-interface";
 
 export default class ManagerRole implements CompanyUserRole {
-	protected token: string;
-	static readonly type: string = "MANAGER";
+  protected token: string;
+  protected name?: string;
+  static readonly type: string = "MANAGER";
+  protected httpRequest: HttpRequestInterface;
+  protected restRequest: RestRequestInterface;
 
-	constructor(parameters: CompanyUserRoleType) {
-		this.token = parameters.token!;
-	}
+  constructor(
+    parameters: CompanyUserRoleType,
+    httpRequest: HttpRequestInterface,
+    restRequest: RestRequestInterface
+  ) {
+    this.token = parameters.token!;
+    this.name = parameters.name;
+    this.httpRequest = httpRequest;
+    this.restRequest = restRequest;
+  }
 
-	canAccessCompanyMenu(menu: string): boolean {
-		return [
-			"customer",
-		].includes(menu);
-	}
+  canAccessCompanyMenu(menu: string): boolean {
+    return ["customer"].includes(menu);
+  }
+  getLandingPage(): string {
+    return "/admin-dashboard";
+  }
+  getLayout(companyUserRepository: CompanyUserRepository): LayoutInterface {
+    // const asSuperUserNavbarMenus = this.aSuperUser
+    //   ? [{ title: "admin", to: "/admin" }]
+    //   : [];
+    return {
+      home: baseHome,
+      appBarMenuItems: generateBaseAppBarMenuItems(
+        companyUserRepository,
+        this.name
+      ),
+      navBarMenuItems: [
+        {
+          title: "customer assignment",
+          to: "/manager-customer-assignment",
+        },
+      ],
+    };
+  }
 
-	//
-	async executeGraphqlMutationInCompany<ResponseType>(
-		httpRequest: HttpRequestInterface,
-		options: GraphqlBuilderOptions
-	): Promise<ResponseType> {
-		const response = await httpRequest.mutate("company", options, this.token);
-		return response;
-	}
+  //
+  async executeGraphqlMutationInCompany<ResponseType>(
+    options: GraphqlBuilderOptions
+  ): Promise<ResponseType> {
+    const response = await this.httpRequest.mutate(
+      "company",
+      options,
+      this.token
+    );
+    return response;
+  }
 
-	async executeGraphqlQueryInCompany<ResponseType>(
-		httpRequest: HttpRequestInterface,
-		options: GraphqlBuilderOptions
-	): Promise<ResponseType> {
-		const response = await httpRequest.query("company", options, this.token);
-		return response;
-	}
+  async executeGraphqlQueryInCompany<ResponseType>(
+    options: GraphqlBuilderOptions
+  ): Promise<ResponseType> {
+    const response = await this.httpRequest.query(
+      "company",
+      options,
+      this.token
+    );
+    return response;
+  }
 
-	async executeGetRequest<ResponseType>(
-		restRequest: RestRequestInterface, url: string, queryParameters?: any
-	): Promise<ResponseType> {
-		return await restRequest.get(url, queryParameters, this.token);
-	}
+  async executeGetRequest<ResponseType>(
+    url: string,
+    queryParameters?: any
+  ): Promise<ResponseType> {
+    return await this.restRequest.get(url, queryParameters, this.token);
+  }
 
-	async executePostRequest<ResponseType>(
-		restRequest: RestRequestInterface, url: string, data?: any
-	): Promise<ResponseType> {
-		return await restRequest.post(url, data, this.token);
-	}
+  async executePostRequest<ResponseType>(
+    url: string,
+    data?: any
+  ): Promise<ResponseType> {
+    return await this.restRequest.post(url, data, this.token);
+  }
 
-	async uploadFile<ResponseType>(
-		restRequest: RestRequestInterface, url: string, file: string | Blob, onUploadProgress: any
-	): Promise<ResponseType> {
-		const response = await restRequest.uploadFile<ResponseType>(
-			url, file, this.token, onUploadProgress
-		);
-		return response;
-	}
+  //
+  async uploadFile<ResponseType>(
+    url: string,
+    file: string | Blob,
+    onUploadProgress: any
+  ): Promise<ResponseType> {
+    const response = await this.restRequest.uploadFile<ResponseType>(
+      url,
+      file,
+      this.token,
+      onUploadProgress
+    );
+    return response;
+  }
 
-	async downloadStream(
-		restRequest: RestRequestInterface, url: string, params?: object, fileType?: string, label?: string
-	): Promise<void> {
-		await restRequest.downloadStream(
-			url, this.token, params, fileType, label
-		);
-	}
-
+  async downloadStream(
+    url: string,
+    params?: object,
+    fileType?: string,
+    label?: string
+  ): Promise<void> {
+    await this.restRequest.downloadStream(
+      url,
+      this.token,
+      params,
+      fileType,
+      label
+    );
+  }
 }

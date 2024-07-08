@@ -23,12 +23,11 @@ import { useDependencyInjection } from '@/shared/composables/dependency-injectio
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection();
+const { companyUserRepository, cache } = useDependencyInjection();
 
 const salesRank = reactive(new SalesRank())
 const props = defineProps<{ salesRankId: string }>()
 let editing = ref(false)
-const router = useRouter()
 let cacheData: SalesRankType;
 
 onMounted(async () => {
@@ -36,8 +35,8 @@ onMounted(async () => {
   if (cacheData) {
     salesRank.load(cacheData);
   } else {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewSalesRankDetail: SalesRankType }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewSalesRankDetail: SalesRankType }>({
         operation: 'viewSalesRankDetail',
         variables: { id: { type: 'ID!', value: props.salesRankId } },
         fields: [
@@ -51,8 +50,8 @@ onMounted(async () => {
 })
 
 const update = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ updateSalesRank: SalesRankType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ updateSalesRank: SalesRankType }>({
       operation: "updateSalesRank",
       variables: salesRank.toGraphqlVariables(),
       fields: [

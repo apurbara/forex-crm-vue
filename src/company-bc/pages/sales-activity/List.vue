@@ -56,14 +56,14 @@ import { useConfirm } from "primevue/useconfirm";
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { SalesActivityType } from '@/company-bc/domain/model/sales-activity';
 
-const { httpRequest, companyUserRepository } = useDependencyInjection()
+const { companyUserRepository } = useDependencyInjection()
 const router = useRouter();
 const confirm = useConfirm();
 
 const pagination = reactive(new OffsetPagination<SalesActivityType>(
   async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ salesActivityList: PaginationResponseType<SalesActivityType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ salesActivityList: PaginationResponseType<SalesActivityType> }>({
         operation: 'salesActivityList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
@@ -91,8 +91,8 @@ const disableConfirmation = (event: Event, salesActivityId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ disableSalesActivity: SalesActivityType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ disableSalesActivity: SalesActivityType }>({
           operation: "disableSalesActivity",
           variables: { id: { type: "ID", value: salesActivityId } },
           fields: ['disabled']
@@ -111,8 +111,8 @@ const enableConfirmation = (event: Event, salesActivityId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ enableSalesActivity: SalesActivityType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ enableSalesActivity: SalesActivityType }>({
           operation: "enableSalesActivity",
           variables: { id: { type: "ID", value: salesActivityId } },
           fields: ['disabled']

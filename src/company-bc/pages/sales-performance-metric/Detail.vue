@@ -23,12 +23,11 @@ import { useDependencyInjection } from '@/shared/composables/dependency-injectio
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection();
+const { companyUserRepository, cache } = useDependencyInjection();
 
 const salesPerformanceMetric = reactive(new SalesPerformanceMetric())
 const props = defineProps<{ salesPerformanceMetricId: string }>()
 let editing = ref(false)
-const router = useRouter()
 let cacheData: SalesPerformanceMetricType;
 
 onMounted(async () => {
@@ -36,8 +35,8 @@ onMounted(async () => {
   if (cacheData) {
     salesPerformanceMetric.load(cacheData);
   } else {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewSalesPerformanceMetricDetail: SalesPerformanceMetricType }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewSalesPerformanceMetricDetail: SalesPerformanceMetricType }>({
         operation: 'viewSalesPerformanceMetricDetail',
         variables: { id: { type: 'ID!', value: props.salesPerformanceMetricId } },
         fields: [
@@ -51,8 +50,8 @@ onMounted(async () => {
 })
 
 const update = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ updateSalesPerformanceMetric: SalesPerformanceMetricType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ updateSalesPerformanceMetric: SalesPerformanceMetricType }>({
       operation: "updateSalesPerformanceMetric",
       variables: salesPerformanceMetric.toGraphqlVariables(),
       fields: [

@@ -51,16 +51,16 @@ import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { CustomerType } from '@/company-bc/domain/model/customer';
-import ManagerRole from '@/company-bc/role/manager-role';
 import { AxiosProgressEvent } from 'axios';
+import AdminRole from '@/company-bc/role/admin-role';
 
-const { httpRequest, restRequest, companyUserRepository } = useDependencyInjection()
+const { restRequest, companyUserRepository } = useDependencyInjection()
 const router = useRouter();
 
 const pagination = reactive(new OffsetPagination<CustomerType>(
   async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ customerList: PaginationResponseType<CustomerType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ customerList: PaginationResponseType<CustomerType> }>({
         operation: 'customerList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
@@ -93,16 +93,16 @@ const handleFileImport = async () => {
 
 const onFileChange = async (e: any) => {
   const file = e.target.files[0]
-  const failedList = await companyUserRepository.getUser<ManagerRole>()
-    .uploadFile(restRequest, '/import-customer-from-csv', file, (event: AxiosProgressEvent) => { progress.value = Math.round((100 * event.loaded) / event.total!) })
+  const failedList = await companyUserRepository.getUser<AdminRole>()!
+    .uploadFile('/import-customer-from-csv', file, (event: AxiosProgressEvent) => { progress.value = Math.round((100 * event.loaded) / event.total!) })
   console.log(failedList);
   await pagination.loadPage();
 }
 
 const exportCustomer = async () => {
   const params = pagination.toQueryParams();
-  await companyUserRepository.getUser<ManagerRole>()
-    .downloadStream(restRequest, "/export-customer-to-csv", params, 'text/csv', 'customer');
+  await companyUserRepository.getUser<AdminRole>()!
+    .downloadStream("/export-customer-to-csv", params, 'text/csv', 'customer');
 }
 
 </script>

@@ -34,8 +34,8 @@ onMounted(async () => {
   if (cacheData) {
     companyMetric.load(cacheData);
   } else {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewCompanyMetricDetail: CompanyMetricType }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewCompanyMetricDetail: CompanyMetricType }>({
         operation: 'viewCompanyMetricDetail',
         variables: { id: { type: 'ID!', value: props.companyMetricId } },
         fields: [
@@ -49,8 +49,8 @@ onMounted(async () => {
 })
 
 const update = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ updateCompanyMetric: CompanyMetricType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ updateCompanyMetric: CompanyMetricType }>({
       operation: "updateCompanyMetric",
       variables: companyMetric.toGraphqlVariables(),
       fields: [

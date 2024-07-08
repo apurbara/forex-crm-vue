@@ -68,8 +68,8 @@ const thousandSeparator = (value: number) => useThousandSeparator(value);
 
 const pagination = reactive(new OffsetPagination<CommonSalesMetricType>(
   async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewCommonSalesMetricList: PaginationResponseType<CommonSalesMetricType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewCommonSalesMetricList: PaginationResponseType<CommonSalesMetricType> }>({
         operation: 'viewCommonSalesMetricList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
@@ -97,8 +97,8 @@ const disableConfirmation = (event: Event, commonSalesMetricId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ disableCommonSalesMetric: CommonSalesMetricType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ disableCommonSalesMetric: CommonSalesMetricType }>({
           operation: "disableCommonSalesMetric",
           variables: { id: { type: "ID", value: commonSalesMetricId } },
           fields: ['disabled']
@@ -117,8 +117,8 @@ const enableConfirmation = (event: Event, commonSalesMetricId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ enableCommonSalesMetric: CommonSalesMetricType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ enableCommonSalesMetric: CommonSalesMetricType }>({
           operation: "enableCommonSalesMetric",
           variables: { id: { type: "ID", value: commonSalesMetricId } },
           fields: ['disabled']

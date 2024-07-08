@@ -65,8 +65,8 @@ const confirm = useConfirm();
 
 const pagination = reactive(new OffsetPagination<CompanyMetricType>(
   async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewCompanyMetricList: PaginationResponseType<CompanyMetricType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewCompanyMetricList: PaginationResponseType<CompanyMetricType> }>({
         operation: 'viewCompanyMetricList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
@@ -94,8 +94,8 @@ const disableConfirmation = (event: Event, companyMetric: CompanyMetricType) => 
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ disableCompanyMetric: CompanyMetricType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ disableCompanyMetric: CompanyMetricType }>({
           operation: "disableCompanyMetric",
           variables: { id: { type: "ID", value: companyMetric.id } },
           fields: ['disabled']
@@ -112,8 +112,8 @@ const enableConfirmation = (event: Event, companyMetric: CompanyMetricType) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ enableCompanyMetric: CompanyMetricType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ enableCompanyMetric: CompanyMetricType }>({
           operation: "enableCompanyMetric",
           variables: { id: { type: "ID", value: companyMetric.id } },
           fields: ['disabled']

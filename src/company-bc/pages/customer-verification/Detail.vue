@@ -22,7 +22,7 @@ import CustomerVerification, { CustomerVerificationType } from '@/company-bc/dom
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, reactive, ref } from 'vue';
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection();
+const { companyUserRepository, cache } = useDependencyInjection();
 
 const customerVerification = reactive(new CustomerVerification())
 const props = defineProps<{ customerVerificationId: string }>()
@@ -34,8 +34,8 @@ onMounted(async () => {
   if (cacheData) {
     customerVerification.load(cacheData);
   } else {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ customerVerificationDetail: CustomerVerificationType }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ customerVerificationDetail: CustomerVerificationType }>({
         operation: 'customerVerificationDetail',
         variables: { id: { type: 'ID!', value: props.customerVerificationId } },
         fields: [
@@ -48,8 +48,8 @@ onMounted(async () => {
 })
 
 const update = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ updateCustomerVerification: CustomerVerificationType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ updateCustomerVerification: CustomerVerificationType }>({
       operation: "updateCustomerVerification",
       variables: customerVerification.toGraphqlVariables(),
       fields: [

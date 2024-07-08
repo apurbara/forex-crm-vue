@@ -26,7 +26,7 @@ const customerAssignmentPagination = reactive(new OffsetPagination<CustomerAssig
     return response.customerAssignmentList;
   },
   [
-    new EnumFilter('status', 'CustomerAssignment.status', () => Object.keys(CustomerAssignmentStatus).map(key => { return { name: key, value: key } }), 'IN', 'name', 'value'),
+    new EnumFilter('status', 'CustomerAssignment.status', () => Object.keys(CustomerAssignmentStatus).map(key => { return { name: key, value: key } }), 'IN', undefined, 'name', 'value'),
   ],
   new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"])
 ))

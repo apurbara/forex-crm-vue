@@ -89,14 +89,14 @@ import { CustomerType } from '@/company-bc/domain/model/customer';
 import { SalesType } from '@/company-bc/domain/model/sales';
 import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
 import { KeywordSearch, PaginationResponseType } from '@/resources/components/abstract-pagination';
-import OffsetPagination from '@/resources/components/offset-pagination';
+import OffsetPagination, { OffsetLimit } from '@/resources/components/offset-pagination';
 import router from '@/router';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { computed, onMounted, ref, watch } from 'vue';
 import { reactive } from 'vue';
 import Checkbox from 'primevue/checkbox';
 
-const { httpRequest, companyUserRepository } = useDependencyInjection();
+const { companyUserRepository } = useDependencyInjection();
 
 const customerPagination = reactive(new OffsetPagination<CustomerType>(
   async (pagination) => {
@@ -105,8 +105,8 @@ const customerPagination = reactive(new OffsetPagination<CustomerType>(
       ...variables['filters']['value'],
       { column: "hasActiveAssignment", value: false, comparisonType: 'EQ' }
     ];
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ customerList: PaginationResponseType<CustomerType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ customerList: PaginationResponseType<CustomerType> }>({
         operation: 'customerList',
         variables: variables,
         fields: OffsetPagination.wrapResultFields([
@@ -116,7 +116,8 @@ const customerPagination = reactive(new OffsetPagination<CustomerType>(
     return response.customerList;
   },
   [],
-  new KeywordSearch(['Customer.name', 'Customer.email', 'Customer.phone'])
+  new KeywordSearch(['Customer.name', 'Customer.email', 'Customer.phone']),
+  new OffsetLimit(100)
 ))
 
 const salesPagination = reactive(new OffsetPagination<SalesType>(
@@ -124,10 +125,10 @@ const salesPagination = reactive(new OffsetPagination<SalesType>(
     let variables: any = pagination.toGraphqlVariables();
     variables['filters']['value'] = [
       ...variables['filters']['value'],
-      { column: "Sales.cancelled", value: false, comparisonType: 'EQ' }
+      { column: "Sales.contractTerminated", value: false, comparisonType: 'EQ' }
     ];
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewSalesList: PaginationResponseType<SalesType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewSalesList: PaginationResponseType<SalesType> }>({
         operation: 'viewSalesList',
         variables: variables,
         fields: OffsetPagination.wrapResultFields([
@@ -188,8 +189,8 @@ watch(allSalesSelected, (selectAllSales) => {
 
 const isValidToSubmit = computed(() => payload.customerList.length > 0 && payload.salesList.length > 0)
 const submit = async () => {
-  await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany(httpRequest, {
+  await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany({
       operation: 'assignMultipleCustomerToMultipleSales',
       variables: {
         customerList: { type: "[ID]", value: payload.customerList },

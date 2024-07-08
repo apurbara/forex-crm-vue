@@ -1,7 +1,15 @@
 import { GraphqlBuilderOptions } from "@/resources/types/graphql";
-import { CompanyUserRole, CompanyUserRoleType } from "./company-user-repository";
+import CompanyUserRepository, {
+  CompanyUserRole,
+  CompanyUserRoleType,
+} from "./company-user-repository";
 import HttpRequestInterface from "@/infrastructure/http-request-interface";
 import RestRequestInterface from "@/infrastructure/rest-request-interface";
+import LayoutInterface from "@/resources/components/layout-interface";
+import {
+  baseHome,
+  generateBaseAppBarMenuItems,
+} from "@/shared/components/default-layout";
 
 export type AdminRoleType = {
   aSuperUser?: boolean;
@@ -9,13 +17,25 @@ export type AdminRoleType = {
 
 export default class AdminRole implements CompanyUserRole {
   protected token: string;
+  protected name?: string;
   protected aSuperUser: boolean;
   static readonly type: string = "ADMIN";
+  protected httpRequest: HttpRequestInterface;
+  protected restRequest: RestRequestInterface;
 
-  constructor(parameters: AdminRoleType) {
+  constructor(
+    parameters: AdminRoleType,
+    httpRequest: HttpRequestInterface,
+    restRequest: RestRequestInterface
+  ) {
     this.token = parameters.token!;
+    this.name = parameters.name;
     this.aSuperUser = parameters.aSuperUser!;
+    this.httpRequest = httpRequest;
+    this.restRequest = restRequest;
   }
+
+  //
   canAccessCompanyMenu(menu: string): boolean {
     // const asSuperUserMenus = this.aSuperUser ? ["admin"] : [];
     return [
@@ -24,32 +44,141 @@ export default class AdminRole implements CompanyUserRole {
     ].includes(menu);
   }
 
+  getLandingPage(): string {
+    return "/admin-dashboard";
+  }
+  getLayout(companyUserRepository: CompanyUserRepository): LayoutInterface {
+    // const asSuperUserNavbarMenus = this.aSuperUser
+    //   ? [{ title: "admin", to: "/admin" }]
+    //   : [];
+    return {
+      home: baseHome,
+      appBarMenuItems: generateBaseAppBarMenuItems(
+        companyUserRepository,
+        this.name
+      ),
+      navBarMenuItems: [
+        // ...asSuperUserNavbarMenus,
+        {
+          title: "province",
+          to: "/province",
+        },
+        {
+          title: "city",
+          to: "/city",
+        },
+        {
+          title: "common sales metric",
+          to: "/common-sales-metric",
+        },
+        {
+          title: "company metric",
+          to: "/company-metric",
+        },
+        {
+          title: "sales rank",
+          to: "/sales-rank",
+        },
+        {
+          title: "sales performance metric",
+          to: "/sales-performance-metric",
+        },
+        {
+          title: "customer journey",
+          to: "/customer-journey",
+        },
+        {
+          title: "customer verification",
+          to: "/customer-verification",
+        },
+        {
+          title: "manager",
+          to: "/manager",
+        },
+        {
+          title: "sales",
+          to: "/sales",
+        },
+        {
+          title: "sales activity",
+          to: "/sales-activity",
+        },
+        {
+          title: "customer",
+          to: "/customer",
+        },
+        {
+          title: "customer assignment",
+          to: "/customer-assignment",
+        },
+      ],
+    };
+  }
+
   //
   async executeGraphqlMutationInCompany<ResponseType>(
-    httpRequest: HttpRequestInterface,
     options: GraphqlBuilderOptions
   ): Promise<ResponseType> {
-    const response = await httpRequest.mutate("company", options, this.token);
+    const response = await this.httpRequest.mutate(
+      "company",
+      options,
+      this.token
+    );
     return response;
   }
 
   async executeGraphqlQueryInCompany<ResponseType>(
-    httpRequest: HttpRequestInterface,
     options: GraphqlBuilderOptions
   ): Promise<ResponseType> {
-    const response = await httpRequest.query("company", options, this.token);
+    const response = await this.httpRequest.query(
+      "company",
+      options,
+      this.token
+    );
     return response;
   }
 
   async executeGetRequest<ResponseType>(
-    restRequest: RestRequestInterface, url: string, queryParameters?: any
+    url: string,
+    queryParameters?: any
   ): Promise<ResponseType> {
-    return await restRequest.get(url, queryParameters, this.token);
+    return await this.restRequest.get(url, queryParameters, this.token);
   }
 
   async executePostRequest<ResponseType>(
-    restRequest: RestRequestInterface, url: string, data?: any
+    url: string,
+    data?: any
   ): Promise<ResponseType> {
-    return await restRequest.post(url, data, this.token);
+    return await this.restRequest.post(url, data, this.token);
+  }
+
+  //
+  async uploadFile<ResponseType>(
+    url: string,
+    file: string | Blob,
+    onUploadProgress: any
+  ): Promise<ResponseType> {
+    const response = await this.restRequest.uploadFile<ResponseType>(
+      url,
+      file,
+      this.token,
+      onUploadProgress
+    );
+    return response;
+  }
+
+  async downloadStream(
+    url: string,
+    params?: object,
+    fileType?: string,
+    label?: string
+  ): Promise<void> {
+    await this.restRequest.downloadStream(
+      url,
+      this.token,
+      params,
+      fileType,
+      label
+    );
   }
 }

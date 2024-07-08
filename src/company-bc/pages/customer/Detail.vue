@@ -15,7 +15,7 @@ import Customer, { CustomerType } from '@/company-bc/domain/model/customer';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, reactive, ref } from 'vue';
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection();
+const { companyUserRepository, cache } = useDependencyInjection();
 
 const customer = reactive(new Customer())
 const props = defineProps<{ customerId: string }>()
@@ -26,8 +26,8 @@ onMounted(async () => {
   if (cacheData) {
     customer.load(cacheData);
   } else {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ customerDetail: CustomerType }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ customerDetail: CustomerType }>({
         operation: 'customerDetail',
         variables: { id: { type: 'ID!', value: props.customerId } },
         fields: [

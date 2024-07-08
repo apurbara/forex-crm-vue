@@ -19,13 +19,13 @@ import { useRouter } from 'vue-router';
 
 const salesRank = reactive(new SalesRank());
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection()
+const { companyUserRepository, cache } = useDependencyInjection()
 const router = useRouter()
 
 
 const submit = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ createSalesRank: SalesRankType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ createSalesRank: SalesRankType }>({
       operation: 'createSalesRank',
       variables: salesRank.toGraphqlVariables(),
       fields: [

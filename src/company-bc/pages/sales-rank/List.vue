@@ -59,14 +59,14 @@ import { useConfirm } from "primevue/useconfirm";
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { SalesRankType } from '@/company-bc/domain/model/sales-rank';
 
-const { httpRequest, companyUserRepository } = useDependencyInjection()
+const { companyUserRepository } = useDependencyInjection()
 const router = useRouter();
 const confirm = useConfirm();
 
 const pagination = reactive(new OffsetPagination<SalesRankType>(
   async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewSalesRankList: PaginationResponseType<SalesRankType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewSalesRankList: PaginationResponseType<SalesRankType> }>({
         operation: 'viewSalesRankList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
@@ -95,8 +95,8 @@ const disableConfirmation = (event: Event, salesRankId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ disableSalesRank: SalesRankType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ disableSalesRank: SalesRankType }>({
           operation: "disableSalesRank",
           variables: { id: { type: "ID", value: salesRankId } },
           fields: ['disabled']
@@ -115,8 +115,8 @@ const enableConfirmation = (event: Event, salesRankId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ enableSalesRank: SalesRankType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ enableSalesRank: SalesRankType }>({
           operation: "enableSalesRank",
           variables: { id: { type: "ID", value: salesRankId } },
           fields: ['disabled']

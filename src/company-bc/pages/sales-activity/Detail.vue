@@ -22,7 +22,7 @@ import SalesActivity, { SalesActivityType } from '@/company-bc/domain/model/sale
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, reactive, ref } from 'vue';
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection();
+const { companyUserRepository, cache } = useDependencyInjection();
 
 const salesActivity = reactive(new SalesActivity())
 const props = defineProps<{ salesActivityId: string }>()
@@ -34,8 +34,8 @@ onMounted(async () => {
   if (cacheData) {
     salesActivity.load(cacheData);
   } else {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ salesActivityDetail: SalesActivityType }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ salesActivityDetail: SalesActivityType }>({
         operation: 'salesActivityDetail',
         variables: { id: { type: 'ID!', value: props.salesActivityId } },
         fields: [
@@ -48,8 +48,8 @@ onMounted(async () => {
 })
 
 const update = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ updateSalesActivity: SalesActivityType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ updateSalesActivity: SalesActivityType }>({
       operation: "updateSalesActivity",
       variables: salesActivity.toGraphqlVariables(),
       fields: [

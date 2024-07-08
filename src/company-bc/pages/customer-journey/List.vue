@@ -54,14 +54,14 @@ import { useConfirm } from "primevue/useconfirm";
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { CustomerJourneyType } from '@/company-bc/domain/model/customer-journey';
 
-const { httpRequest, companyUserRepository } = useDependencyInjection()
+const { companyUserRepository } = useDependencyInjection()
 const router = useRouter();
 const confirm = useConfirm();
 
 const pagination = reactive(new OffsetPagination<CustomerJourneyType>(
   async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ customerJourneyList: PaginationResponseType<CustomerJourneyType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ customerJourneyList: PaginationResponseType<CustomerJourneyType> }>({
         operation: 'customerJourneyList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
@@ -89,8 +89,8 @@ const disableConfirmation = (event: Event, customerJourneyId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ disableCustomerJourney: CustomerJourneyType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ disableCustomerJourney: CustomerJourneyType }>({
           operation: "disableCustomerJourney",
           variables: { id: { type: "ID", value: customerJourneyId } },
           fields: ['disabled']
@@ -109,8 +109,8 @@ const enableConfirmation = (event: Event, customerJourneyId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ enableCustomerJourney: CustomerJourneyType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ enableCustomerJourney: CustomerJourneyType }>({
           operation: "enableCustomerJourney",
           variables: { id: { type: "ID", value: customerJourneyId } },
           fields: ['disabled']

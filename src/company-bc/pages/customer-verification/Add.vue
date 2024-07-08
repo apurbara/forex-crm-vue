@@ -19,13 +19,13 @@ import { useRouter } from 'vue-router';
 
 const customerVerification = reactive(new CustomerVerification());
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection()
+const { companyUserRepository, cache } = useDependencyInjection()
 const router = useRouter()
 
 
 const submit = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ addCustomerVerification: CustomerVerificationType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ addCustomerVerification: CustomerVerificationType }>({
       operation: 'addCustomerVerification',
       variables: customerVerification.toGraphqlVariables(),
       fields: [

@@ -55,14 +55,14 @@ import { useConfirm } from "primevue/useconfirm";
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { SalesPerformanceMetricType } from '@/company-bc/domain/model/sales-performance-metric';
 
-const { httpRequest, companyUserRepository } = useDependencyInjection()
+const { companyUserRepository } = useDependencyInjection()
 const router = useRouter();
 const confirm = useConfirm();
 
 const pagination = reactive(new OffsetPagination<SalesPerformanceMetricType>(
   async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewSalesPerformanceMetricList: PaginationResponseType<SalesPerformanceMetricType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewSalesPerformanceMetricList: PaginationResponseType<SalesPerformanceMetricType> }>({
         operation: 'viewSalesPerformanceMetricList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
@@ -91,8 +91,8 @@ const disableConfirmation = (event: Event, salesPerformanceMetricId: string) => 
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ disableSalesPerformanceMetric: SalesPerformanceMetricType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ disableSalesPerformanceMetric: SalesPerformanceMetricType }>({
           operation: "disableSalesPerformanceMetric",
           variables: { id: { type: "ID", value: salesPerformanceMetricId } },
           fields: ['disabled']
@@ -111,8 +111,8 @@ const enableConfirmation = (event: Event, salesPerformanceMetricId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ enableSalesPerformanceMetric: SalesPerformanceMetricType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ enableSalesPerformanceMetric: SalesPerformanceMetricType }>({
           operation: "enableSalesPerformanceMetric",
           variables: { id: { type: "ID", value: salesPerformanceMetricId } },
           fields: ['disabled']

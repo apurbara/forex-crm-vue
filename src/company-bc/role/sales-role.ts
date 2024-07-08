@@ -1,46 +1,93 @@
 import { GraphqlBuilderOptions } from "@/resources/types/graphql";
-import { CompanyUserRole, CompanyUserRoleType } from "./company-user-repository";
+import CompanyUserRepository, {
+  CompanyUserRole,
+  CompanyUserRoleType,
+} from "./company-user-repository";
 import HttpRequestInterface from "@/infrastructure/http-request-interface";
 import RestRequestInterface from "@/infrastructure/rest-request-interface";
+import LayoutInterface from "@/resources/components/layout-interface";
+import {
+  baseHome,
+  generateBaseAppBarMenuItems,
+} from "@/shared/components/default-layout";
 
 export default class SalesRole implements CompanyUserRole {
   protected token: string;
+  protected name?: string;
   static readonly type: string = "SALES";
+  protected httpRequest: HttpRequestInterface;
+  protected restRequest: RestRequestInterface;
 
-  constructor(parameters: CompanyUserRoleType) {
+  constructor(
+    parameters: CompanyUserRoleType,
+    httpRequest: HttpRequestInterface,
+    restRequest: RestRequestInterface
+  ) {
     this.token = parameters.token!;
+    this.name = parameters.name;
+    this.httpRequest = httpRequest;
+    this.restRequest = restRequest;
   }
 
   canAccessCompanyMenu(menu: string): boolean {
     return false;
   }
+  getLandingPage(): string {
+    return "/admin-dashboard";
+  }
+  getLayout(companyUserRepository: CompanyUserRepository): LayoutInterface {
+    // const asSuperUserNavbarMenus = this.aSuperUser
+    //   ? [{ title: "admin", to: "/admin" }]
+    //   : [];
+    return {
+      home: baseHome,
+      appBarMenuItems: generateBaseAppBarMenuItems(
+        companyUserRepository,
+        this.name
+      ),
+      navBarMenuItems: [
+        {
+          title: "customer assignment",
+          to: "/sales-customer-assignment",
+        },
+      ],
+    };
+  }
 
   //
   async executeGraphqlMutationInCompany<ResponseType>(
-    httpRequest: HttpRequestInterface,
     options: GraphqlBuilderOptions
   ): Promise<ResponseType> {
-    const response = await httpRequest.mutate("company", options, this.token);
+    const response = await this.httpRequest.mutate(
+      "company",
+      options,
+      this.token
+    );
     return response;
   }
 
   async executeGraphqlQueryInCompany<ResponseType>(
-    httpRequest: HttpRequestInterface,
     options: GraphqlBuilderOptions
   ): Promise<ResponseType> {
-    const response = await httpRequest.query("company", options, this.token);
+    const response = await this.httpRequest.query(
+      "company",
+      options,
+      this.token
+    );
     return response;
   }
 
   async executeGetRequest<ResponseType>(
-    restRequest: RestRequestInterface, url: string, queryParameters?: any
+    url: string,
+    queryParameters?: any
   ): Promise<ResponseType> {
-    return await restRequest.get(url, queryParameters, this.token);
+    return await this.restRequest.get(url, queryParameters, this.token);
   }
 
   async executePostRequest<ResponseType>(
-    restRequest: RestRequestInterface, url: string, data?: any
+    url: string,
+    data?: any
   ): Promise<ResponseType> {
-    return await restRequest.post(url, data, this.token);
+    return await this.restRequest.post(url, data, this.token);
   }
 }

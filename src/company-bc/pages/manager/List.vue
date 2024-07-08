@@ -49,14 +49,14 @@ import { useConfirm } from "primevue/useconfirm";
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { ManagerType } from '@/company-bc/domain/model/manager';
 
-const { httpRequest, companyUserRepository } = useDependencyInjection()
+const { companyUserRepository } = useDependencyInjection()
 const router = useRouter();
 const confirm = useConfirm();
 
 const pagination = reactive(new OffsetPagination<ManagerType>(
   async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewManagerList: PaginationResponseType<ManagerType> }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewManagerList: PaginationResponseType<ManagerType> }>({
         operation: 'viewManagerList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
@@ -84,8 +84,8 @@ const suspendConfirmation = (event: Event, managerId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ suspendManager: ManagerType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ suspendManager: ManagerType }>({
           operation: "suspendManager",
           variables: { id: { type: "ID", value: managerId } },
           fields: ['suspended']
@@ -104,8 +104,8 @@ const unsuspendConfirmation = (event: Event, managerId: string) => {
     icon: 'mdi mdi-alert-outline',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      const response = await companyUserRepository.getUser()
-        .executeGraphqlMutationInCompany<{ unsuspendManager: ManagerType }>(httpRequest, {
+      const response = await companyUserRepository.getUser()!
+        .executeGraphqlMutationInCompany<{ unsuspendManager: ManagerType }>({
           operation: "unsuspendManager",
           variables: { id: { type: "ID", value: managerId } },
           fields: ['suspended']

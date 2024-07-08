@@ -1,36 +1,46 @@
+import router from "@/router";
 import SalesRole, { SalesRoleType } from "./sales-role";
 import RegularException from "@/resources/exception/regular-exception";
+import HttpRequestInterface from "@/infrastructure/http-request-interface";
+import RestRequestInterface from "@/infrastructure/rest-request-interface";
 
 export default class SalesRepository {
-	protected user?: SalesRole;
+  protected user?: SalesRole;
+  protected httpRequest: HttpRequestInterface;
+  protected restRequest: RestRequestInterface;
 
-	constructor() {
-		const userParameters = localStorage.getItem("user");
-		if (userParameters) {
-			const userData: SalesRoleType = JSON.parse(userParameters);
-			this.logUserIn(userData);
-		}
-	}
-	//
-	getUser(): SalesRole {
-		if (!this.user) {
-			throw RegularException.unauthorized('you must login to access this resources');
-		}
-		return this.user;
-	}
+  constructor(
+    httpRequest: HttpRequestInterface,
+    restRequest: RestRequestInterface
+  ) {
+    this.httpRequest = httpRequest;
+    this.restRequest = restRequest;
+    const userParameters = localStorage.getItem("user");
+    if (userParameters) {
+      const salesData: SalesRoleType = JSON.parse(userParameters);
+      if (salesData.type === SalesRole.type) {
+        this.logUserIn(salesData);
+      }
+    }
+  }
+  //
+  getUser(): SalesRole {
+    if (!this.user) {
+      throw RegularException.unauthorized(
+        "you must login to access this resources"
+      );
+    }
+    return this.user;
+  }
 
-	//
-	logUserIn(userData: SalesRoleType): void {
-		switch (userData.type) {
-			case SalesRole.type:
-				this.user = new SalesRole(userData);
-				break;
-			default:
-				break;
-		}
-	}
+  //
+  logUserIn(salesData: SalesRoleType): void {
+    this.user = new SalesRole(salesData, this.httpRequest, this.restRequest);
+    localStorage.setItem("user", JSON.stringify(salesData));
+    router.push(this.user.getLandingPage());
+  }
 
-	logUserOut(): void {
-		this.user = undefined;
-	}
+  logUserOut(): void {
+    this.user = undefined;
+  }
 }

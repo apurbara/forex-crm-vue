@@ -19,13 +19,13 @@ import { useRouter } from 'vue-router';
 
 const salesActivity = reactive(new SalesActivity());
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection()
+const { companyUserRepository, cache } = useDependencyInjection()
 const router = useRouter()
 
 
 const submit = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ addSalesActivity: SalesActivityType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ addSalesActivity: SalesActivityType }>({
       operation: 'addSalesActivity',
       variables: salesActivity.toGraphqlVariables(),
       fields: [

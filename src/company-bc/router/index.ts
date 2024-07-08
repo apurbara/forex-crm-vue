@@ -2,80 +2,141 @@ import { inject } from "vue";
 import CompanyUserRepository from "../role/company-user-repository";
 
 const companyRoutes = [
+  // {
+  //   path: "admin-dashboard/",
+  //   name: "admin-dashboard",
+  //   component: () => import("@/company-bc/pages/AdminDashboard.vue"),
+  //   beforeEnter: () => {
+  //     inject<CompanyUserRepository>("companyUserRepository")
+  //       ?.getUser()
+  //       ?.canAccessCompanyMenu("admin-dashboard");
+  //   },
+  // },
+  // {
+  //   path: "manager-dashboard/",
+  //   name: "manager-dashboard",
+  //   component: () => import("@/company-bc/pages/ManagerDashboard.vue"),
+  //   beforeEnter: () => {
+  //     inject<CompanyUserRepository>("companyUserRepository")
+  //       ?.getUser()
+  //       ?.canAccessCompanyMenu("manager-dashboard");
+  //   },
+  // },
+  // {
+  //   path: "area-structure/",
+  //   beforeEnter: () => {
+  //     inject<CompanyUserRepository>("companyUserRepository")
+  //       ?.getUser()
+  //       ?.canAccessCompanyMenu("area-structure");
+  //   },
+  //   children: [
+  //     {
+  //       path: "",
+  //       name: "area-structure-list",
+  //       component: () => import("@/company-bc/pages/area-structure/List.vue"),
+  //     },
+  //     {
+  //       path: "add-root",
+  //       name: "add-root-area-structure",
+  //       component: () =>
+  //         import("@/company-bc/pages/area-structure/AddRoot.vue"),
+  //     },
+  //     {
+  //       path: ":areaStructureId/add-branch",
+  //       name: "add-branch-area-structure",
+  //       props: true,
+  //       component: () =>
+  //         import("@/company-bc/pages/area-structure/AddBranch.vue"),
+  //     },
+  //     {
+  //       path: ":areaStructureId",
+  //       name: "area-structure-detail",
+  //       props: true,
+  //       component: () => import("@/company-bc/pages/area-structure/Detail.vue"),
+  //     },
+  //   ],
+  // },
   {
-    path: "admin-dashboard/",
-    name: "admin-dashboard",
-    component: () => import("@/company-bc/pages/AdminDashboard.vue"),
+    path: "province/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("admin-dashboard")
-    },
-  },
-  {
-    path: "manager-dashboard/",
-    name: "manager-dashboard",
-    component: () => import("@/company-bc/pages/ManagerDashboard.vue"),
-    beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("manager-dashboard")
-    },
-  },
-  {
-    path: "area-structure/",
-    beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("area-structure")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("province");
     },
     children: [
       {
         path: "",
-        name: "area-structure-list",
-        component: () => import("@/company-bc/pages/area-structure/List.vue"),
+        name: "province-list",
+        component: () => import("@/company-bc/pages/province/List.vue"),
       },
       {
-        path: "add-root",
-        name: "add-root-area-structure",
-        component: () => import("@/company-bc/pages/area-structure/AddRoot.vue"),
+        path: "add",
+        name: "add-province",
+        component: () => import("@/company-bc/pages/province/Add.vue"),
+      },
+    ],
+  },
+  {
+    path: "city/",
+    beforeEnter: () => {
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("city");
+    },
+    children: [
+      {
+        path: "",
+        name: "city-list",
+        component: () => import("@/company-bc/pages/city/List.vue"),
       },
       {
-        path: ":areaStructureId/add-branch",
-        name: "add-branch-area-structure",
+        path: "add",
+        name: "add-city",
+        component: () => import("@/company-bc/pages/city/Add.vue"),
+      },
+      {
+        path: ":cityId",
+        name: "city-detail",
         props: true,
-        component: () => import("@/company-bc/pages/area-structure/AddBranch.vue"),
-      },
-      {
-        path: ":areaStructureId",
-        name: "area-structure-detail",
-        props: true,
-        component: () => import("@/company-bc/pages/area-structure/Detail.vue"),
+        component: () => import("@/company-bc/pages/city/Detail.vue"),
       },
     ],
   },
   {
     path: "common-sales-metric/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("common-sales-metric")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("common-sales-metric");
     },
     children: [
       {
         path: "",
         name: "common-sales-metric-list",
-        component: () => import("@/company-bc/pages/common-sales-metric/List.vue"),
+        component: () =>
+          import("@/company-bc/pages/common-sales-metric/List.vue"),
       },
       {
         path: "add",
         name: "add-common-sales-metric",
-        component: () => import("@/company-bc/pages/common-sales-metric/Add.vue"),
+        component: () =>
+          import("@/company-bc/pages/common-sales-metric/Add.vue"),
       },
       {
         path: ":commonSalesMetricId",
         name: "common-sales-metric-detail",
         props: true,
-        component: () => import("@/company-bc/pages/common-sales-metric/Detail.vue"),
+        component: () =>
+          import("@/company-bc/pages/common-sales-metric/Detail.vue"),
       },
     ],
   },
   {
     path: "company-metric/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("company-metric")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("company-metric");
     },
     children: [
       {
@@ -99,7 +160,9 @@ const companyRoutes = [
   {
     path: "sales-rank/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("sales-rank")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("sales-rank");
     },
     children: [
       {
@@ -123,31 +186,38 @@ const companyRoutes = [
   {
     path: "sales-performance-metric/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("sales-performance-metric")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("sales-performance-metric");
     },
     children: [
       {
         path: "",
         name: "sales-performance-metric-list",
-        component: () => import("@/company-bc/pages/sales-performance-metric/List.vue"),
+        component: () =>
+          import("@/company-bc/pages/sales-performance-metric/List.vue"),
       },
       {
         path: "add",
         name: "add-sales-performance-metric",
-        component: () => import("@/company-bc/pages/sales-performance-metric/Add.vue"),
+        component: () =>
+          import("@/company-bc/pages/sales-performance-metric/Add.vue"),
       },
       {
         path: ":salesPerformanceMetricId",
         name: "sales-performance-metric-detail",
         props: true,
-        component: () => import("@/company-bc/pages/sales-performance-metric/Detail.vue"),
+        component: () =>
+          import("@/company-bc/pages/sales-performance-metric/Detail.vue"),
       },
     ],
   },
   {
     path: "customer-journey/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("customer-journey")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("customer-journey");
     },
     children: [
       {
@@ -163,20 +233,24 @@ const companyRoutes = [
       {
         path: "set-initial",
         name: "set-initial-customer-journey",
-        component: () => import("@/company-bc/pages/customer-journey/SetInitial.vue"),
+        component: () =>
+          import("@/company-bc/pages/customer-journey/SetInitial.vue"),
       },
       {
         path: ":customerJourneyId",
         name: "customer-journey-detail",
         props: true,
-        component: () => import("@/company-bc/pages/customer-journey/Detail.vue"),
+        component: () =>
+          import("@/company-bc/pages/customer-journey/Detail.vue"),
       },
     ],
   },
   {
     path: "sales-activity/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("sales-activity")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("sales-activity");
     },
     children: [
       {
@@ -192,7 +266,8 @@ const companyRoutes = [
       {
         path: "set-initial",
         name: "set-initial-sales-activity",
-        component: () => import("@/company-bc/pages/sales-activity/SetInitial.vue"),
+        component: () =>
+          import("@/company-bc/pages/sales-activity/SetInitial.vue"),
       },
       {
         path: ":salesActivityId",
@@ -205,31 +280,38 @@ const companyRoutes = [
   {
     path: "customer-verification/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("customer-verification")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("customer-verification");
     },
     children: [
       {
         path: "",
         name: "customer-verification-list",
-        component: () => import("@/company-bc/pages/customer-verification/List.vue"),
+        component: () =>
+          import("@/company-bc/pages/customer-verification/List.vue"),
       },
       {
         path: "add",
         name: "add-customer-verification",
-        component: () => import("@/company-bc/pages/customer-verification/Add.vue"),
+        component: () =>
+          import("@/company-bc/pages/customer-verification/Add.vue"),
       },
       {
         path: ":customerVerificationId",
         name: "customer-verification-detail",
         props: true,
-        component: () => import("@/company-bc/pages/customer-verification/Detail.vue"),
+        component: () =>
+          import("@/company-bc/pages/customer-verification/Detail.vue"),
       },
     ],
   },
   {
     path: "manager/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("manager")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("manager");
     },
     children: [
       {
@@ -253,7 +335,9 @@ const companyRoutes = [
   {
     path: "sales/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("sales")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("sales");
     },
     children: [
       {
@@ -277,7 +361,9 @@ const companyRoutes = [
   {
     path: "customer/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("customer")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("customer");
     },
     children: [
       {
@@ -296,53 +382,61 @@ const companyRoutes = [
   {
     path: "customer-assignment/",
     beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("customer-assignment")
+      inject<CompanyUserRepository>("companyUserRepository")
+        ?.getUser()
+        ?.canAccessCompanyMenu("customer-assignment");
     },
     children: [
       {
         path: "",
         name: "customer-assignment-list",
-        component: () => import("@/company-bc/pages/customer-assignment/List.vue"),
+        component: () =>
+          import("@/company-bc/pages/customer-assignment/List.vue"),
       },
       {
         path: "distribute",
         name: "distribute-customer-assignment",
-        component: () => import("@/company-bc/pages/customer-assignment/Distribute.vue"),
+        component: () =>
+          import("@/company-bc/pages/customer-assignment/Distribute.vue"),
       },
-      {
-        path: ":customerAssignmentId",
-        name: "customer-assignment-detail",
-        props: true,
-        component: () => import("@/company-bc/pages/customer/Detail.vue"),
-      },
+      // {
+      //   path: ":customerAssignmentId",
+      //   name: "customer-assignment-detail",
+      //   props: true,
+      //   component: () => import("@/company-bc/pages/customer-assignment/Detail.vue"),
+      // },
     ],
   },
-  {
-    path: "closing-request/",
-    beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("closing-request")
-    },
-    children: [
-      {
-        path: "",
-        name: "closing-request-list",
-        component: () => import("@/company-bc/pages/closing-request/List.vue"),
-      },
-    ],
-  },
-  {
-    path: "recycle-request/",
-    beforeEnter: () => {
-      inject<CompanyUserRepository>("companyUserRepository")?.getUser().canAccessCompanyMenu("recycle-request")
-    },
-    children: [
-      {
-        path: "",
-        name: "recycle-request-list",
-        component: () => import("@/company-bc/pages/recycle-request/List.vue"),
-      },
-    ],
-  },
+  // {
+  //   path: "closing-request/",
+  //   beforeEnter: () => {
+  //     inject<CompanyUserRepository>("companyUserRepository")
+  //       ?.getUser()
+  //       ?.canAccessCompanyMenu("closing-request");
+  //   },
+  //   children: [
+  //     {
+  //       path: "",
+  //       name: "closing-request-list",
+  //       component: () => import("@/company-bc/pages/closing-request/List.vue"),
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: "recycle-request/",
+  //   beforeEnter: () => {
+  //     inject<CompanyUserRepository>("companyUserRepository")
+  //       ?.getUser()
+  //       ?.canAccessCompanyMenu("recycle-request");
+  //   },
+  //   children: [
+  //     {
+  //       path: "",
+  //       name: "recycle-request-list",
+  //       component: () => import("@/company-bc/pages/recycle-request/List.vue"),
+  //     },
+  //   ],
+  // },
   // {
   //   path: "area/",
   //   // component: () => import('@/resources/components/BlankComponent.vue'),

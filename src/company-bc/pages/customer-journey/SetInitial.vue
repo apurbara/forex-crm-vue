@@ -19,13 +19,13 @@ import { useRouter } from 'vue-router';
 
 const customerJourney = reactive(new CustomerJourney());
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection()
+const { companyUserRepository, cache } = useDependencyInjection()
 const router = useRouter()
 
 
 const submit = async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlMutationInCompany<{ setInitialCustomerJourney: CustomerJourneyType }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlMutationInCompany<{ setInitialCustomerJourney: CustomerJourneyType }>({
       operation: 'setInitialCustomerJourney',
       variables: customerJourney.toGraphqlVariables(),
       fields: [

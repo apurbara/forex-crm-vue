@@ -15,7 +15,7 @@ import Manager, { ManagerType } from '@/company-bc/domain/model/manager';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, reactive } from 'vue';
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection();
+const { companyUserRepository, cache } = useDependencyInjection();
 
 const manager = reactive(new Manager())
 const props = defineProps<{ managerId: string }>()
@@ -26,8 +26,8 @@ onMounted(async () => {
   if (cacheData) {
     manager.load(cacheData);
   } else {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ viewManagerDetail: ManagerType }>(httpRequest, {
+    const response = await companyUserRepository.getUser()!
+      .executeGraphqlQueryInCompany<{ viewManagerDetail: ManagerType }>({
         operation: 'viewManagerDetail',
         variables: { id: { type: 'ID!', value: props.managerId } },
         fields: [

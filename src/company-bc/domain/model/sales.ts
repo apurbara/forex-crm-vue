@@ -1,29 +1,37 @@
-import AccountInfo, { AccountInfoType } from "@/shared-bc/domain/value-object/account-info";
-import Area, { AreaType } from "./area-structure/area";
+import AccountInfo, {
+  AccountInfoType,
+} from "@/shared-bc/domain/value-object/account-info";
 import { ValidationResult } from "@/resources/types/custom-types";
 import { isNotEmpty } from "@/resources/composables/validator";
 import { SalesEnumType } from "@/shared-bc/domain/enum/sales-enum-type";
+import { ManagerType } from "./manager";
+import { CityType } from "./province/city";
 
 export type SalesType = {
   id?: string;
-  cancelled?: boolean;
+  contractTerminated?: boolean;
   createdTime?: string;
-  cancelTime?: string;
+  contractTerminatedTime?: string;
   type?: SalesEnumType;
   //
-  Area_id?: string;
-  area?: Area;
+  City_id?: string;
+  city?: CityType;
+  //
+  Manager_id?: string;
+  manager?: ManagerType;
 } & AccountInfoType;
 
 export default class Sales {
   id?: string;
-  cancelled?: boolean;
+  contractTerminated?: boolean;
   createdTime?: string;
-  cancelTime?: string;
+  contractTerminatedTime?: string;
   //
   type: SalesEnumType = SalesEnumType.IN_HOUSE;
   accountInfo: AccountInfo = new AccountInfo();
-  area?: Area;
+  //
+  city?: CityType;
+  manager?: ManagerType;
 
   constructor(data: SalesType = {}) {
     this.load(data);
@@ -31,29 +39,25 @@ export default class Sales {
 
   load(data: SalesType): void {
     this.id = data.id ?? this.id;
-    this.cancelled = data.cancelled ?? this.cancelled;
+    this.contractTerminated =
+      data.contractTerminated ?? this.contractTerminated;
     this.createdTime = data.createdTime ?? this.createdTime;
-    this.cancelTime = data.cancelTime ?? this.cancelTime;
+    this.contractTerminatedTime =
+      data.contractTerminatedTime ?? this.contractTerminatedTime;
     this.type = data.type ?? this.type;
     this.accountInfo.load(data);
-
-    if (data.area) {
-      this.loadArea(data.area);
-    }
-  }
-
-  loadArea(areaData: AreaType): void {
-    if (!this.area) {
-      this.area = new Area();
-    }
-    this.area.load(areaData);
+    //
+    this.city = data.city ?? this.city;
+    this.manager = data.manager ?? this.manager;
   }
 
   toGraphqlVariables() {
     return {
       ...this.accountInfo.toGraphqlVariables(),
+      id: { type: "ID", value: this.id },
       type: this.type,
-      Area_id: { type: "ID", value: this.area?.id },
+      City_id: { type: "ID", value: this.city?.id },
+      Manager_id: { type: "ID", value: this.manager?.id },
     };
   }
 
@@ -62,6 +66,10 @@ export default class Sales {
   }
 
   isValidToCreate(): boolean {
-    return this.accountInfo.isValidToCreate() && this.isValidType() === true;
+    return (
+      this.accountInfo.isValidToCreate() &&
+      this.isValidType() === true &&
+      !!this.manager?.id
+    );
   }
 }

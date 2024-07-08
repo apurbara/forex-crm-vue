@@ -1,9 +1,17 @@
 import { ValidationResult } from "@/resources/types/custom-types";
-import Area, { AreaType } from "./area-structure/area";
-import { isEmail, isNotEmpty, isPhone } from "@/resources/composables/validator";
+import {
+  isEmail,
+  isNotEmpty,
+  isPhone,
+} from "@/resources/composables/validator";
 import { PaginationResponseType } from "@/resources/components/abstract-pagination";
-import VerificationReport, { VerificationReportType } from "./customer/verification-report";
-import CustomerVerification, { CustomerVerificationType } from "./customer-verification";
+import VerificationReport, {
+  VerificationReportType,
+} from "./customer/verification-report";
+import CustomerVerification, {
+  CustomerVerificationType,
+} from "./customer-verification";
+import { CityType } from "./province/city";
 
 export type CustomerType = {
   id?: string;
@@ -13,7 +21,8 @@ export type CustomerType = {
   phone?: string;
   source?: string;
   verificationScore?: number;
-  area?: AreaType;
+  City_id?: string;
+  city?: CityType;
   verificationReports?: PaginationResponseType<VerificationReportType>;
 };
 
@@ -23,7 +32,7 @@ export default class Customer {
   name: string = "";
   phone: string = "";
   source: string = "";
-  area: Area = new Area();
+  city?: CityType;
   verificationReports: VerificationReport[] = [];
   constructor(data: CustomerType = {}) {
     this.load(data);
@@ -35,9 +44,8 @@ export default class Customer {
     this.name = data.name ?? this.name;
     this.phone = data.phone ?? this.phone;
     this.source = data.source ?? this.source;
-    if (data.area) {
-      this.area.load(data.area);
-    }
+    this.city = data.city ?? this.city;
+
     if (data.verificationReports) {
       data.verificationReports.list.forEach((verificationReportData) => {
         const associateReport = this.verificationReports.find(
@@ -50,10 +58,6 @@ export default class Customer {
     }
   }
 
-  loadArea(areaData: AreaType) {
-    this.area.load(areaData);
-  }
-
   registerCustomerVerificationReports(list: CustomerVerificationType[]): void {
     list.forEach((element) => {
       const customerVerification = new CustomerVerification();
@@ -61,7 +65,7 @@ export default class Customer {
       const verificationReport = new VerificationReport();
       verificationReport.customer = this;
       verificationReport.customerVerification = customerVerification;
-      this.verificationReports.push(verificationReport)
+      this.verificationReports.push(verificationReport);
     });
   }
 
@@ -90,7 +94,7 @@ export default class Customer {
   //
   toGraphqlVariables() {
     return {
-      Area_id: { type: "ID", required: true, value: this.area.id },
+      City_id: { type: "ID", required: true, value: this.city?.id },
       name: this.name,
       email: this.email,
       phone: this.phone,
@@ -99,7 +103,7 @@ export default class Customer {
   }
   toJSON() {
     return {
-      area: this.area,
+      city: this.city,
       name: this.name,
       email: this.email,
       phone: this.phone,
@@ -123,7 +127,7 @@ export default class Customer {
       this.isValidEmail() === true &&
       this.isValidName() === true &&
       this.isValidPhone() === true &&
-      !!this.area.id
+      !!this.city?.id
     );
   }
 }
