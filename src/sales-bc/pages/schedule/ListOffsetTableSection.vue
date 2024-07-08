@@ -23,8 +23,8 @@
           <td>{{ activity.customerAssignment?.customer?.name }}</td>
           <td>{{ activity.customerAssignment?.customerJourney?.name }}</td>
           <td>{{ activity.status }}</td>
-          <td>{{ new Date(activity.startTime!).toLocaleDateString() }} : {{ new
-            Date(activity.startTime!).toLocaleTimeString() }} - {{ new Date(activity.endTime!).toLocaleTimeString() }}
+          <td>{{ new Date(activity.startTime!).toLocaleDateString("id-ID") }} : {{ new
+            Date(activity.startTime!).toLocaleTimeString("id-ID") }} - {{ new Date(activity.endTime!).toLocaleTimeString("id-ID") }}
           </td>
         </tr>
       </tbody>

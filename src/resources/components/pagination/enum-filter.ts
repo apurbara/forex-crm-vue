@@ -1,49 +1,43 @@
-  import { OptionalString, PrimitiveTypes } from "@/resources/types/custom-types";
+import { OptionalString, PrimitiveTypes } from "@/resources/types/custom-types";
+import FilterType from "./filter";
 
-export type EnumFilterType = {
-  column: string;
-  comparisonType: string;
-  value: Array<any>;
-};
+export type EnumFilterItemType = {
+  value: PrimitiveTypes,
+  label: string,
+}
 
 export default class EnumFilter {
-  type: string = "ENUM";
-
-  public items: Array<{ [key: string]: PrimitiveTypes }> = [];
-  public selectedItems: Array<{ [key: string]: PrimitiveTypes }> = [];
-  // public itemValue: string = "id",
+  public items: EnumFilterItemType[] = [];
+  public selectedItems: EnumFilterItemType[] = [];
 
   constructor(
-    public label: string,
+    public title: string,
     public column: string,
-    public itemListCallback: () => Array<{ [key: string]: PrimitiveTypes }>,
-    public comparisonType: string = "IN",
+    public itemListCallback: () => EnumFilterItemType[] | Promise<EnumFilterItemType[]>,
     public placeholder: OptionalString = undefined,
-    public itemTitle: string = "name",
-    public itemValue: string = "id"
-  ) {}
+  ) { }
 
   //
-  toGraphqlVariables(): EnumFilterType | undefined {
+  toGraphqlVariables(): FilterType | undefined {
     return this.selectedItems.length > 0
       ? {
-          column: this.column,
-          comparisonType: this.comparisonType,
-          value: this.selectedItems.map(
-            (selectedItem) => selectedItem[this.itemValue]
-          ),
-        }
+        column: this.column,
+        comparisonType: "IN",
+        value: this.selectedItems.map(
+          (selectedItem) => selectedItem.value
+        ),
+      }
       : undefined;
   }
-  toQueryParams(): EnumFilterType | undefined {
+  toQueryParams(): FilterType | undefined {
     return this.selectedItems.length > 0
       ? {
-          column: this.column,
-          comparisonType: this.comparisonType,
-          value: this.selectedItems.map(
-            (selectedItem) => selectedItem[this.itemValue]
-          ),
-        }
+        column: this.column,
+        comparisonType: "IN",
+        value: this.selectedItems.map(
+          (selectedItem) => selectedItem.value
+        ),
+      }
       : undefined;
   }
 
@@ -53,11 +47,11 @@ export default class EnumFilter {
   }
 
   //
-  noAppliedFilter(): boolean {
-    return this.selectedItems.length < 1;
+  hasSelectedFilter(): boolean {
+    return this.selectedItems.length > 0;
   }
 
-  removeSelectedItem(selectedItem: { [key: string]: PrimitiveTypes }): void {
+  removeSelectedItem(selectedItem: EnumFilterItemType): void {
     // console.log(appliedFilterValue);
     const index = this.selectedItems.indexOf(selectedItem);
     if (index > -1) {

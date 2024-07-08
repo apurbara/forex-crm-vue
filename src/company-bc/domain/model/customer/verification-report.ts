@@ -36,16 +36,4 @@ export default class VerificationReport {
       this.customerVerification.load(data.customerVerification);
     }
   }
-
-  //
-  isValidToSubmit() {
-    return !!this.customer?.id && !!this.customerVerification?.id;
-  }
-
-  //
-  toGraphqlVariables() {
-    return {
-      note: this.note,
-    };
-  }
 }

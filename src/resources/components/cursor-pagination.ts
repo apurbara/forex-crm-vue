@@ -22,7 +22,7 @@ export class CursorLimit {
   constructor(
     public pageSize: number = 10,
     public availableOrders: Array<OrderType> = []
-  ) {}
+  ) { }
 
   load(cursorLimit: CursorLimitType): void {
     this.pageSize = cursorLimit.pageSize;
@@ -38,11 +38,11 @@ export class CursorLimit {
       cursor: this.cursor,
       orders: this.appliedOrder
         ? [
-            {
-              column: this.appliedOrder.column,
-              direction: this.appliedOrder.direction,
-            },
-          ]
+          {
+            column: this.appliedOrder.column,
+            direction: this.appliedOrder.direction,
+          },
+        ]
         : undefined,
     };
   }
@@ -64,7 +64,7 @@ export default class CursorPagination<
     viewListCallback: (
       pagination: AbstractPagination<ResultType>
     ) => Promise<PaginationResponseType<ResultType>>,
-    availableFilters: Array<EnumFilter> = [],
+    availableFilters: EnumFilter[] = [],
     keywordSearch: KeywordSearch | undefined = undefined,
     public cursorLimit: CursorLimit = new CursorLimit()
   ) {

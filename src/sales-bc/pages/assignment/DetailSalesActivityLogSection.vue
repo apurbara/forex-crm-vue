@@ -29,9 +29,9 @@
               icon="mdi-dots-horizontal-circle-outline" size="small"
               @click="showReportContent($event, activitySchedule.salesActivityReport!)"></v-btn>
           </td>
-          <td v-if="activitySchedule.salesActivityReport">{{ new
-            Date(activitySchedule.salesActivityReport?.submitTime!).toLocaleString() }}</td>
-          <td v-else>{{ new Date(activitySchedule.startTime!).toLocaleString() }}</td>
+          <!-- <td v-if="activitySchedule.salesActivityReport">{{ new
+            Date(activitySchedule.salesActivityReport?.submitTime!).toLocaleString() }}</td> -->
+          <td>{{ new Date(activitySchedule.startTime!).toLocaleString("id-ID") }}</td>
         </tr>
       </tbody>
     </v-table>

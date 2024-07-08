@@ -1,80 +1,166 @@
 <template>
   <h1 class="page-title">Customer Assignment List</h1>
-  <OffsetPaginationComponent :pagination="pagination">
-    <template v-slot:editSection>
-      <v-btn prepend-icon="mdi-store-plus-outline" class="ml-4" variant="tonal" to="/customer-assignment/distribute">
-        Distribute Customer Assignment</v-btn>
-    </template>
-    <v-table height="400px" density="compact" style="width: 100%;" class="datatable">
-      <thead>
-        <tr>
-          <th>customer</th>
-          <th>sales</th>
-          <th>customer journey</th>
-          <th>status</th>
-          <th>createdTime</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="pagination.resultList.length < 1">
-          <td class="no-data" colspan="12">
-            <div class="justify-center text-center pa-5">
-              <img src="@/assets/images/image-no-data.svg" alt="No Data" /><br /><br />
-              <span class="text-disabled text-body-1">Data Customer Assignment kosong</span>
-            </div>
-          </td>
-        </tr>
-        <tr v-else v-for="(customerAssignment, index) in pagination.resultList" :key="customerAssignment.id ?? index">
-          <td>{{ customerAssignment.customer?.name }}</td>
-          <td>{{ customerAssignment.sales?.name }}</td>
-          <td>{{ customerAssignment.customerJourney?.name }}</td>
-          <td>{{ customerAssignment.status }}</td>
-          <td>{{ new Date(customerAssignment.createdTime ?? '00-00-00').toLocaleDateString() }}</td>
-        </tr>
-      </tbody>
-    </v-table>
-  </OffsetPaginationComponent>
+  <div class="page-section">
+    <v-tabs v-model="tab" align-tabs="center" fixed-tabs density="comfortable">
+      <v-tab value="idle-assignment"> idle
+        <v-badge inline :content="idleAssignmentCount" color="warning" />
+      </v-tab>
+      <v-tab value="new-assignment"> new
+        <v-badge inline rounded="sm" :content="newAssignmentCount" color="red" />
+      </v-tab>
+      <v-tab value="has-pending-closing-request"> has pending closing
+        <v-badge inline rounded="sm" :content="pendingClosingRequestAssignmentCount" color="green" />
+      </v-tab>
+      <v-tab value="has-pending-recycle-request"> has pending recycle
+        <v-badge inline rounded="sm" :content="pendingRecycleRequestAssignmentCount" color="green" />
+      </v-tab>
+      <v-tab value="active-assignment"> active
+        <v-badge inline rounded="sm" :content="activeAssignmentCount" color="primary" />
+      </v-tab>
+      <v-tab value="all-assignment"> all assignment
+        <v-badge inline rounded="sm" :content="allAssignmentCount" color="grey" />
+      </v-tab>
+    </v-tabs>
+    <v-window v-model="tab">
+      <v-window-item value="active-assignment">
+        <ListActiveAssignmentTab class="page-section" />
+      </v-window-item>
+      <v-window-item value="new-assignment">
+        <ListNewAssignmentTab class="page-section" />
+      </v-window-item>
+      <v-window-item value="idle-assignment">
+        <ListIdleAssignmentTab class="page-section" />
+      </v-window-item>
+      <v-window-item value="has-pending-closing-request">
+        <ListHasPendingClosingRequestAssignmentTab class="page-section" />
+      </v-window-item>
+      <v-window-item value="has-pending-recycle-request">
+        <ListHasPendingRecycleRequestAssignmentTab class="page-section" />
+      </v-window-item>
+      <v-window-item value="all-assignment">
+        <ListAllAssignmentTab class="page-section" />
+      </v-window-item>
+    </v-window>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
-import { KeywordSearch, PaginationResponseType } from '@/resources/components/abstract-pagination';
-import OffsetPagination from '@/resources/components/offset-pagination';
-import { onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import ListActiveAssignmentTab from './ListActiveAssignmentTab.vue';
+import ListNewAssignmentTab from './ListNewAssignmentTab.vue';
+import ListIdleAssignmentTab from './ListIdleAssignmentTab.vue';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
-import { CustomerAssignmentType } from '@/company-bc/domain/model/sales/customer-assignment';
-import EnumFilter from '@/resources/components/pagination/enum-filter';
+import { CustomerAssignmentStatus } from '@/shared-bc/domain/enum/customer-assignment-status';
+import ListHasPendingClosingRequestAssignmentTab from './ListHasPendingClosingRequestAssignmentTab.vue';
+import ListHasPendingRecycleRequestAssignmentTab from './ListHasPendingRecycleRequestAssignmentTab.vue';
+import ListAllAssignmentTab from './ListAllAssignmentTab.vue';
 
-const { httpRequest, companyUserRepository } = useDependencyInjection()
-const router = useRouter();
+const route = useRoute()
+const { companyUserRepository, httpRequest } = useDependencyInjection();
 
-const pagination = reactive(new OffsetPagination<CustomerAssignmentType>(
-  async (pagination) => {
-    const response = await companyUserRepository.getUser()
-      .executeGraphqlQueryInCompany<{ customerAssignmentList: PaginationResponseType<CustomerAssignmentType> }>(httpRequest, {
-        operation: 'customerAssignmentList',
-        variables: pagination.toGraphqlVariables(),
-        fields: OffsetPagination.wrapResultFields([
-          'id', 'status', 'createdTime',
-          { sales: ['name'] },
-          { customer: ['name'] },
-          { customerJourney: ['name'] },
-        ])
-      })!
-    return response.customerAssignmentList;
-  },
-  [
-    new EnumFilter('status', 'AssignedCustomer.status',
-      () => [{ status: 'ACTIVE', name: 'ACTIVE' }, { status: 'RECYCLED', name: 'RECYCLED' }, { status: "GOOD_FUND", name: "GOOD_FUND" }],
-      'IN', undefined, 'name', 'status'),
-  ],
-  new KeywordSearch(["Customer.name", "Sales.name"])
-))
+const tab = ref<string>("active-assignment")
+const activeAssignmentCount = ref<number>(0)
+const newAssignmentCount = ref<number>(0)
+const idleAssignmentCount = ref<number>(0)
+const pendingClosingRequestAssignmentCount = ref<number>(0)
+const pendingRecycleRequestAssignmentCount = ref<number>(0)
+const allAssignmentCount = ref<number>(0)
 
 onMounted(async () => {
-  await pagination.loadPage();
+  tab.value = route.query.tab as string ?? "idle-assignment"
+  await fetchAssignmentSummary()
 })
+
+const fetchAssignmentSummary = async () => {
+  type ResponseDataType = {
+    activeAssignmentCount: number,
+    newAssignmentCount: number,
+    idleAssignmentCount: number,
+    pendingClosingRequestAssignmentCount: number,
+    pendingRecycleRequestAssignmentCount: number,
+    allAssignmentCount: number,
+  }
+  const response = await companyUserRepository.getUser()
+    .executeGraphqlQueryInCompany<ResponseDataType>(httpRequest, [
+      {
+        operation: { name: "viewCustomerAssignmentCount", alias: "activeAssignmentCount" },
+        variables: {
+          activeAssignmentFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
+            ],
+          }
+        },
+        fields: []
+      },
+      {
+        operation: { name: "viewCustomerAssignmentCount", alias: "newAssignmentCount" },
+        variables: {
+          newAssignmentFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
+              { column: "hasSalesActivitySchedule", value: false },
+            ],
+          }
+        },
+        fields: []
+      },
+      {
+        operation: { name: "viewCustomerAssignmentCount", alias: "idleAssignmentCount" },
+        variables: {
+          idleAssignmentFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
+              { column: "hasSalesActivitySchedule", value: true },
+              { column: "hasActiveSalesActivitySchedule", value: false },
+              { column: "hasPendingClosingRequest", value: false },
+              { column: "hasPendingRecycleRequest", value: false },
+            ],
+          }
+        },
+        fields: []
+      },
+      {
+        operation: { name: "viewCustomerAssignmentCount", alias: "pendingClosingRequestAssignmentCount" },
+        variables: {
+          pendingRequestAssignmentFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "hasPendingClosingRequest", value: true },
+            ],
+          }
+        },
+        fields: []
+      },
+      {
+        operation: { name: "viewCustomerAssignmentCount", alias: "pendingRecycleRequestAssignmentCount" },
+        variables: {
+          pendingRequestAssignmentFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "hasPendingRecycleRequest", value: true },
+            ],
+          }
+        },
+        fields: []
+      },
+      {
+        operation: { name: "viewCustomerAssignmentCount", alias: "allAssignmentCount" },
+        variables: {},
+        fields: []
+      },
+    ])
+  activeAssignmentCount.value = response.activeAssignmentCount
+  newAssignmentCount.value = response.newAssignmentCount
+  idleAssignmentCount.value = response.idleAssignmentCount
+  pendingClosingRequestAssignmentCount.value = response.pendingClosingRequestAssignmentCount
+  pendingRecycleRequestAssignmentCount.value = response.pendingRecycleRequestAssignmentCount
+  allAssignmentCount.value = response.allAssignmentCount
+}
 
 </script>
 

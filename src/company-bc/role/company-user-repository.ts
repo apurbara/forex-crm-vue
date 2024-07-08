@@ -20,7 +20,7 @@ export interface CompanyUserRole {
 
 	executeGraphqlQueryInCompany<ResponseType>(
 		httpRequest: HttpRequestInterface,
-		options: GraphqlBuilderOptions
+		options: GraphqlBuilderOptions | GraphqlBuilderOptions[]
 	): Promise<ResponseType>;
 
 	executeGetRequest<ResponseType>(

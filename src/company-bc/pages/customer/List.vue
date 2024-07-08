@@ -45,7 +45,7 @@
 <script lang="ts" setup>
 import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
 import { KeywordSearch, PaginationResponseType } from '@/resources/components/abstract-pagination';
-import OffsetPagination from '@/resources/components/offset-pagination';
+import OffsetPagination, { OffsetLimit } from '@/resources/components/offset-pagination';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';

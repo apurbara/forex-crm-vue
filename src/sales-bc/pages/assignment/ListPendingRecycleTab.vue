@@ -29,10 +29,7 @@ const customerAssignmentPagination = reactive(new OffsetPagination<CustomerAssig
 
 onMounted(async () => {
   customerAssignmentPagination.addHiddenFilter({ column: 'CustomerAssignment.status', value: CustomerAssignmentStatus.ACTIVE });
-  customerAssignmentPagination.addHiddenFilter({ column: 'hasSalesActivitySchedule', value: true });
-  customerAssignmentPagination.addHiddenFilter({ column: 'hasActiveSalesActivitySchedule', value: false });
-  customerAssignmentPagination.addHiddenFilter({ column: 'hasPendingClosingRequest', value: false });
-  customerAssignmentPagination.addHiddenFilter({ column: 'hasPendingRecycleRequest', value: false });
+  customerAssignmentPagination.addHiddenFilter({ column: 'hasPendingRecycleRequest', value: true });
   await customerAssignmentPagination.loadPage();
 })
 

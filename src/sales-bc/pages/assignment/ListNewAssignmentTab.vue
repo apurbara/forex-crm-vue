@@ -64,8 +64,8 @@ const customerAssignmentPagination = reactive(new CursorPagination<CustomerAssig
 ))
 
 onMounted(async () => {
-  customerAssignmentPagination.addHiddenFilter({ column: 'newAssignment', value: true });
   customerAssignmentPagination.addHiddenFilter({ column: 'CustomerAssignment.Status', value: CustomerAssignmentStatus.ACTIVE });
+  customerAssignmentPagination.addHiddenFilter({ column: 'hasSalesActivitySchedule', value: false });
   await customerAssignmentPagination.loadPage();
 })
 

@@ -1,17 +1,17 @@
 <template>
   <OffsetPaginationComponent :pagination="customerAssignmentPagination">
-    <!-- <template v-slot:editSection>
-      <v-btn prepend-icon="mdi-account-plus-outline" variant="tonal" to="/customer-assignment/register">Register
-        Customer</v-btn>
-    </template> -->
-    <v-table height="402px" density="compact" style="width: 100%;" class="datatable">
+    <template v-slot:editSection>
+      <v-btn prepend-icon="mdi-store-plus-outline" class="ml-4" variant="tonal" to="/customer-assignment/distribute">
+        Distribute Customer Assignment</v-btn>
+    </template>
+    <v-table height="402px" density="compact" style="width: 100%;" class="datatable px-2">
       <thead>
         <tr>
-          <th>name</th>
-          <th>email</th>
-          <th>phone</th>
+          <th>customer</th>
+          <th>sales</th>
+          <th>journey</th>
           <th>status</th>
-          <th>area</th>
+          <th>assignment time</th>
         </tr>
       </thead>
       <tbody>
@@ -26,10 +26,10 @@
         <tr v-else v-for="(customerAssignment, index) in customerAssignmentPagination.resultList"
           :key="customerAssignment.id ?? index" @dblclick="toDetail(customerAssignment.id!)">
           <td>{{ customerAssignment.customer?.name }}</td>
-          <td>{{ customerAssignment.customer?.email }}</td>
-          <td>{{ customerAssignment.customer?.phone }}</td>
+          <td>{{ customerAssignment.sales?.name }}</td>
+          <td>{{ customerAssignment.customerJourney?.name }}</td>
           <td>{{ customerAssignment.status }}</td>
-          <td>{{ customerAssignment.customer?.area?.name }}</td>
+          <td>{{ new Date(customerAssignment.createdTime!).toLocaleString() }}</td>
         </tr>
       </tbody>
     </v-table>
@@ -37,15 +37,15 @@
 </template>
 
 <script setup lang="ts">
+import { CustomerAssignmentType } from '@/company-bc/domain/model/sales/customer-assignment';
 import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
 import OffsetPagination from '@/resources/components/offset-pagination';
-import { CustomerAssignmentType } from '@/sales-bc/domain/model/sales/customer-assignment';
 import { useRouter } from 'vue-router';
 
 defineProps<{ customerAssignmentPagination: OffsetPagination<CustomerAssignmentType> }>()
 const router = useRouter();
 
-const toDetail = (customerAssignmentId: string) => router.push(`/sales-customer-assignment/${customerAssignmentId}`)
+const toDetail = (customerAssignmentId: string) => router.push(`/customer-assignment/${customerAssignmentId}`)
 
 </script>
 

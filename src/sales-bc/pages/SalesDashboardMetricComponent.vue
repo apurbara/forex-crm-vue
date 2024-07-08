@@ -1,5 +1,5 @@
 <template>
-  <section v-if="metricSummaries.length > 0" class="page-section ma-2" style="min-width: 48%;">
+  <section v-if="metricSummaries.length > 0" class="page-section" style="min-width: 48%;">
     <h2 class="section-title mb-4">Metric Summaries</h2>
     <v-row>
       <v-col class="border-sm ma-2 pa-2" v-for="(metricSummary, key) in metricSummaries" :key="key">

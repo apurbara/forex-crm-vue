@@ -1,67 +1,66 @@
 <template>
   <h1 class="page-title">Sales Dashboard</h1>
-  <SalesDashboardMetricComponent />
   <div class="d-flex justify-space-between flex-wrap">
-    <v-card class="pa-4 ma-2" @click="toSchedulePage('upcomingSchedule')">
-      <v-card-title>{{ upcomingScheduleCount }}</v-card-title>
-      <v-card-subtitle>upcoming schedule</v-card-subtitle>
-    </v-card>
-    <v-card class="pa-4 ma-2" @click="toSchedulePage('pastSchedule')">
-      <v-card-title>{{ pastScheduleCount }}</v-card-title>
-      <v-card-subtitle>past schedule</v-card-subtitle>
-    </v-card>
-    <v-card class="pa-4 ma-2" @click="toAssignmentPage('newAssignment')">
-      <v-card-title>{{ newAssignment }}</v-card-title>
-      <v-card-subtitle>new assignment</v-card-subtitle>
-    </v-card>
-    <v-card class="pa-4 ma-2" @click="toAssignmentPage('idleAssignment')">
-      <v-card-title>{{ idleAssignment }}</v-card-title>
-      <v-card-subtitle>idle assignment</v-card-subtitle>
-    </v-card>
+    <NotificationCardComponent :title="'Upcoming Schedule'" :info="upcomingScheduleCount"
+      @click="toSchedulePage('upcoming-schedule')" />
+    <NotificationCardComponent :title="'Past Schedule'" :info="pastScheduleCount"
+      @click="toSchedulePage('past-schedule')" />
+    <NotificationCardComponent :title="'New Assignment'" :info="newAssignment"
+      @click="toAssignmentPage('new-assignment')" />
+    <NotificationCardComponent :title="'Idle Assignment'" :info="idleAssignment"
+      @click="toAssignmentPage('idle-assignment')" />
   </div>
-  <section class="page-section ma-2 calendar-container is-light-mode">
-    <Qalendar :events="calendarSchedules" :config="config" />
-  </section>
+  <SalesDashboardMetricComponent />
+  <SalesDashboardCalendarSection />
+  <!-- <section class="page-section calendar-container is-light-mode">
+    <Qalendar :events="calendarSchedules" :config="config" @updated-period="periodUpdated" />
+  </section> -->
 </template>
 
 <script lang="ts" setup>
 // import "vue-pro-calendar/style";
-import { useIsoToLocalTimeFormat, useTimeIntervalDifferenceCounter } from "@/resources/composables/typography";
+// import { useIsoToLocalTimeFormat, useTimeIntervalDifferenceCounter } from "@/resources/composables/typography";
 import { useDependencyInjection } from "@/shared/composables/dependency-injection";
-import { Qalendar } from "qalendar";
-import { computed, onMounted, ref } from "vue";
+// import { Qalendar } from "qalendar";
+import { onMounted, ref } from "vue";
 import SalesDashboardMetricComponent from "./SalesDashboardMetricComponent.vue";
 import { SalesActivityScheduleStatus } from "@/shared-bc/domain/enum/sales-activity-schedule-status";
 import { CustomerAssignmentStatus } from "@/shared-bc/domain/enum/customer-assignment-status";
 import { useRouter } from "vue-router";
-import { SalesActivityScheduleSummaryType } from "../domain/model/sales/customer-assignment/salesActivitySchedule";
+// import { SalesActivityScheduleSummaryType } from "../domain/model/sales/customer-assignment/salesActivitySchedule";
+import NotificationCardComponent from "@/shared/components/NotificationCardComponent.vue";
+import SalesDashboardCalendarSection from "./SalesDashboardCalendarSection.vue";
 
 const { httpRequest, salesRepository } = useDependencyInjection()
-const salesActivityScheduleSummaryList = ref<SalesActivityScheduleSummaryType[]>([])
+// const salesActivityScheduleSummaryList = ref<SalesActivityScheduleSummaryType[]>([])
 const upcomingScheduleCount = ref<number>(0)
 const pastScheduleCount = ref<number>(0)
 const newAssignment = ref<number>(0)
 const idleAssignment = ref<number>(0)
 
-const calendarSchedules = computed(() => {
-  return salesActivityScheduleSummaryList.value.map((list) => {
-    const { diffStatus } = useTimeIntervalDifferenceCounter(list.startTime!, list.endTime!)
-    return {
-      id: list.startTime! + list.status!,
-      title: `${list.total} ` + (diffStatus === 'UPCOMING' ? ' upcoming' : diffStatus === 'ONGOING' ? " ongoing" : list.status === "COMPLETED" ? ' completed' : ' need report'),
-      time: { start: useIsoToLocalTimeFormat(list.startTime!), end: useIsoToLocalTimeFormat(list.endTime!) },
-      color: diffStatus === 'UPCOMING' ? 'blue' : diffStatus === 'ONGOING' ? "yellow" : list.status === "COMPLETED" ? 'green' : 'red'
-    }
-  })
-})
-const config = ref({ defaultMode: 'month' });
+// const calendarSchedules = computed(() => {
+//   return salesActivityScheduleSummaryList.value.map((list) => {
+//     const { diffStatus } = useTimeIntervalDifferenceCounter(list.startTime!, list.endTime!)
+//     return {
+//       id: list.startTime! + list.status!,
+//       title: `${list.total} ` + (diffStatus === 'UPCOMING' ? ' upcoming' : diffStatus === 'ONGOING' ? " ongoing" : list.status === "COMPLETED" ? ' completed' : ' need report'),
+//       time: { start: useIsoToLocalTimeFormat(list.startTime!), end: useIsoToLocalTimeFormat(list.endTime!) },
+//       color: diffStatus === 'UPCOMING' ? 'blue' : diffStatus === 'ONGOING' ? "yellow" : list.status === "COMPLETED" ? 'green' : 'red'
+//     }
+//   })
+// })
+// const config = ref({ defaultMode: 'month', locale: 'id-ID' });
 const router = useRouter();
 const toAssignmentPage = (tab: string) => router.push(`/sales-customer-assignment/?tab=${tab}`)
 const toSchedulePage = (tab: string) => router.push(`/schedule/?tab=${tab}`)
 
+// const periodUpdated = (period: { start: string, end: string }) => {
+//   console.log(new Date(period.start).getDate())
+// }
+
 onMounted(async () => {
   type ReponseType = {
-    salesActivityScheduleSummaryList: SalesActivityScheduleSummaryType[];
+    // salesActivityScheduleSummaryList: SalesActivityScheduleSummaryType[];
     upcomingScheduleCount: number;
     pastScheduleCount: number;
     newAssignment: number;
@@ -69,11 +68,11 @@ onMounted(async () => {
   }
   const response = await salesRepository.getUser()
     .executeSalesGraphqlQuery<ReponseType>(httpRequest, [
-      {
-        operation: "salesActivityScheduleSummaryList",
-        variables: {},
-        fields: ["total", "startTime", "endTime", "status"],
-      },
+      // {
+      //   operation: "salesActivityScheduleSummaryList",
+      //   variables: {},
+      //   fields: ["total", "startTime", "endTime", "status"],
+      // },
       {
         operation: { name: "totalSalesActivitySchedule", alias: "upcomingScheduleCount" },
         variables: {
@@ -107,7 +106,7 @@ onMounted(async () => {
             type: "[FilterInput]", name: "filters",
             value: [
               { column: "CustomerAssignment.status", value: 'ACTIVE' },
-              { column: "newAssignment", value: true },
+              { column: "hasSalesActivitySchedule", value: false },
             ],
           }
         },
@@ -120,15 +119,17 @@ onMounted(async () => {
             type: "[FilterInput]", name: "filters",
             value: [
               { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
-              { column: "newAssignment", value: false },
+              { column: "hasSalesActivitySchedule", value: true },
               { column: "hasActiveSalesActivitySchedule", value: false },
+              { column: "hasPendingClosingRequest", value: false },
+              { column: "hasPendingRecycleRequest", value: false },
             ],
           }
         },
         fields: []
       },
     ])
-  salesActivityScheduleSummaryList.value = response.salesActivityScheduleSummaryList
+  // salesActivityScheduleSummaryList.value = response.salesActivityScheduleSummaryList
   upcomingScheduleCount.value = response.upcomingScheduleCount
   pastScheduleCount.value = response.pastScheduleCount
   newAssignment.value = response.newAssignment

@@ -1,22 +1,23 @@
 <template>
   <h1 class="page-title">Schedule List</h1>
-  <div>
-    <v-tabs v-model="tab" fixed-tabs bg-color="primary">
-      <v-tab value="upcomingSchedule">Upcoming Schedule<v-badge inline :content="upcomingScheduleCount"
-          color="green" /></v-tab>
-      <v-tab value="pastSchedule">Past Schedule<v-badge inline :content="pastScheduleCount" color="warning" /></v-tab>
-      <v-tab value="completedSchedule">Completed Schedule<v-badge inline :content="completedScheduleCount"
-          color="grey" /></v-tab>
+  <div class="page-section">
+    <v-tabs v-model="tab" fixed-tabs>
+      <v-tab value="past-schedule">Past Schedule<v-badge inline rounded="sm" :content="pastScheduleCount"
+          color="error" /></v-tab>
+      <v-tab value="upcoming-schedule">Upcoming Schedule<v-badge inline rounded="sm" :content="upcomingScheduleCount"
+          color="warning" /></v-tab>
+      <v-tab value="completed-schedule">Completed Schedule<v-badge inline rounded="sm" :content="completedScheduleCount"
+          color="success" /></v-tab>
     </v-tabs>
     <div>
       <v-window v-model="tab">
-        <v-window-item value="upcomingSchedule">
+        <v-window-item value="upcoming-schedule">
           <ListUpcomingScheduleTab />
         </v-window-item>
-        <v-window-item value="pastSchedule">
+        <v-window-item value="past-schedule">
           <ListPastScheduleTab />
         </v-window-item>
-        <v-window-item value="completedSchedule">
+        <v-window-item value="completed-schedule">
           <ListCompletedScheduleTab />
         </v-window-item>
       </v-window>
@@ -42,7 +43,7 @@ const pastScheduleCount = ref<number>(0)
 const completedScheduleCount = ref<number>(0)
 
 onMounted(async () => {
-  tab.value = route.query.tab as string ?? "upcomingSchedule"
+  tab.value = route.query.tab as string ?? "past-schedule"
   type ResponseType = {
     upcomingScheduleCount: number;
     pastScheduleCount: number;

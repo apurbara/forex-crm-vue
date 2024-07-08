@@ -8,6 +8,7 @@
           <th>transaction value</th>
           <th>note</th>
           <th>remark</th>
+          <th>status</th>
         </tr>
       </thead>
       <tbody>
@@ -16,6 +17,7 @@
           <td>{{ closingRequest.transactionValue }}</td>
           <td>{{ closingRequest.note }}</td>
           <td>{{ closingRequest.remark }}</td>
+          <td>{{ closingRequest.status }}</td>
         </tr>
       </tbody>
     </v-table>

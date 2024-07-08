@@ -7,6 +7,7 @@
           <th>time</th>
           <th>note</th>
           <th>remark</th>
+          <th>status</th>
         </tr>
       </thead>
       <tbody>
@@ -14,6 +15,7 @@
           <td>{{ new Date(recycleRequest.createdTime!).toLocaleString() }}</td>
           <td>{{ recycleRequest.note }}</td>
           <td>{{ recycleRequest.remark }}</td>
+          <td>{{ recycleRequest.status }}</td>
         </tr>
       </tbody>
     </v-table>

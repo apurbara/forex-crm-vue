@@ -1,9 +1,5 @@
-import { ValidationResult } from "@/resources/types/custom-types";
 import Area, { AreaType } from "./area-structure/area";
-import { isEmail, isNotEmpty, isPhone } from "@/resources/composables/validator";
-import { PaginationResponseType } from "@/resources/components/abstract-pagination";
 import VerificationReport, { VerificationReportType } from "./customer/verification-report";
-import CustomerVerification, { CustomerVerificationType } from "./customer-verification";
 
 export type CustomerType = {
   id?: string;
@@ -14,7 +10,7 @@ export type CustomerType = {
   source?: string;
   verificationScore?: number;
   area?: AreaType;
-  verificationReports?: PaginationResponseType<VerificationReportType>;
+  verificationReports?: VerificationReportType[];
 };
 
 export default class Customer {
@@ -23,8 +19,9 @@ export default class Customer {
   name: string = "";
   phone: string = "";
   source: string = "";
-  area: Area = new Area();
+  area?: Area;
   verificationReports: VerificationReport[] = [];
+
   constructor(data: CustomerType = {}) {
     this.load(data);
   }
@@ -36,94 +33,22 @@ export default class Customer {
     this.phone = data.phone ?? this.phone;
     this.source = data.source ?? this.source;
     if (data.area) {
+      this.area ??= new Area();
       this.area.load(data.area);
     }
-    if (data.verificationReports) {
-      data.verificationReports.list.forEach((verificationReportData) => {
-        const associateReport = this.verificationReports.find(
-          (verificationReport) =>
-            verificationReport.customerVerification?.id ==
-            verificationReportData.CustomerVerification_id
-        );
-        associateReport?.load(verificationReportData);
-      });
-    }
-  }
-
-  loadArea(areaData: AreaType) {
-    this.area.load(areaData);
-  }
-
-  registerCustomerVerificationReports(list: CustomerVerificationType[]): void {
-    list.forEach((element) => {
-      const customerVerification = new CustomerVerification();
-      customerVerification.load(element);
+    data.verificationReports ?? [].forEach(verificationReportData => {
       const verificationReport = new VerificationReport();
-      verificationReport.customer = this;
-      verificationReport.customerVerification = customerVerification;
-      this.verificationReports.push(verificationReport)
+      verificationReport.load(verificationReportData);
+      this.verificationReports.push(verificationReport);
     });
   }
 
-  getVerifiedReportList(): VerificationReport[] {
-    return this.verificationReports.filter(
-      (verificationReport) => !!verificationReport.id
-    );
-  }
-
-  getUnverifiedReportList(): VerificationReport[] {
-    return this.verificationReports.filter(
-      (verificationReport) => !verificationReport.id
-    );
-  }
-
-  countTotalVerifiedReportWeight(): number {
-    let totalWeight: number = 0;
-    this.getVerifiedReportList().forEach((verificationReport) => {
-      totalWeight += verificationReport.id
-        ? verificationReport.customerVerification?.weight ?? 0
-        : 0;
-    });
-    return totalWeight;
-  }
-
   //
-  toGraphqlVariables() {
-    return {
-      Area_id: { type: "ID", required: true, value: this.area.id },
-      name: this.name,
-      email: this.email,
-      phone: this.phone,
-      source: this.source,
-    };
-  }
-  toJSON() {
-    return {
-      area: this.area,
-      name: this.name,
-      email: this.email,
-      phone: this.phone,
-      source: this.source,
-    };
+  countVerificationReportScore(): number {
+    return this.verificationReports?.reduce<number>(
+      (accumulator, verificationReport) =>
+        accumulator + (verificationReport.customerVerification?.disabled ? 0 : (verificationReport.customerVerification?.weight ?? 0)), 0
+    )
   }
 
-  //
-  isValidName(): ValidationResult {
-    return isNotEmpty(this.name) || "name is mandatory";
-  }
-  isValidEmail(): ValidationResult {
-    return isEmail(this.email) || "email in valid format is mandatory";
-  }
-  isValidPhone(): ValidationResult {
-    return isPhone(this.phone) || "phone in valid format is mandatory";
-  }
-
-  isValidToRegister(): boolean {
-    return (
-      this.isValidEmail() === true &&
-      this.isValidName() === true &&
-      this.isValidPhone() === true &&
-      !!this.area.id
-    );
-  }
 }
