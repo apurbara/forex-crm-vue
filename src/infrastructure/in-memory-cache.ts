@@ -1,4 +1,4 @@
-import CacheInterface from "@/domain/cache-interface";
+import CacheInterface from "./cache-interface";
 
 export default class InMemoryCache implements CacheInterface {
   constructor(protected cache: { [key: string]: any } = {}) {}

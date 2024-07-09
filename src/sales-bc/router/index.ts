@@ -5,11 +5,11 @@ const salesRoutes = [
     component: () => import("@/sales-bc/pages/SalesDashboard.vue"),
   },
   {
-    path: "sales-activity/",
+    path: "sales-activity-schedule/",
     children: [
       {
         path: "",
-        name: "sales-activity-list",
+        name: "sales-activity-schedule-list",
         component: () => import("@/sales-bc/pages/activity/List.vue"),
       },
     ],

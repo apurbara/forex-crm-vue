@@ -72,8 +72,6 @@ onMounted(async () => {
   await pagination.loadPage();
 })
 
-const toDetail = (provinceId: string) => router.push(`/province/${provinceId}`)
-
 const disableConfirmation = (event: Event, provinceId: string) => {
   confirm.require({
     target: event.currentTarget as HTMLElement,

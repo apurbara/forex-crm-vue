@@ -1,7 +1,7 @@
 <template>
     <v-text-field label="name" v-model="commonSalesMetric.name" :rules="[commonSalesMetric.isValidName()]"
         :readonly="readonly" />
-    <VCurrencyField v-model="commonSalesMetric.target!" label="target" :readonly="readonly" />
+    <VCurrencyField v-model="commonSalesMetric.target" label="target" :readonly="readonly" />
     <v-row>
         <v-col cols="12" md="6">
             <v-select :items="metricTypeList" v-model="commonSalesMetric.metricType" label="metric type"

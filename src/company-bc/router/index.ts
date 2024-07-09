@@ -371,12 +371,6 @@ const companyRoutes = [
         name: "customer-list",
         component: () => import("@/company-bc/pages/customer/List.vue"),
       },
-      {
-        path: ":customerId",
-        name: "customer-detail",
-        props: true,
-        component: () => import("@/company-bc/pages/customer/Detail.vue"),
-      },
     ],
   },
   {

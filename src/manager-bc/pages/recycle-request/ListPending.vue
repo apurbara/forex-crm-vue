@@ -96,12 +96,12 @@ const approveConfirmation = (event: Event, recycleRequest: RecycleRequestType) =
     acceptClass: 'p-button-danger',
     accept: async () => {
       const response = await managerRepository.getUser()
-        .executeManagerGraphqlMutation<{ acceptRecycleRequest: RecycleRequestType }>({
+        .executeManagerGraphqlMutation<{ approveRecycleRequest: RecycleRequestType }>({
           operation: "approveRecycleRequest",
           variables: { id: { type: "ID", value: recycleRequest.id } },
           fields: ['status']
         })
-      recycleRequest.status = response.acceptRecycleRequest.status;
+      recycleRequest.status = response.approveRecycleRequest.status;
     },
     reject: () => { }
   });

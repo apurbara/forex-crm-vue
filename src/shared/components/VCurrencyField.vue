@@ -2,7 +2,7 @@
 import { CurrencyDisplay, useCurrencyInput } from 'vue-currency-input';
 import { watch } from 'vue';
 
-const props = defineProps<{ modelValue: number, label?: string, readonly?: boolean }>();
+const props = withDefaults(defineProps<{ modelValue?: number | null, label?: string, readonly?: boolean }>(), { modelValue: null });
 
 const { inputRef, formattedValue, setValue } = useCurrencyInput({
   currency: 'IDR',

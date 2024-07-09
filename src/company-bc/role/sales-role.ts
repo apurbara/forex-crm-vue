@@ -49,7 +49,7 @@ export default class SalesRole implements CompanyUserRole {
         },
         {
           title: "activity",
-          to: "/sales-activity",
+          to: "/sales-activity-schedule",
         },
       ],
     };

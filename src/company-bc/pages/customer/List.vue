@@ -26,8 +26,7 @@
             </div>
           </td>
         </tr>
-        <tr v-else v-for="(customer, index) in pagination.resultList" :key="customer.id ?? index"
-          @dblclick="toDetail(customer.id!)">
+        <tr v-else v-for="(customer, index) in pagination.resultList" :key="customer.id ?? index">
           <td>{{ customer.name }}</td>
           <td>{{ customer.email }}</td>
           <td>{{ customer.phone }}</td>
@@ -76,8 +75,6 @@ const pagination = reactive(new OffsetPagination<CustomerType>(
 onMounted(async () => {
   await pagination.loadPage();
 })
-
-const toDetail = (customerId: string) => router.push(`/customer/${customerId}`)
 
 const isSelecting = ref<boolean>(false)
 const progress = ref<number>(0)

@@ -1,9 +1,5 @@
 <template>
   <OffsetPaginationComponent :pagination="customerAssignmentPagination">
-    <template v-slot:editSection>
-      <v-btn prepend-icon="mdi-store-plus-outline" class="ml-4" variant="tonal" to="/customer-assignment/distribute">
-        Distribute Customer Assignment</v-btn>
-    </template>
     <v-table height="402px" density="compact" style="width: 100%;" class="datatable px-2">
       <thead>
         <tr>
