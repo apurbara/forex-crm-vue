@@ -1,143 +1,181 @@
 <template>
-  <div>
-    <h1 class="page-title">Customer Assignment List</h1>
-    <div class="d-flex justify-space-around mb-8">
-      <v-card class="pa-4">
-        <v-card-title>{{ totalCustomerAssignment }}</v-card-title>
-        <v-card-subtitle>total assignment</v-card-subtitle>
-      </v-card>
-      <v-card class="pa-4">
-        <v-card-title>{{ totalActiveAssignment }}</v-card-title>
-        <v-card-subtitle>active assignment</v-card-subtitle>
-      </v-card>
-      <v-card class="pa-4">
-        <v-card-title>{{ totalGoodfundAssignment }}</v-card-title>
-        <v-card-subtitle>good fund</v-card-subtitle>
-      </v-card>
-      <v-card class="pa-4">
-        <v-card-title>{{ totalRecycleAssignment }}</v-card-title>
-        <v-card-subtitle>recycled</v-card-subtitle>
-      </v-card>
-    </div>
-    <CursorPaginationComponent :pagination="customerAssignmentPagination">
-      <template v-slot:editSection>
-        <v-btn prepend-icon="mdi-account-plus-outline" variant="tonal" to="/customer-assignment/register">Register
-          Customer</v-btn>
-        <v-btn @click="viewAsCard = !viewAsCard" class="ml-4">switch view</v-btn>
-      </template>
-      <div class="card-list" v-if="viewAsCard">
-        <PersonCardComponent class="card-list__item" style="min-height: 150px; width: 300px;"
-          v-for="(customerAssignment, key) in customerAssignmentPagination.resultList" :key="key"
-          :person="{ name: customerAssignment.customer?.name!, bio: `${customerAssignment.customer?.email}` }"
-          :to="`/customer-assignment/${customerAssignment.id}`">
-          <v-chip color="success">{{ customerAssignment.customer?.area?.name }}</v-chip>
-        </PersonCardComponent>
-      </div>
-      <v-table height="400px" density="compact" style="width: 100%;" class="datatable px-2" v-else>
-        <thead>
-          <tr>
-            <th>name</th>
-            <th>email</th>
-            <th>phone</th>
-            <th>status</th>
-            <th>area</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="customerAssignmentPagination.resultList.length < 1">
-            <td class="no-data" colspan="12">
-              <div class="justify-center text-center pa-5">
-                <img src="@/assets/images/image-no-data.svg" alt="No Data" /><br /><br />
-                <span class="text-disabled text-body-1">Data AreaStructure kosong</span>
-              </div>
-            </td>
-          </tr>
-          <tr v-else v-for="(customerAssignment, index) in customerAssignmentPagination.resultList"
-            :key="customerAssignment.id ?? index" @dblclick="toDetail(customerAssignment.id!)">
-            <td>{{ customerAssignment.customer?.name }}</td>
-            <td>{{ customerAssignment.customer?.email }}</td>
-            <td>{{ customerAssignment.customer?.phone }}</td>
-            <td>{{ customerAssignment.status }}</td>
-            <td>{{ customerAssignment.customer?.area?.name }}</td>
-          </tr>
-        </tbody>
-      </v-table>
-    </CursorPaginationComponent>
+  <h1 class="page-title">Customer Assignment List</h1>
+  <div class="page-section ma-0">
+    <v-tabs v-model="tab" fixed-tabs>
+      <v-tab value="new-assignment">New<v-badge inline rounded="sm" :content="newAssignmentCount"
+          color="warning" /></v-tab>
+      <v-tab value="idle-assignment">Idle<v-badge inline rounded="sm" :content="idleAssignmentCount"
+          color="error" /></v-tab>
+      <v-tab value="pending-closing">Closing<v-badge inline rounded="sm" :content="pendingClosingRequestAssignmentCount"
+          color="primary" /></v-tab>
+      <v-tab value="pending-recycle">Recycling<v-badge inline rounded="sm"
+          :content="pendingRecyleRequestAssignmentCount" color="primary" /></v-tab>
+      <v-tab value="active-assignment">Active<v-badge inline rounded="sm" :content="activeAssignmentCount"
+          color="grey" /></v-tab>
+      <v-tab value="good-fund">Good Fund<v-badge inline rounded="sm" :content="goodFundAssignmentCount"
+          color="success" /></v-tab>
+      <v-tab value="all-assignment">All<v-badge inline rounded="sm" :content="customerAssignmentCount"
+          color="grey" /></v-tab>
+    </v-tabs>
+    <v-window v-model="tab">
+      <v-window-item value="new-assignment">
+        <ListNewAssignmentTab />
+      </v-window-item>
+      <v-window-item value="idle-assignment">
+        <ListIdleAssignmentTab />
+      </v-window-item>
+      <v-window-item value="active-assignment">
+        <ListActiveAssignmentTab />
+      </v-window-item>
+      <v-window-item value="pending-closing">
+        <ListPendingClosingTab />
+      </v-window-item>
+      <v-window-item value="pending-recycle">
+        <ListPendingRecycleTab />
+      </v-window-item>
+      <v-window-item value="good-fund">
+        <ListGoodFundTab />
+      </v-window-item>
+      <v-window-item value="all-assignment">
+        <ListAllAssignmentTab />
+      </v-window-item>
+    </v-window>
   </div>
 </template>
 
 <script lang="ts" setup>
-import CursorPaginationComponent from '@/resources/components/CursorPaginationComponent.vue';
-import { KeywordSearch, PaginationResponseType } from '@/resources/components/abstract-pagination';
-import CursorPagination from '@/resources/components/cursor-pagination';
-import EnumFilter from '@/resources/components/pagination/enum-filter';
-import { CustomerAssignmentType } from '@/sales-bc/domain-old/model/sales/customer-assignment';
-import PersonCardComponent from '@/shared/components/person-card-component.vue';
+
+
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
-import { onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { onMounted, ref } from 'vue';
+import ListAllAssignmentTab from './ListAllAssignmentTab.vue';
+import ListActiveAssignmentTab from './ListActiveAssignmentTab.vue';
+import ListNewAssignmentTab from './ListNewAssignmentTab.vue';
+import ListIdleAssignmentTab from './ListIdleAssignmentTab.vue';
+import ListGoodFundTab from './ListGoodFundTab.vue';
+import { CustomerAssignmentStatus } from '@/shared-bc/domain/enum/customer-assignment-status';
+import { useRoute } from 'vue-router';
+import ListPendingClosingTab from './ListPendingClosingTab.vue';
+import ListPendingRecycleTab from './ListPendingRecycleTab.vue';
 
+const route = useRoute();
+const tab = ref<string>('newAssignment')
 
-const { httpRequest, salesRepository } = useDependencyInjection();
-const router = useRouter();
-const viewAsCard = ref<boolean>(false)
-const totalCustomerAssignment = ref<number>(0)
-const totalActiveAssignment = ref<number>(0)
-const totalRecycleAssignment = ref<number>(0)
-const totalGoodfundAssignment = ref<number>(0)
-
-const customerAssignmentPagination = reactive(new CursorPagination<CustomerAssignmentType>(
-  async (pagination) => {
-    const response = await salesRepository.getUser()
-      .executeSalesGraphqlQuery<{ customerAssignmentList: PaginationResponseType<CustomerAssignmentType> }>(httpRequest, {
-        operation: "customerAssignmentList",
-        variables: pagination.toGraphqlVariables(),
-        fields: CursorPagination.wrapResultFields(["id", "status", { customer: ["id", "name", "email", "phone", { area: ["name"] }] }])
-      })
-    return response.customerAssignmentList;
-  },
-  [
-    new EnumFilter('disabled', 'CustomerAssignment.disabled', () => [{ status: true, name: 'disabled' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
-  ],
-  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"])
-))
+const { salesRepository } = useDependencyInjection();
+const customerAssignmentCount = ref<number>(0)
+const newAssignmentCount = ref<number>(0)
+const idleAssignmentCount = ref<number>(0)
+const activeAssignmentCount = ref<number>(0)
+const goodFundAssignmentCount = ref<number>(0)
+const pendingClosingRequestAssignmentCount = ref<number>(0)
+const pendingRecyleRequestAssignmentCount = ref<number>(0)
 
 onMounted(async () => {
-  await customerAssignmentPagination.loadPage()
   await viewSummary()
+  tab.value = route.query.tab as string ?? "new-assignment"
 })
 
 const viewSummary = async () => {
+  type ResponseType = {
+    customerAssignmentCount: number,
+    newAssignmentCount: number,
+    idleAssignmentCount: number,
+    activeAssignmentCount: number,
+    goodFundAssignmentCount: number,
+    pendingClosingRequestAssignmentCount: number,
+    pendingRecycleRequestAssignmentCount: number,
+  }
   const response = await salesRepository.getUser()
-    .executeSalesGraphqlQuery<{ totalCustomerAssignment: number, totalActiveAssignment: number, totalGoodFundAssignment: number, totalRecycleAssignment: number }>(httpRequest, [
+    .executeSalesGraphqlQuery<ResponseType>([
       {
-        operation: "totalCustomerAssignment",
+        operation: { name: "totalCustomerAssignment", alias: "customerAssignmentCount" },
         variables: {},
         fields: []
       },
       {
-        operation: { name: "totalCustomerAssignment", alias: "totalActiveAssignment" },
-        variables: { activeFilters: { type: "[FilterInput]", value: [{ column: "CustomerAssignment.status", value: 'ACTIVE' }], name: "filters" } },
+        operation: { name: "totalCustomerAssignment", alias: "newAssignmentCount" },
+        variables: {
+          newAssignmentFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "CustomerAssignment.status", value: 'ACTIVE' },
+              { column: "hasSalesActivitySchedule", value: false },
+            ],
+          }
+        },
         fields: []
       },
       {
-        operation: { name: "totalCustomerAssignment", alias: "totalGoodFundAssignment" },
-        variables: { goodFundFilters: { type: "[FilterInput]", value: [{ column: "CustomerAssignment.status", value: 'GOOD_FUND' }], name: "filters" } },
+        operation: { name: "totalCustomerAssignment", alias: "idleAssignmentCount" },
+        variables: {
+          assignmentWithoutActiveScheduleFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
+              { column: "hasSalesActivitySchedule", value: true },
+              { column: "hasActiveSalesActivitySchedule", value: false },
+              { column: "hasPendingClosingRequest", value: false },
+              { column: "hasPendingRecycleRequest", value: false },
+            ],
+          }
+        },
         fields: []
       },
       {
-        operation: { name: "totalCustomerAssignment", alias: "totalRecycleAssignment" },
-        variables: { recycledFilters: { type: "[FilterInput]", value: [{ column: "CustomerAssignment.status", value: 'RECYCLED' }], name: "filters" } },
+        operation: { name: "totalCustomerAssignment", alias: "activeAssignmentCount" },
+        variables: {
+          activeFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [{ column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE }]
+          }
+        },
         fields: []
-      }
+      },
+      {
+        operation: { name: "totalCustomerAssignment", alias: "goodFundAssignmentCount" },
+        variables: {
+          goodFundFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [{ column: "CustomerAssignment.status", value: CustomerAssignmentStatus.GOOD_FUND }],
+          }
+        },
+        fields: []
+      },
+      {
+        operation: { name: "totalCustomerAssignment", alias: "pendingClosingRequestAssignmentCount" },
+        variables: {
+          pendingClosingRequestFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
+              { column: "hasPendingClosingRequest", value: true }
+            ],
+          }
+        },
+        fields: []
+      },
+      {
+        operation: { name: "totalCustomerAssignment", alias: "pendingRecycleRequestAssignmentCount" },
+        variables: {
+          pendingRecycleRequestFilter: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
+              { column: "hasPendingRecycleRequest", value: true }
+            ],
+          }
+        },
+        fields: []
+      },
     ])
-  totalCustomerAssignment.value = response.totalCustomerAssignment
-  totalActiveAssignment.value = response.totalActiveAssignment
-  totalGoodfundAssignment.value = response.totalGoodFundAssignment
-  totalRecycleAssignment.value = response.totalRecycleAssignment
+  customerAssignmentCount.value = response.customerAssignmentCount
+  newAssignmentCount.value = response.newAssignmentCount
+  idleAssignmentCount.value = response.idleAssignmentCount
+  activeAssignmentCount.value = response.activeAssignmentCount
+  goodFundAssignmentCount.value = response.goodFundAssignmentCount
+  pendingClosingRequestAssignmentCount.value = response.pendingClosingRequestAssignmentCount
+  pendingRecyleRequestAssignmentCount.value = response.pendingRecycleRequestAssignmentCount
 }
-
-const toDetail = (customerAssignmentId: string) => router.push(`/sales-customer-assignment/${customerAssignmentId}`)
 
 </script>
 

@@ -3,22 +3,23 @@
     <v-menu :close-on-content-click="false" v-model="showMenu" location="end">
       <template v-slot:activator="{ props }">
         <div v-bind="props" @click="prepareList()" class="d-flex justify-space-between align-center">
-          <div class="filter-title">{{ enumFilter.label }}</div>
+          <div class="filter-title">{{ enumFilter.title }}</div>
           <v-icon icon="mdi-chevron-right" end></v-icon>
         </div>
       </template>
       <v-card class="ml-4">
         <v-card-title>
-          <v-text-field v-if="enumFilter.placeholder" :placeholder="enumFilter.placeholder" variant="plain" hide-details
-            v-model="search" append-inner-icon="mdi-magnify">
+          <v-text-field class="mx-6" density="compact" v-if="enumFilter.placeholder"
+            :placeholder="enumFilter.placeholder" variant="plain" hide-details v-model="search"
+            append-inner-icon="mdi-magnify">
           </v-text-field>
         </v-card-title>
         <v-virtual-scroll :max-height="200" :width="300" :items="filterValues">
           <template v-slot:default="{ item }">
             <v-list-item class="my-0 py-0">
               <template v-slot:prepend>
-                <v-checkbox-btn color="primary" icon="mdi-checkbox-blank-outline" :value="item"
-                  :label="item[enumFilter.itemTitle].toString()" v-model="selectedItems"></v-checkbox-btn>
+                <v-checkbox-btn color="primary" icon="mdi-checkbox-blank-outline" :value="item" :label="item.label"
+                  v-model="selectedItems"></v-checkbox-btn>
               </template>
             </v-list-item>
             <v-divider />
@@ -35,21 +36,21 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import EnumFilter from './enum-filter';
+import EnumFilter, { EnumFilterItemType } from './enum-filter';
 import { onMounted } from 'vue';
 
 const props = defineProps<{ enumFilter: EnumFilter }>()
 const emit = defineEmits(['filterUpdated'])
 const search = ref('')
-const selectedItems = ref<Array<{ [key: string]: string | number | boolean }>>([])
+const selectedItems = ref<EnumFilterItemType[]>([])
 const showMenu = ref(false)
 
 const filterValues = computed(() => {
-  const values = props.enumFilter.items;
+  const enumFilterItems = props.enumFilter.items;
   if (search.value) {
-    return values.filter((value) => value[props.enumFilter.itemTitle].toString().toLowerCase().includes(search.value.toLocaleLowerCase()))
+    return enumFilterItems.filter((item) => item.label.toLowerCase().includes(search.value.toLocaleLowerCase()))
   } else {
-    return values
+    return enumFilterItems
   }
 })
 

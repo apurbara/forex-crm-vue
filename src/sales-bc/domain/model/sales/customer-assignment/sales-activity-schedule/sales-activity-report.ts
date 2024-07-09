@@ -1,6 +1,8 @@
 import { ValidationResult } from "@/resources/types/custom-types";
 import { isNotEmpty } from "@/resources/composables/validator";
-import SalesActivitySchedule, { SalesActivityScheduleType } from "../salesActivitySchedule";
+import SalesActivitySchedule, {
+  SalesActivityScheduleType,
+} from "../salesActivitySchedule";
 
 export type SalesActivityReportType = {
   id?: string;

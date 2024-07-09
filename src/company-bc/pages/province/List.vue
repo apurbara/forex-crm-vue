@@ -63,7 +63,7 @@ const pagination = reactive(new OffsetPagination<ProvinceType>(
     return response.viewProvinceList;
   },
   [
-    new EnumFilter('disabled', 'Province.disabled', () => [{ status: true, name: 'disabled' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
+    new EnumFilter('status', 'Province.disabled', () => [{ label: 'active', value: false }, { label: 'disabled', value: true }], 'select status ...')
   ],
   new KeywordSearch(["Province.name"])
 ))

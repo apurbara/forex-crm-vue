@@ -36,8 +36,6 @@ export default class SalesRepository {
   //
   logUserIn(salesData: SalesRoleType): void {
     this.user = new SalesRole(salesData, this.httpRequest, this.restRequest);
-    localStorage.setItem("user", JSON.stringify(salesData));
-    router.push(this.user.getLandingPage());
   }
 
   logUserOut(): void {

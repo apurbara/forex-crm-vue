@@ -1,6 +1,8 @@
 import { ValidationResult } from "@/resources/types/custom-types";
 import { isNotEmpty, isNumber } from "@/resources/composables/validator";
-import CustomerAssignment, { CustomerAssignmentType } from "../customer-assignment";
+import CustomerAssignment, {
+  CustomerAssignmentType,
+} from "../customer-assignment";
 
 export type ClosingRequestType = {
   id?: string;
@@ -52,7 +54,10 @@ export default class ClosingRequest {
   //
   toGraphqlVariables() {
     return {
-      transactionValue: { type: "Int", value: parseInt(this.transactionValue?.toString()!) },
+      transactionValue: {
+        type: "Int",
+        value: parseInt(this.transactionValue?.toString()!),
+      },
       note: this.note,
     };
   }

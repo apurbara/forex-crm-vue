@@ -1,6 +1,6 @@
 <template>
   <div>
-    <LayoutComponent :layout="layout">
+    <LayoutComponent :layout="layout" :show-logout="showLogout">
       <div class="content">
         <Toast></Toast>
         <ConfirmPopup class="elevation-1"></ConfirmPopup>
@@ -31,7 +31,8 @@ const guestLayout: LayoutInterface = {
     },
   ],
 }
-const layout = computed(() => companyUserRepository?.getUser<CompanyUserRole>()?.getLayout(companyUserRepository) ?? guestLayout);
+const layout = computed(() => companyUserRepository?.getUser<CompanyUserRole>()?.getLayout() ?? guestLayout);
+const showLogout = computed(() => !!companyUserRepository?.getUser<CompanyUserRole>());
 </script>
 
 <style lang="scss" scoped></style>

@@ -1,0 +1,15 @@
+<template>
+  <ManagerDashboardManagerMetric />
+  <ManagerDashboardSalesPerformanceMetric />
+  <ManagerDashboardSalesRank />
+</template>
+
+<script setup lang="ts">
+import ManagerDashboardManagerMetric from './ManagerDashboardManagerMetric.vue';
+import ManagerDashboardSalesPerformanceMetric from './ManagerDashboardSalesPerformanceMetric.vue';
+import ManagerDashboardSalesRank from './ManagerDashboardSalesRank.vue';
+
+
+</script>
+
+<style scoped></style>

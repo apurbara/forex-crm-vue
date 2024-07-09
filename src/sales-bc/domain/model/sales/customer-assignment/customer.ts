@@ -1,8 +1,10 @@
 import { ValidationResult } from "@/resources/types/custom-types";
-import { AreaType } from "../../../dependency-model/area";
 import { isEmail, isNotEmpty } from "@/resources/composables/validator";
-import VerificationReport, { VerificationReportType } from "./customer/verification-report";
-import { CustomerVerificationType } from "@/sales-bc/domain/dependency-model/customer-verification";
+import VerificationReport, {
+  VerificationReportType,
+} from "./customer/verification-report";
+import { CityType } from "@/company-bc/domain/model/province/city";
+import { CustomerVerificationType } from "@/company-bc/domain/model/customer-verification";
 
 export type CustomerType = {
   id?: string;
@@ -13,11 +15,11 @@ export type CustomerType = {
   phone?: string;
   source?: string;
   //
-  Area_id?: string;
-  area?: AreaType;
+  City_id?: string;
+  city?: CityType;
   //
   verificationReports?: VerificationReportType[];
-}
+};
 
 export default class Customer {
   id?: string;
@@ -28,7 +30,7 @@ export default class Customer {
   phone?: string;
   source?: string;
   //
-  area?: AreaType;
+  city?: CityType;
   verificationReports: VerificationReport[] = [];
 
   constructor(data: CustomerType = {}) {
@@ -43,21 +45,31 @@ export default class Customer {
     this.email = data.email ?? this.email;
     this.phone = data.phone ?? this.phone;
     this.source = data.source ?? this.source;
-    this.area = data.area ?? this.area;
+    this.city = data.city ?? this.city;
 
     if (data.verificationReports) {
-      data.verificationReports.forEach((verificationReportData: VerificationReportType) => {
-        this.verificationReports.find(
-          (verificationReport) => verificationReport.customerVerification?.id === verificationReportData.CustomerVerification_id
-        )?.load(verificationReportData);
-      });
+      data.verificationReports.forEach(
+        (verificationReportData: VerificationReportType) => {
+          this.verificationReports
+            .find(
+              (verificationReport) =>
+                verificationReport.customerVerification?.id ===
+                verificationReportData.CustomerVerification_id
+            )
+            ?.load(verificationReportData);
+        }
+      );
     }
   }
 
   //
   countTotalVerificationWeight(): number {
     return this.verificationReports?.reduce<number>(
-      (accumulator, verificationReport: VerificationReport): number => accumulator + (!verificationReport.id ? 0 : verificationReport.customerVerification?.weight!),
+      (accumulator, verificationReport: VerificationReport): number =>
+        accumulator +
+        (!verificationReport.id
+          ? 0
+          : verificationReport.customerVerification?.weight!),
       0
     )!;
   }
@@ -74,7 +86,9 @@ export default class Customer {
     );
   }
 
-  registerCustomerVerificationReports(customerVerificationList: CustomerVerificationType[]): void {
+  registerCustomerVerificationReports(
+    customerVerificationList: CustomerVerificationType[]
+  ): void {
     customerVerificationList.forEach((customerVerification) => {
       const verificationReport = new VerificationReport();
       verificationReport.customerVerification = customerVerification;
@@ -84,14 +98,15 @@ export default class Customer {
 
   //
   isValidName(): ValidationResult {
-    return isNotEmpty(this.name) || 'customer name is mandatory';
+    return isNotEmpty(this.name) || "customer name is mandatory";
   }
   isValidEmail(): ValidationResult {
-    return !this.email ? true : (isEmail(this.email) || 'customer name is mandatory');
+    return !this.email
+      ? true
+      : isEmail(this.email) || "customer name is mandatory";
   }
   isValidProperties(): boolean {
-    return this.isValidName() === true &&
-      this.isValidEmail() === true;
+    return this.isValidName() === true && this.isValidEmail() === true;
   }
 
   //
@@ -99,7 +114,7 @@ export default class Customer {
     return {
       name: this.name,
       email: this.email,
-      Area_id: this.area?.id,
+      City_id: this.city?.id,
     };
   }
 }

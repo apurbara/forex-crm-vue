@@ -1,5 +1,5 @@
 <template>
-  <section v-if="metricSummaries.length > 0" class="page-section ma-2" style="min-width: 48%;">
+  <section v-if="metricSummaries.length > 0" class="page-section" style="min-width: 48%;">
     <h2 class="section-title mb-4">Metric Summaries</h2>
     <v-row>
       <v-col class="border-sm ma-2 pa-2" v-for="(metricSummary, key) in metricSummaries" :key="key">
@@ -16,7 +16,7 @@ import { onMounted, ref } from 'vue';
 import Chart from 'primevue/chart';
 
 
-const { salesRepository, restRequest } = useDependencyInjection()
+const { salesRepository } = useDependencyInjection()
 const chartOptions = ref();
 
 type MetricSummry = {
@@ -28,7 +28,7 @@ const metricSummaries = ref<MetricSummry[]>([])
 
 onMounted(async () => {
   metricSummaries.value = await salesRepository.getUser()
-    .executeGetRequest(restRequest, 'view-all-common-sales-metric-summary')
+    .executeGetRequest('view-all-common-sales-metric-summary')
   chartOptions.value = setChartOptions()
 })
 

@@ -66,7 +66,7 @@ const pagination = reactive(new OffsetPagination<ManagerType>(
     return response.viewManagerList;
   },
   [
-    new EnumFilter('suspended', 'Manager.suspended', () => [{ status: true, name: 'suspended' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
+    new EnumFilter('status', 'Manager.suspended', () => [{ label: 'active', value: false }, { label: 'suspended', value: true }], 'select status ...')
   ],
   new KeywordSearch(["Manager.name", "Manager.email"])
 ))

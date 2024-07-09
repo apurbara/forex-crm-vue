@@ -1,4 +1,6 @@
-import CustomerAssignment, { CustomerAssignmentType } from "../customer-assignment";
+import CustomerAssignment, {
+  CustomerAssignmentType,
+} from "../customer-assignment";
 
 export type RecycleRequestType = {
   id?: string;

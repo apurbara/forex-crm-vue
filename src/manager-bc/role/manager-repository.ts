@@ -40,8 +40,6 @@ export default class ManagerRepository {
       this.httpRequest,
       this.restRequest
     );
-    localStorage.setItem("user", JSON.stringify(managerData));
-    router.push(this.user.getLandingPage());
   }
 
   logUserOut(): void {

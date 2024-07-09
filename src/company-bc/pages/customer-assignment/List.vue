@@ -45,6 +45,7 @@ import { useRouter } from 'vue-router';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { CustomerAssignmentType } from '@/company-bc/domain/model/sales/customer-assignment';
 import EnumFilter from '@/resources/components/pagination/enum-filter';
+import { CustomerAssignmentStatus } from '@/shared-bc/domain/enum/customer-assignment-status';
 
 const { companyUserRepository } = useDependencyInjection()
 const router = useRouter();
@@ -65,9 +66,7 @@ const pagination = reactive(new OffsetPagination<CustomerAssignmentType>(
     return response.customerAssignmentList;
   },
   [
-    new EnumFilter('status', 'AssignedCustomer.status',
-      () => [{ status: 'ACTIVE', name: 'ACTIVE' }, { status: 'RECYCLED', name: 'RECYCLED' }, { status: "GOOD_FUND", name: "GOOD_FUND" }],
-      'IN', undefined, 'name', 'status'),
+    new EnumFilter('status', 'CustomerAssignment.status', () => Object.keys(CustomerAssignmentStatus).map(key => { return { label: key, value: key } }), 'select status...'),
   ],
   new KeywordSearch(["Customer.name", "Sales.name"])
 ))

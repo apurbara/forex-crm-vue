@@ -10,16 +10,16 @@
 import Calendar from 'primevue/calendar';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, ref } from 'vue';
-import { SalesActivityType } from '../../../dependency-model/sales-activity';
 import SalesActivitySchedule from './salesActivitySchedule';
+import { SalesActivityType } from '@/company-bc/domain/model/sales-activity';
 
 defineProps<{ salesActivitySchedule: SalesActivitySchedule }>()
-const { httpRequest, companyUserRepository } = useDependencyInjection();
+const { companyUserRepository } = useDependencyInjection();
 const salesActivityList = ref<SalesActivityType[]>([])
 
 onMounted(async () => {
-  const response = await companyUserRepository.getUser()
-    .executeGraphqlQueryInCompany<{ salesActivityList: { list: SalesActivityType[] } }>(httpRequest, {
+  const response = await companyUserRepository.getUser()!
+    .executeGraphqlQueryInCompany<{ salesActivityList: { list: SalesActivityType[] } }>({
       operation: "salesActivityList",
       variables: { filters: { type: "[FilterInput]", value: [{ column: "SalesActivity.disabled", value: false }] } },
       fields: [{ list: ["id", "name"] }]

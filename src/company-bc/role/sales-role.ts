@@ -33,22 +33,23 @@ export default class SalesRole implements CompanyUserRole {
     return false;
   }
   getLandingPage(): string {
-    return "/admin-dashboard";
+    return "/sales-dashboard";
   }
-  getLayout(companyUserRepository: CompanyUserRepository): LayoutInterface {
+  getLayout(): LayoutInterface {
     // const asSuperUserNavbarMenus = this.aSuperUser
     //   ? [{ title: "admin", to: "/admin" }]
     //   : [];
     return {
       home: baseHome,
-      appBarMenuItems: generateBaseAppBarMenuItems(
-        companyUserRepository,
-        this.name
-      ),
+      appBarMenuItems: generateBaseAppBarMenuItems(this.name),
       navBarMenuItems: [
         {
           title: "customer assignment",
           to: "/sales-customer-assignment",
+        },
+        {
+          title: "activity",
+          to: "/sales-activity",
         },
       ],
     };

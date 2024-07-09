@@ -36,8 +36,6 @@ export default class AdminRepository {
   //
   logUserIn(adminData: AdminRoleType): void {
     this.user = new AdminRole(adminData, this.httpRequest, this.restRequest);
-    // localStorage.setItem("user", JSON.stringify(adminData));
-    // router.push(this.user.getLandingPage());
   }
 
   logUserOut(): void {

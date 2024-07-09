@@ -3,4 +3,5 @@ export enum CustomerAssignmentStatus {
   RECYCLED = "RECYCLED",
   GOOD_FUND = "GOOD_FUND",
   CANCELLED = "CANCELLED",
+  CANCELLED_BY_SYSTEM = "CANCELLED_BY_SYSTEM",
 }

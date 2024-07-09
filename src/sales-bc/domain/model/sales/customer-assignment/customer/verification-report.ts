@@ -1,4 +1,4 @@
-import { CustomerVerificationType } from "@/sales-bc/domain/dependency-model/customer-verification";
+import { CustomerVerificationType } from "@/company-bc/domain/model/customer-verification";
 import Customer, { CustomerType } from "../customer";
 
 export type VerificationReportType = {
@@ -29,8 +29,10 @@ export default class VerificationReport {
     this.id = data.id ?? this.id;
     this.createdTime = data.createdTime ?? this.createdTime;
     this.note = data.note;
-    this.CustomerVerification_id = data.CustomerVerification_id ?? this.CustomerVerification_id;
-    this.customerVerification = data.customerVerification ?? this.customerVerification;
+    this.CustomerVerification_id =
+      data.CustomerVerification_id ?? this.CustomerVerification_id;
+    this.customerVerification =
+      data.customerVerification ?? this.customerVerification;
 
     if (data.customer) {
       this.customer ??= new Customer();
@@ -46,7 +48,11 @@ export default class VerificationReport {
   //
   toGraphqlVariables() {
     return {
-      CustomerVerification_id: { type: "ID", required: true, value: this.CustomerVerification_id ?? this.customerVerification?.id },
+      CustomerVerification_id: {
+        type: "ID",
+        required: true,
+        value: this.CustomerVerification_id ?? this.customerVerification?.id,
+      },
       note: this.note,
     };
   }

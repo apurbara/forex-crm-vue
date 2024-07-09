@@ -1,8 +1,8 @@
-import { OptionalString, PrimitiveTypes } from "../types/custom-types";
+import { OptionalString } from "../types/custom-types";
 import { CursorLimitType } from "./cursor-pagination";
 import { OffsetLimitType } from "./offset-pagination";
-import EnumFilter, { EnumFilterType } from "./pagination/enum-filter";
-import { FilterType } from "./pagination/filter";
+import EnumFilter, { EnumFilterItemType } from "./pagination/enum-filter";
+import FilterType from "./pagination/filter";
 
 export type PaginationResponseType<ResultType> = {
   list: Array<ResultType>;
@@ -14,7 +14,8 @@ export class KeywordSearch {
   public value?: string = undefined;
   constructor(
     public columns: string[],
-    public comparisonType: OptionalString = "LIKE"
+    public comparisonType: OptionalString = "LIKE",
+    public placeholder: OptionalString = undefined,
   ) { }
 
   //
@@ -34,13 +35,13 @@ export default abstract class AbstractPagination<ResultType> {
     public viewListCallback: (
       pagination: AbstractPagination<ResultType>
     ) => Promise<PaginationResponseType<ResultType>>,
-    public availableFilters: Array<EnumFilter> = [],
+    public availableFilters: EnumFilter[] = [],
     public keywordSearch: KeywordSearch | undefined = undefined
   ) { }
 
   //
-  noAppliedFilter(): boolean {
-    return this.availableFilters.every((filter) => filter.noAppliedFilter());
+  hasSelectedFilter(): boolean {
+    return this.availableFilters.some(filter => filter.hasSelectedFilter());
   }
 
   //
@@ -50,10 +51,7 @@ export default abstract class AbstractPagination<ResultType> {
     });
     this.resetList();
   }
-  async removeFilterSelectedItem(
-    filter: EnumFilter,
-    selectedItem: { [key: string]: PrimitiveTypes }
-  ): Promise<void> {
+  async removeFilterSelectedItem(filter: EnumFilter, selectedItem: EnumFilterItemType): Promise<void> {
     filter.removeSelectedItem(selectedItem);
     this.resetList();
   }
@@ -64,7 +62,7 @@ export default abstract class AbstractPagination<ResultType> {
 
   //
   toGraphqlVariables() {
-    const filters: Array<EnumFilterType> = [];
+    const filters: FilterType[] = [];
     this.availableFilters.forEach((availableFilter) => {
       const filter = availableFilter.toGraphqlVariables();
       if (filter) {
@@ -81,7 +79,7 @@ export default abstract class AbstractPagination<ResultType> {
   }
 
   toQueryParams() {
-    const filters: Array<EnumFilterType> = [];
+    const filters: FilterType[] = [];
     this.availableFilters.forEach((availableFilter) => {
       const filter = availableFilter.toQueryParams();
       if (filter) {

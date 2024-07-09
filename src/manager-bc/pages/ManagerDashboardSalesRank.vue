@@ -30,7 +30,7 @@ import { useDependencyInjection } from '@/shared/composables/dependency-injectio
 import { onMounted, ref } from 'vue';
 
 
-const { companyUserRepository, restRequest } = useDependencyInjection()
+const { managerRepository } = useDependencyInjection()
 
 type SalesRankSummary = {
   name: string;
@@ -39,8 +39,8 @@ type SalesRankSummary = {
 const salesRankSummaries = ref<SalesRankSummary[]>([])
 
 onMounted(async () => {
-  salesRankSummaries.value = await companyUserRepository.getUser()
-    .executeGetRequest(restRequest, 'view-all-sales-rank-summary')
+  salesRankSummaries.value = await managerRepository.getUser()
+    .executeGetRequest('manager/view-all-sales-rank-summary')
 })
 
 </script>

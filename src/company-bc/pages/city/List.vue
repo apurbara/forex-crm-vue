@@ -66,7 +66,8 @@ const pagination = reactive(new OffsetPagination<CityType>(
     return response.viewCityList;
   },
   [
-    new EnumFilter('disabled', 'City.disabled', () => [{ status: true, name: 'disabled' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
+    new EnumFilter('status', 'City.disabled', () => [{ label: 'active', value: false }, { label: 'disabled', value: true }], 'select status ...')
+    // new EnumFilter('disabled', 'City.disabled', () => [{ status: true, name: 'disabled' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
   ],
   new KeywordSearch(["City.name"])
 ))

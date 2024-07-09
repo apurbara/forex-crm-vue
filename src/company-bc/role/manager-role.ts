@@ -33,22 +33,27 @@ export default class ManagerRole implements CompanyUserRole {
     return ["customer"].includes(menu);
   }
   getLandingPage(): string {
-    return "/admin-dashboard";
+    return "/manager-dashboard";
   }
-  getLayout(companyUserRepository: CompanyUserRepository): LayoutInterface {
+  getLayout(): LayoutInterface {
     // const asSuperUserNavbarMenus = this.aSuperUser
     //   ? [{ title: "admin", to: "/admin" }]
     //   : [];
     return {
       home: baseHome,
-      appBarMenuItems: generateBaseAppBarMenuItems(
-        companyUserRepository,
-        this.name
-      ),
+      appBarMenuItems: generateBaseAppBarMenuItems(this.name),
       navBarMenuItems: [
         {
           title: "customer assignment",
           to: "/manager-customer-assignment",
+        },
+        {
+          title: "closing request",
+          to: "/manager-closing-request",
+        },
+        {
+          title: "recycle request",
+          to: "/manager-recycle-request",
         },
       ],
     };

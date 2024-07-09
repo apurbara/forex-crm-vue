@@ -74,7 +74,7 @@ const pagination = reactive(new OffsetPagination<SalesType>(
     return response.viewSalesList;
   },
   [
-    new EnumFilter('contractTerminated', 'Sales.contractTerminated', () => [{ status: true, name: 'terminated' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
+    new EnumFilter('status', 'Sales.contractTerminated', () => [{ label: 'active', value: false }, { label: 'contract terminated', value: true }], 'select status ...')
   ],
   new KeywordSearch(["Sales.name", "Sales.email"])
 ))

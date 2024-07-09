@@ -71,7 +71,7 @@ const pagination = reactive(new OffsetPagination<CustomerJourneyType>(
     return response.customerJourneyList;
   },
   [
-    new EnumFilter('disabled', 'CustomerJourney.disabled', () => [{ status: true, name: 'disabled' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
+    new EnumFilter('status', 'CustomerJourney.disabled', () => [{ label: 'active', value: false }, { label: 'disabled', value: true }], 'select status ...')
   ],
   new KeywordSearch(["CustomerJourney.name", "CustomerJourney.description"])
 ))

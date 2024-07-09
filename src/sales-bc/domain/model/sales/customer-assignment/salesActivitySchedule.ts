@@ -1,8 +1,19 @@
 import { SalesActivityScheduleStatus } from "@/shared-bc/domain/enum/sales-activity-schedule-status";
-import { SalesActivityType } from "../../../dependency-model/sales-activity";
 import { isNotEmpty } from "@/resources/composables/validator";
-import CustomerAssignment, { CustomerAssignmentType } from "../customer-assignment";
-import SalesActivityReport, { SalesActivityReportType } from "./sales-activity-schedule/sales-activity-report";
+import CustomerAssignment, {
+  CustomerAssignmentType,
+} from "../customer-assignment";
+import SalesActivityReport, {
+  SalesActivityReportType,
+} from "./sales-activity-schedule/sales-activity-report";
+import { SalesActivityType } from "@/company-bc/domain/model/sales-activity";
+
+export type SalesActivityScheduleSummaryType = {
+  total?: number;
+  status?: string;
+  startTime?: string;
+  endTime?: string;
+};
 
 export type SalesActivityScheduleType = {
   CustomerAssignment_id?: string;
@@ -17,9 +28,9 @@ export type SalesActivityScheduleType = {
   SalesActivity_id?: string;
   salesActivity?: SalesActivityType;
   //
-  salesActivityReport?: SalesActivityReportType
+  salesActivityReport?: SalesActivityReportType;
   //
-}
+};
 
 export default class SalesActivitySchedule {
   customerAssignment?: CustomerAssignment;
@@ -31,7 +42,7 @@ export default class SalesActivitySchedule {
   salesActivity?: SalesActivityType;
   salesActivityReport?: SalesActivityReport;
 
-  constructor(data: SalesActivityScheduleType = {}) { }
+  constructor(data: SalesActivityScheduleType = {}) {}
   load(data: SalesActivityScheduleType) {
     if (data.customerAssignment) {
       this.customerAssignment ??= new CustomerAssignment();
@@ -54,7 +65,11 @@ export default class SalesActivitySchedule {
   //
   toGraphqlVariables() {
     return {
-      SalesActivity_id: { type: "ID", required: true, value: this.salesActivity?.id },
+      SalesActivity_id: {
+        type: "ID",
+        required: true,
+        value: this.salesActivity?.id,
+      },
       startTime: { value: this.startTime, type: "DateTimeZ" },
     };
   }

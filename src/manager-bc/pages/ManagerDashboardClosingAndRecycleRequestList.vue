@@ -101,10 +101,10 @@ import CursorPagination from "@/resources/components/cursor-pagination";
 import { PaginationResponseType } from "@/resources/components/abstract-pagination";
 import { onMounted } from "vue";
 import { useConfirm } from "primevue/useconfirm";
-import { ClosingRequestType } from '@/company-bc/domain/model/sales/customer-assignment/closing-request';
-import { RecycleRequestType } from '@/company-bc/domain/model/sales/customer-assignment/recycle-request';
+import { ClosingRequestType } from '../domain/model/manager/sales/customer-assignment/closing-request';
+import { RecycleRequestType } from '../domain/model/manager/sales/customer-assignment/recycle-request';
 
-const { httpRequest, managerRepository } = useDependencyInjection()
+const { managerRepository } = useDependencyInjection()
 
 const confirm = useConfirm();
 const pendingClosingRequests = ref<ClosingRequestType[]>([])
@@ -115,7 +115,7 @@ onMounted(async () => {
     .executeManagerGraphqlMutation<{
       closingRequestList: PaginationResponseType<ClosingRequestType>,
       recycleRequestList: PaginationResponseType<RecycleRequestType>
-    }>(httpRequest, [
+    }>([
       {
         operation: "closingRequestList",
         variables: {
@@ -214,8 +214,8 @@ const approveRecycleRequestConfirmation = (event: Event, recycleRequestId: strin
 };
 
 const approveClosingRequest = async (closingRequestId: string) => {
-  userRepository.getUser<ManagerRole>()
-    .executeManagerGraphqlMutation<{ acceptClosingRequest: ClosingRequestType }>(httpRequest, {
+  managerRepository.getUser()
+    .executeManagerGraphqlMutation<{ acceptClosingRequest: ClosingRequestType }>({
       operation: "acceptClosingRequest",
       variables: { id: { type: "ID!", value: closingRequestId } },
       fields: ['status']
@@ -226,8 +226,8 @@ const approveClosingRequest = async (closingRequestId: string) => {
 
 const remark = ref<string>('')
 const rejectClosingRequest = async (closingRequestId: string) => {
-  userRepository.getUser<ManagerRole>()
-    .executeManagerGraphqlMutation<{ rejectClosingRequest: ClosingRequestType }>(httpRequest, {
+  managerRepository.getUser()
+    .executeManagerGraphqlMutation<{ rejectClosingRequest: ClosingRequestType }>({
       operation: "rejectClosingRequest",
       variables: { id: { type: "ID!", value: closingRequestId } },
       fields: ['status']
@@ -238,8 +238,8 @@ const rejectClosingRequest = async (closingRequestId: string) => {
 
 //
 const approveRecycleRequest = async (recycleRequestId: string) => {
-  userRepository.getUser<ManagerRole>()
-    .executeManagerGraphqlMutation<{ approveRecycleRequest: RecycleRequestType }>(httpRequest, {
+  managerRepository.getUser()
+    .executeManagerGraphqlMutation<{ approveRecycleRequest: RecycleRequestType }>({
       operation: "approveRecycleRequest",
       variables: { id: { type: "ID!", value: recycleRequestId }, remark: remark.value },
       fields: ['status']
@@ -248,8 +248,8 @@ const approveRecycleRequest = async (recycleRequestId: string) => {
     })
 }
 const rejectRecycleRequest = async (recycleRequestId: string) => {
-  userRepository.getUser<ManagerRole>()
-    .executeManagerGraphqlMutation<{ rejectRecycleRequest: RecycleRequestType }>(httpRequest, {
+  managerRepository.getUser()
+    .executeManagerGraphqlMutation<{ rejectRecycleRequest: RecycleRequestType }>({
       operation: "rejectRecycleRequest",
       variables: { id: { type: "ID!", value: recycleRequestId }, remark: remark.value },
       fields: ['status']

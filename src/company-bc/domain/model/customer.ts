@@ -4,13 +4,7 @@ import {
   isNotEmpty,
   isPhone,
 } from "@/resources/composables/validator";
-import { PaginationResponseType } from "@/resources/components/abstract-pagination";
-import VerificationReport, {
-  VerificationReportType,
-} from "./customer/verification-report";
-import CustomerVerification, {
-  CustomerVerificationType,
-} from "./customer-verification";
+import { VerificationReportType } from "./customer/verification-report";
 import { CityType } from "./province/city";
 
 export type CustomerType = {
@@ -23,7 +17,7 @@ export type CustomerType = {
   verificationScore?: number;
   City_id?: string;
   city?: CityType;
-  verificationReports?: PaginationResponseType<VerificationReportType>;
+  verificationReports?: VerificationReportType[];
 };
 
 export default class Customer {
@@ -33,7 +27,8 @@ export default class Customer {
   phone: string = "";
   source: string = "";
   city?: CityType;
-  verificationReports: VerificationReport[] = [];
+  verificationReports: VerificationReportType[] = [];
+
   constructor(data: CustomerType = {}) {
     this.load(data);
   }
@@ -46,49 +41,8 @@ export default class Customer {
     this.source = data.source ?? this.source;
     this.city = data.city ?? this.city;
 
-    if (data.verificationReports) {
-      data.verificationReports.list.forEach((verificationReportData) => {
-        const associateReport = this.verificationReports.find(
-          (verificationReport) =>
-            verificationReport.customerVerification?.id ==
-            verificationReportData.CustomerVerification_id
-        );
-        associateReport?.load(verificationReportData);
-      });
-    }
-  }
-
-  registerCustomerVerificationReports(list: CustomerVerificationType[]): void {
-    list.forEach((element) => {
-      const customerVerification = new CustomerVerification();
-      customerVerification.load(element);
-      const verificationReport = new VerificationReport();
-      verificationReport.customer = this;
-      verificationReport.customerVerification = customerVerification;
-      this.verificationReports.push(verificationReport);
-    });
-  }
-
-  getVerifiedReportList(): VerificationReport[] {
-    return this.verificationReports.filter(
-      (verificationReport) => !!verificationReport.id
-    );
-  }
-
-  getUnverifiedReportList(): VerificationReport[] {
-    return this.verificationReports.filter(
-      (verificationReport) => !verificationReport.id
-    );
-  }
-
-  countTotalVerifiedReportWeight(): number {
-    let totalWeight: number = 0;
-    this.getVerifiedReportList().forEach((verificationReport) => {
-      totalWeight += verificationReport.id
-        ? verificationReport.customerVerification?.weight ?? 0
-        : 0;
-    });
-    return totalWeight;
+    this.verificationReports =
+      data.verificationReports ?? this.verificationReports;
   }
 
   //

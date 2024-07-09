@@ -73,7 +73,7 @@ const pagination = reactive(new OffsetPagination<SalesActivityType>(
     return response.salesActivityList;
   },
   [
-    new EnumFilter('disabled', 'SalesActivity.disabled', () => [{ status: true, name: 'disabled' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
+    new EnumFilter('status', 'SalesActivity.disabled', () => [{ label: 'active', value: false }, { label: 'disabled', value: true }], 'select status ...')
   ],
   new KeywordSearch(["SalesActivity.name", "SalesActivity.description"])
 ))

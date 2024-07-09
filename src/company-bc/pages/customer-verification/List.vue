@@ -68,7 +68,7 @@ const pagination = reactive(new OffsetPagination<CustomerVerificationType>(
     return response.customerVerificationList;
   },
   [
-    new EnumFilter('disabled', 'CustomerVerification.disabled', () => [{ status: true, name: 'disabled' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
+    new EnumFilter('status', 'CustomerVerification.disabled', () => [{ label: 'active', value: false }, { label: 'disabled', value: true }], 'select status ...')
   ],
   new KeywordSearch(["CustomerVerification.name", "CustomerVerification.description"])
 ))

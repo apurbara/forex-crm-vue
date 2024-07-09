@@ -16,7 +16,7 @@ import { onMounted, ref } from 'vue';
 import Chart from 'primevue/chart';
 
 
-const { companyUserRepository, restRequest } = useDependencyInjection()
+const { managerRepository } = useDependencyInjection()
 const chartOptions = ref();
 
 type SalesPerformanceMetricSummary = {
@@ -26,8 +26,8 @@ type SalesPerformanceMetricSummary = {
 const salesPerformanceMetricSummaries = ref<SalesPerformanceMetricSummary[]>([])
 
 onMounted(async () => {
-  salesPerformanceMetricSummaries.value = await companyUserRepository.getUser()
-    .executeGetRequest(restRequest, 'view-all-sales-performance-metric-summary')
+  salesPerformanceMetricSummaries.value = await managerRepository.getUser()
+    .executeGetRequest('manager/view-all-sales-performance-metric-summary')
   chartOptions.value = setChartOptions()
 })
 

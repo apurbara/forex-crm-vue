@@ -29,7 +29,7 @@ onMounted(async () => {
   // console.log(areaList.value);
 })
 
-const selectArea = (areaData: any) => { props.sales.loadArea(areaData) }
+// const selectArea = (areaData: any) => { props.sales.loadArea(areaData) }
 
 </script>
 

@@ -30,7 +30,7 @@ export interface CompanyUserRole {
     data?: any
   ): Promise<ResponseType>;
   canAccessCompanyMenu(menu: string): boolean;
-  getLayout(companyUserRepository: CompanyUserRepository): LayoutInterface;
+  getLayout(): LayoutInterface;
   getLandingPage(): string;
 }
 

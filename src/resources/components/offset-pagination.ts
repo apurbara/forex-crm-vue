@@ -19,7 +19,7 @@ export class OffsetLimit {
     public pageSize: number = 10,
     public page: number = 1,
     public availableOrders: Array<OrderType> = []
-  ) {}
+  ) { }
 
   load(offsetLimit: OffsetLimitType): void {
     this.pageSize = offsetLimit.pageSize;
@@ -60,7 +60,7 @@ export default class OffsetPagination<
     viewListCallback: (
       pagination: AbstractPagination<ResultType>
     ) => Promise<PaginationResponseType<ResultType>>,
-    filters: Array<EnumFilter> = [],
+    filters: EnumFilter[] = [],
     keywordSearch: KeywordSearch | undefined = undefined,
     public offsetLimit: OffsetLimit = new OffsetLimit()
   ) {

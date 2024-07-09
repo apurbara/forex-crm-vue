@@ -79,7 +79,7 @@ const pagination = reactive(new OffsetPagination<CommonSalesMetricType>(
     return response.viewCommonSalesMetricList;
   },
   [
-    new EnumFilter('disabled', 'CommonSalesMetric.disabled', () => [{ status: true, name: 'disabled' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
+    new EnumFilter('status', 'CommonSalesMetric.disabled', () => [{ label: 'active', value: false }, { label: 'disabled', value: true }], 'select status ...')
   ],
   new KeywordSearch(["CommonSalesMetric.name", "CommonSalesMetric.description"])
 ))

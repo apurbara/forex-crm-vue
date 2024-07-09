@@ -5,12 +5,12 @@ const salesRoutes = [
     component: () => import("@/sales-bc/pages/SalesDashboard.vue"),
   },
   {
-    path: "schedule/",
+    path: "sales-activity/",
     children: [
       {
         path: "",
-        name: "schedule-list",
-        component: () => import("@/sales-bc/pages/schedule/List.vue"),
+        name: "sales-activity-list",
+        component: () => import("@/sales-bc/pages/activity/List.vue"),
       },
     ],
   },
@@ -20,18 +20,21 @@ const salesRoutes = [
       {
         path: "",
         name: "sales-customer-assignment-list",
-        component: () => import("@/sales-bc/pages/assignment/List.vue"),
+        component: () =>
+          import("@/sales-bc/pages/customer-assignment/List.vue"),
       },
-      {
-        path: "register",
-        name: "register-new-customer",
-        component: () => import("@/sales-bc/pages/customer-assignment/Register.vue"),
-      },
+      // {
+      //   path: "register",
+      //   name: "register-new-customer",
+      //   component: () =>
+      //     import("@/sales-bc/pages/customer-assignment/Register.vue"),
+      // },
       {
         path: ":customerAssignmentId",
         name: "sales-customer-assignment-detail",
         props: true,
-        component: () => import("@/sales-bc/pages/assignment/Detail.vue"),
+        component: () =>
+          import("@/sales-bc/pages/customer-assignment/Detail.vue"),
       },
     ],
   },

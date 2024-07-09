@@ -73,7 +73,7 @@ const pagination = reactive(new OffsetPagination<SalesPerformanceMetricType>(
     return response.viewSalesPerformanceMetricList;
   },
   [
-    new EnumFilter('disabled', 'SalesPerformanceMetric.disabled', () => [{ status: true, name: 'disabled' }, { status: false, name: 'active' }], 'IN', undefined, 'name', 'status'),
+    new EnumFilter('status', 'SalesPerformanceMetric.disabled', () => [{ label: 'active', value: false }, { label: 'disabled', value: true }], 'select status ...')
   ],
   new KeywordSearch(["SalesPerformanceMetric.name", "SalesPerformanceMetric.description"])
 ))
