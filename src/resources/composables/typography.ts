@@ -9,6 +9,10 @@ export function useThousandSeparator(number: number): string {
   return thousandSeparator.format(number);
 }
 
+export function removeThousandSeparator(value: string): string {
+  return value.replace(/.(?=\d{3})/g, "");
+}
+
 export function useIsoToLocalTimeFormat(isoTime: string): string {
   return DateTime.fromISO(isoTime).toFormat("yyyy-MM-dd HH:mm");
 }
@@ -61,7 +65,10 @@ export function useTimeIntervalDifferenceCounter(
     : difference?.days
     ? Math.abs(difference.days) + " days"
     : difference?.hours
-    ? Math.abs(difference.hours) + " hours and " + Math.floor(Math.abs(difference?.minutes ?? 0)) + " minutes"
+    ? Math.abs(difference.hours) +
+      " hours and " +
+      Math.floor(Math.abs(difference?.minutes ?? 0)) +
+      " minutes"
     : Math.floor(Math.abs(difference?.minutes ?? 0)) + " minutes";
 
   const differenceDescription =

@@ -56,8 +56,9 @@ export default abstract class AbstractPagination<ResultType> {
     this.resetList();
   }
 
-  addHiddenFilter(filter: FilterType): void {
+  addHiddenFilter(filter: FilterType): this {
     this.hiddenFilters.push(filter);
+    return this;
   }
 
   //

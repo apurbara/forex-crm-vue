@@ -13,9 +13,9 @@
 </template>
 
 <script lang="ts" setup>
-import SalesCreateComponent from '@/company-bc/domain/model/SalesCreateComponent.vue';
 import { ManagerType } from '@/company-bc/domain/model/manager';
-import Sales, { SalesType } from '@/company-bc/domain/model/sales';
+import Sales, { SalesType } from '@/company-bc/domain/model/manager/sales';
+import SalesCreateComponent from '@/company-bc/domain/model/manager/SalesCreateComponent.vue';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -41,7 +41,7 @@ const submit = async () => {
       operation: 'addSales',
       variables: sales.toGraphqlVariables(),
       fields: [
-        'id', 'contractTerminated', 'createdTime', 'contractTerminatedTime', 'name', 'email', 'type',
+        'id', 'contractTerminated', 'createdTime', 'contractTerminatedTime', 'name', 'email', 'role',
         { manager: ["id", "name"] }
       ]
     })

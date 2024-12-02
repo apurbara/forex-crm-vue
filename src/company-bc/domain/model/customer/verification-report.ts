@@ -1,13 +1,18 @@
 import Customer, { CustomerType } from "../customer";
-import CustomerVerification, { CustomerVerificationType } from "../customer-verification";
+import CustomerVerification, {
+  CustomerVerificationType,
+} from "../customer-verification";
 
 export type VerificationReportType = {
-  customer?: CustomerType;
-  customerVerification?: CustomerVerificationType;
-  CustomerVerification_id?: string;
   id?: string;
   createdTime?: string;
   note?: string;
+
+  Customer_id?: string;
+  customer?: CustomerType;
+
+  customerVerification?: CustomerVerificationType;
+  CustomerVerification_id?: string;
 };
 
 export default class VerificationReport {
@@ -18,8 +23,7 @@ export default class VerificationReport {
   customer?: Customer;
   customerVerification?: CustomerVerification;
 
-  constructor(
-  ) { }
+  constructor() {}
 
   load(data: VerificationReportType) {
     this.id = data.id ?? this.id;

@@ -10,20 +10,27 @@ import {
   baseHome,
   generateBaseAppBarMenuItems,
 } from "@/shared/components/default-layout";
+import { SalesRoleEnum } from "@/shared-bc/domain/enum/sales-role-enum";
+
+export type SalesRoleType = {
+  role?: SalesRoleEnum;
+} & CompanyUserRoleType;
 
 export default class SalesRole implements CompanyUserRole {
   protected token: string;
+  public role?: SalesRoleEnum;
   protected name?: string;
   static readonly type: string = "SALES";
   protected httpRequest: HttpRequestInterface;
   protected restRequest: RestRequestInterface;
 
   constructor(
-    parameters: CompanyUserRoleType,
+    parameters: SalesRoleType,
     httpRequest: HttpRequestInterface,
     restRequest: RestRequestInterface
   ) {
     this.token = parameters.token!;
+    this.role = parameters.role;
     this.name = parameters.name;
     this.httpRequest = httpRequest;
     this.restRequest = restRequest;
@@ -33,20 +40,51 @@ export default class SalesRole implements CompanyUserRole {
     return false;
   }
   getLandingPage(): string {
-    return "/sales-dashboard";
+console.log(this.role);
+    switch (this.role) {
+      case SalesRoleEnum.STRIKER:
+        return "/striker-dashboard";
+      case SalesRoleEnum.FACT_FINDER:
+        return "/fact-finder-dashboard";
+      default:
+        return "/greeter-dashboard";
+    }
+    // return "/sales-dashboard";
   }
   getLayout(): LayoutInterface {
     // const asSuperUserNavbarMenus = this.aSuperUser
     //   ? [{ title: "admin", to: "/admin" }]
     //   : [];
+    var assignmentMenu;
+    switch (this.role) {
+      case SalesRoleEnum.STRIKER:
+        assignmentMenu = {
+          title: "sales striking assignment",
+          to: "/sales-striking-assignment",
+        };
+        break;
+      case SalesRoleEnum.FACT_FINDER:
+        assignmentMenu = {
+          title: "sales fact finding assignment",
+          to: "/sales-fact-finding-assignment",
+        };
+        break;
+      default:
+        assignmentMenu = {
+          title: "sales greeting assignment",
+          to: "/sales-greeting-assignment",
+        };
+        break;
+    }
     return {
       home: baseHome,
       appBarMenuItems: generateBaseAppBarMenuItems(this.name),
       navBarMenuItems: [
-        {
-          title: "customer assignment",
-          to: "/sales-customer-assignment",
-        },
+        assignmentMenu,
+        // {
+        //   title: "greeting assignment",
+        //   to: "/sales-greeting-assignment",
+        // },
         {
           title: "activity",
           to: "/sales-activity-schedule",

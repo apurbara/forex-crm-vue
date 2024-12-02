@@ -44,16 +44,20 @@ export default class ManagerRole implements CompanyUserRole {
       appBarMenuItems: generateBaseAppBarMenuItems(this.name),
       navBarMenuItems: [
         {
-          title: "customer assignment",
-          to: "/manager-customer-assignment",
+          title: "greeting assignment",
+          to: "/manager-greeting-assignment",
+        },
+        {
+          title: "fact finding assignment",
+          to: "/manager-fact-finding-assignment",
+        },
+        {
+          title: "striking assignment",
+          to: "/manager-striking-assignment",
         },
         {
           title: "closing request",
           to: "/manager-closing-request",
-        },
-        {
-          title: "recycle request",
-          to: "/manager-recycle-request",
         },
       ],
     };

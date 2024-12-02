@@ -11,7 +11,7 @@
           <th>name</th>
           <th>manager</th>
           <th>email</th>
-          <th>type</th>
+          <th>role</th>
           <th>createdTime</th>
           <th>contract terminated time</th>
           <th></th>
@@ -31,7 +31,7 @@
           <td>{{ sales.name }}</td>
           <td>{{ sales.manager?.name }}</td>
           <td>{{ sales.email }}</td>
-          <td>{{ sales.type }}</td>
+          <td>{{ sales.role }}</td>
           <td>{{ new Date(sales.createdTime!).toLocaleDateString() }}</td>
           <td>{{ sales.contractTerminatedTime ? new Date(sales.contractTerminatedTime).toLocaleDateString() : '' }}</td>
           <td>
@@ -54,7 +54,7 @@ import { onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useConfirm } from "primevue/useconfirm";
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
-import { SalesType } from '@/company-bc/domain/model/sales';
+import { SalesType } from '@/company-bc/domain/model/manager/sales';
 
 const { companyUserRepository } = useDependencyInjection()
 const router = useRouter();
@@ -67,7 +67,7 @@ const pagination = reactive(new OffsetPagination<SalesType>(
         operation: 'viewSalesList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
-          'id', 'contractTerminated', 'name', 'email', 'createdTime', 'contractTerminatedTime', 'type',
+          'id', 'contractTerminated', 'name', 'email', 'createdTime', 'contractTerminatedTime', 'role',
           { manager: ["name"] }
         ])
       })!

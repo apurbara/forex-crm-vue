@@ -12,18 +12,13 @@
       </thead>
       <tbody>
         <tr v-for="(activitySchedule, key) in customerAssignment.salesActivitySchedules"
-          :key="activitySchedule.id ?? key" :style="activitySchedule.salesActivityReport ? 'background-color: green' : 'background-color: orange'">
+          :key="activitySchedule.id ?? key">
           <td>{{ activitySchedule.salesActivity?.name }}</td>
-          <td v-if="!activitySchedule.salesActivityReport">
-            Not Completed
-          </td>
-          <td v-else> {{ limitString(activitySchedule.salesActivityReport?.content, 50) }}
+          <td> {{ limitString(activitySchedule.salesActivityReport?.content, 50) }}
             <v-btn v-if="activitySchedule.salesActivityReport?.content?.length! > 50" variant="text"
               icon="mdi-dots-horizontal-circle-outline" size="small"
               @click="showReportContent($event, activitySchedule.salesActivityReport!)"></v-btn>
           </td>
-          <!-- <td v-if="activitySchedule.salesActivityReport">{{ new
-            Date(activitySchedule.salesActivityReport?.submitTime!).toLocaleString() }}</td> -->
           <td>{{ new Date(activitySchedule.startTime!).toLocaleString("id-ID") }}</td>
         </tr>
       </tbody>
@@ -33,17 +28,16 @@
   <OverlayPanel ref="op" showCloseIcon style="width: 600px;">
     <div class="pa-4">{{ selectedReport?.content }}</div>
   </OverlayPanel>
-
 </template>
 
 <script setup lang="ts">
-import { CustomerAssignmentType } from '@/manager-bc/domain/model/manager/sales/customer-assignment';
-import { SalesActivityReportType } from '@/manager-bc/domain/model/manager/sales/customer-assignment/sales-activity-schedule/sales-activity-report';
+import { CustomerAssignmentType } from '@/company-bc/domain/model/manager/sales/customer-assignment';
+import { SalesActivityReportType } from '@/company-bc/domain/model/manager/sales/customer-assignment/sales-activity-schedule/sales-activity-report';
 import { useStringLimiter } from '@/resources/composables/typography';
 import OverlayPanel from 'primevue/overlaypanel';
 import { ref } from 'vue';
 
-defineProps<{ customerAssignment: CustomerAssignmentType }>();
+const props = defineProps<{ customerAssignment: CustomerAssignmentType }>();
 
 const limitString = (string: string | undefined, length: number) => {
   return useStringLimiter(string, length)
@@ -55,7 +49,6 @@ const showReportContent = (event: any, salesActivityReport: SalesActivityReportT
   op.value.toggle(event)
   selectedReport.value = salesActivityReport
 }
-const initialSalesReportContent = ref<string>("");
 
 </script>
 

@@ -10,6 +10,7 @@
       <thead>
         <tr>
           <th>name</th>
+          <th>status</th>
           <th>email</th>
           <th>phone</th>
           <th>verification score</th>
@@ -28,6 +29,7 @@
         </tr>
         <tr v-else v-for="(customer, index) in pagination.resultList" :key="customer.id ?? index">
           <td>{{ customer.name }}</td>
+          <td>{{ customer.status }}</td>
           <td>{{ customer.email }}</td>
           <td>{{ customer.phone }}</td>
           <td>{{ customer.verificationScore }}</td>
@@ -63,7 +65,7 @@ const pagination = reactive(new OffsetPagination<CustomerType>(
         operation: 'customerList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
-          'id', 'disabled', 'createdTime', 'name', 'email', 'phone', 'source', 'verificationScore'
+          'id', 'createdTime', 'status', 'name', 'email', 'phone', 'source', 'verificationScore'
         ])
       })!
     return response.customerList;

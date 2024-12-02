@@ -8,8 +8,8 @@ import { KeywordSearch, PaginationResponseType } from '@/resources/components/ab
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, reactive } from 'vue';
 import OffsetPagination from '@/resources/components/offset-pagination';
-import { SalesActivityScheduleType } from '@/sales-bc/domain/model/sales/customer-assignment/salesActivitySchedule';
 import { SalesActivityScheduleStatus } from '@/shared-bc/domain/enum/sales-activity-schedule-status';
+import { SalesActivityScheduleType } from '@/company-bc/domain/model/manager/sales/customer-assignment/sales-activity-schedule';
 
 const { salesRepository } = useDependencyInjection();
 
@@ -21,7 +21,9 @@ const activitySchedulePagination = reactive(new OffsetPagination<SalesActivitySc
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
           "id", "status", "startTime", "endTime",
-          { customerAssignment: ["id", { customer: ["name"] }, { customerJourney: ["name"] }] }
+          { strikingAssignment: ["id", { customer: ["name"] }, { customerJourney: ["name"] }] },
+          { factFindingAssignment: ["id", { customer: ["name"] }] },
+          { greetingAssignment: ["id", { customer: ["name"] }] },
         ])
       })
     return response.salesActivityScheduleList;

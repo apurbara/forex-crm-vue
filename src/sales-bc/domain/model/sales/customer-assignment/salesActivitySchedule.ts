@@ -1,36 +1,9 @@
 import { SalesActivityScheduleStatus } from "@/shared-bc/domain/enum/sales-activity-schedule-status";
-import { isNotEmpty } from "@/resources/composables/validator";
-import CustomerAssignment, {
-  CustomerAssignmentType,
-} from "../customer-assignment";
-import SalesActivityReport, {
-  SalesActivityReportType,
-} from "./sales-activity-schedule/sales-activity-report";
 import { SalesActivityType } from "@/company-bc/domain/model/sales-activity";
-
-export type SalesActivityScheduleSummaryType = {
-  total?: number;
-  status?: string;
-  startTime?: string;
-  endTime?: string;
-};
-
-export type SalesActivityScheduleType = {
-  CustomerAssignment_id?: string;
-  customerAssignment?: CustomerAssignmentType;
-  //
-  id?: string;
-  createdTime?: string;
-  status?: SalesActivityScheduleStatus;
-  startTime?: string;
-  endTime?: string;
-  //
-  SalesActivity_id?: string;
-  salesActivity?: SalesActivityType;
-  //
-  salesActivityReport?: SalesActivityReportType;
-  //
-};
+import SalesActivityReport from "./sales-activity-schedule/sales-activity-report";
+import { SalesActivityScheduleType } from "@/company-bc/domain/model/manager/sales/customer-assignment/sales-activity-schedule";
+import { isNotEmpty } from "@/resources/composables/validator";
+import CustomerAssignment from "../customer-assignment";
 
 export default class SalesActivitySchedule {
   customerAssignment?: CustomerAssignment;
@@ -42,13 +15,11 @@ export default class SalesActivitySchedule {
   salesActivity?: SalesActivityType;
   salesActivityReport?: SalesActivityReport;
 
-  constructor(data: SalesActivityScheduleType = {}) {}
-  load(data: SalesActivityScheduleType) {
-    if (data.customerAssignment) {
-      this.customerAssignment ??= new CustomerAssignment();
-      this.customerAssignment.load(data.customerAssignment);
-    }
+  constructor(data: SalesActivityScheduleType = {}) {
+    this.load(data);
+  }
 
+  load(data: SalesActivityScheduleType) {
     this.id = data.id ?? this.id;
     this.createdTime = data.createdTime ?? this.createdTime;
     this.status = data.status ?? this.status;
@@ -79,10 +50,6 @@ export default class SalesActivitySchedule {
     return isNotEmpty(this.startTime) || "start time is mandatory";
   }
   isValidToSubmit() {
-    return (
-      this.isValidStartTime() === true &&
-      !!this.customerAssignment?.id &&
-      !!this.salesActivity?.id
-    );
+    return this.isValidStartTime() === true && !!this.salesActivity?.id;
   }
 }

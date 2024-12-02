@@ -20,7 +20,7 @@ const login = async () => {
   const response = await httpRequest.mutate<{ login: SalesRoleType }>('sales', {
     operation: 'login',
     variables: loginPayload.toGraphqlVariable(),
-    fields: ['token', 'name']
+    fields: ['token', 'name', 'role']
   })
   const salesData: SalesRoleType = { ...response.login, type: SalesRole.type }
   salesRepository.logUserIn(salesData)

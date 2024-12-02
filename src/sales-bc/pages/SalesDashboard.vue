@@ -100,12 +100,12 @@ onMounted(async () => {
         fields: []
       },
       {
-        operation: { name: "totalCustomerAssignment", alias: "newAssignment" },
+        operation: { name: "totalGreetingAssignment", alias: "newAssignment" },
         variables: {
           newAssignmentFilters: {
             type: "[FilterInput]", name: "filters",
             value: [
-              { column: "CustomerAssignment.status", value: 'ACTIVE' },
+              { column: "GreetingAssignment.status", value: 'ACTIVE' },
               { column: "hasSalesActivitySchedule", value: false },
             ],
           }
@@ -113,16 +113,14 @@ onMounted(async () => {
         fields: []
       },
       {
-        operation: { name: "totalCustomerAssignment", alias: "idleAssignment" },
+        operation: { name: "totalGreetingAssignment", alias: "idleAssignment" },
         variables: {
           assignmentWithoutActiveScheduleFilters: {
             type: "[FilterInput]", name: "filters",
             value: [
-              { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
+              { column: "GreetingAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
               { column: "hasSalesActivitySchedule", value: true },
               { column: "hasActiveSalesActivitySchedule", value: false },
-              { column: "hasPendingClosingRequest", value: false },
-              { column: "hasPendingRecycleRequest", value: false },
             ],
           }
         },

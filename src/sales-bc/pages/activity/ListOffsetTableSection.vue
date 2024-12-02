@@ -4,7 +4,7 @@
       <thead>
         <tr>
           <th>customer</th>
-          <th>customer journey</th>
+          <!-- <th>customer journey</th> -->
           <th>status</th>
           <th>time</th>
         </tr>
@@ -19,12 +19,13 @@
           </td>
         </tr>
         <tr v-else v-for="(activity, index) in activitySchedulePagination.resultList" :key="activity.id ?? index"
-          @dblclick="toDetail(activity.customerAssignment?.id!)">
-          <td>{{ activity.customerAssignment?.customer?.name }}</td>
-          <td>{{ activity.customerAssignment?.customerJourney?.name }}</td>
+          @dblclick="toDetail(activity)">
+          <td>{{ getCustomerName(activity) }}</td>
+          <!-- <td>{{ activity.customerAssignment?.customerJourney?.name }}</td> -->
           <td>{{ activity.status }}</td>
           <td>{{ new Date(activity.startTime!).toLocaleDateString("id-ID") }} : {{ new
-            Date(activity.startTime!).toLocaleTimeString("id-ID") }} - {{ new Date(activity.endTime!).toLocaleTimeString("id-ID") }}
+            Date(activity.startTime!).toLocaleTimeString("id-ID") }} - {{ new
+              Date(activity.endTime!).toLocaleTimeString("id-ID") }}
           </td>
         </tr>
       </tbody>
@@ -33,15 +34,31 @@
 </template>
 
 <script setup lang="ts">
+import { SalesActivityScheduleType } from '@/company-bc/domain/model/manager/sales/customer-assignment/sales-activity-schedule';
 import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
 import OffsetPagination from '@/resources/components/offset-pagination';
-import { SalesActivityScheduleType } from '@/sales-bc/domain/model/sales/customer-assignment/salesActivitySchedule';
+import { isNotEmpty } from '@/resources/composables/validator';
 import { useRouter } from 'vue-router';
 
 defineProps<{ activitySchedulePagination: OffsetPagination<SalesActivityScheduleType> }>()
 const router = useRouter();
 
-const toDetail = (customerAssignmentId: string) => router.push(`/sales-customer-assignment/${customerAssignmentId}`)
+const toDetail = (activity: SalesActivityScheduleType) => {
+  if (isNotEmpty(activity.greetingAssignment?.id)) {
+    router.push(`/sales-greeting-assignment/${activity.greetingAssignment?.id}`);
+  }
+  if (isNotEmpty(activity.factFindingAssignment?.id)) {
+    router.push(`/sales-fact-finding-assignment/${activity.factFindingAssignment?.id}`);
+  }
+  if (isNotEmpty(activity.strikingAssignment?.id)) {
+    router.push(`/sales-striking-assignment/${activity.strikingAssignment?.id}`);
+  }
+}
+// => router.push(`/sales-customer-assignment/${customerAssignmentId}`)
+
+const getCustomerName = (activity: SalesActivityScheduleType) => {
+  return activity.greetingAssignment?.customer?.name || activity.factFindingAssignment?.customer?.name || activity.strikingAssignment?.customer?.name;
+}
 
 </script>
 

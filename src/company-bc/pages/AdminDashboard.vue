@@ -1,12 +1,15 @@
 <template>
+  <h1 class="page-title">Admin Dashboard</h1>
+  <AdminDashboardCompanyMetric />
+  <AdminDashboardSalesPerformanceMetric />
+  <AdminDashboardSalesRank />
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import AdminDashboardSalesPerformanceMetric from './AdminDashboardSalesPerformanceMetric.vue';
+import AdminDashboardSalesRank from './AdminDashboardSalesRank.vue';
+import AdminDashboardCompanyMetric from './AdminDashboardCompanyMetric.vue';
 
-const router = useRouter()
-
-router.replace("/area-structure")
 </script>
 
 <style scoped></style>

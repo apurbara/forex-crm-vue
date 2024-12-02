@@ -25,8 +25,8 @@
         </tr>
         <tr v-else v-for="(closingRequest, index) in pagination.resultList" :key="closingRequest.id ?? index"
           @dblclick="toDetail(closingRequest)">
-          <td>{{ closingRequest.customerAssignment?.customer?.name }}</td>
-          <td>{{ closingRequest.customerAssignment?.sales?.name }}</td>
+          <td>{{ closingRequest.strikingAssignment?.customer?.name }}</td>
+          <td>{{ closingRequest.strikingAssignment?.sales?.name }}</td>
           <td>{{ closingRequest.status }}</td>
           <td>{{ useThousandSeparator(closingRequest.transactionValue!) }}</td>
           <td>{{ closingRequest.note }}</td>
@@ -48,7 +48,7 @@ import { useRouter } from 'vue-router';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { ManagementApprovalStatus } from '@/shared-bc/domain/enum/management-approval-status';
 import { useThousandSeparator } from '@/resources/composables/typography';
-import { ClosingRequestType } from '@/manager-bc/domain/model/manager/sales/customer-assignment/closing-request';
+import { ClosingRequestType } from '@/company-bc/domain/model/manager/sales/striking-assignment/closing-request';
 
 const { managerRepository } = useDependencyInjection()
 const router = useRouter();
@@ -62,7 +62,7 @@ const pagination = reactive(new OffsetPagination<ClosingRequestType>(
         fields: OffsetPagination.wrapResultFields([
           'id', 'status', 'createdTime', 'transactionValue', 'note', 'remark',
           {
-            customerAssignment: ["id",
+            strikingAssignment: ["id",
               { customer: ['name'] },
               { sales: ['name'] },
             ]
@@ -84,7 +84,7 @@ onMounted(async () => {
   await pagination.loadPage();
 })
 
-const toDetail = (closingRequest: ClosingRequestType) => router.push(`/manager-customer-assignment/${closingRequest.customerAssignment?.id}`)
+const toDetail = (closingRequest: ClosingRequestType) => router.push(`/manager-striking-assignment/${closingRequest.strikingAssignment?.id}`)
 
 </script>
 

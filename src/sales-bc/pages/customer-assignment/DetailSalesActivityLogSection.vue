@@ -3,10 +3,8 @@
     <h2 class="section-title">Activity Log</h2>
     <div v-if="customerAssignment.status === CustomerAssignmentStatus.ACTIVE"
       class="d-flex justify-space-around flex-wrap mb-2">
-      <v-btn v-if="customerAssignment.isIdleAssignment()" @click="displayNewScheduleDialog = true">plan new
-        activity</v-btn>
-      <v-btn v-if="customerAssignment.isNewAssignment()" @click="displayInitialReportDialog = true">submit initial
-        report</v-btn>
+      <v-btn @click="displayNewScheduleDialog = true">create schedule</v-btn>
+      <v-btn @click="displayNonScheduleActivityReportDialog = true">submit non scheduled report</v-btn>
     </div>
     <v-table v-if="customerAssignment.salesActivitySchedules.length > 0" density="compact" style="width: 100%;"
       class="datatable px-2">
@@ -51,24 +49,23 @@
     </div>
   </Dialog>
 
-  <Dialog v-model:visible="displayInitialReportDialog" style="width: 600px;" modal>
+  <Dialog v-model:visible="displayNonScheduleActivityReportDialog" style="width: 600px;" modal>
     <div class="ma-4">
-      <p class="text-center font-20 font-weight-bold mb-8">Submit Initial Activity Report</p>
-      <v-textarea label="content" v-model="initialSalesReportContent" />
+      <p class="text-center font-20 font-weight-bold mb-8">Submit Non Scheduled Activity Report</p>
+      <v-select label="select activity" :items="salesActivityList" item-title="name" return-object
+        v-model="nonScheduledSalesActivity" hide-details />
+      <v-textarea label="content" v-model="nonScheduledActivityReportContent" />
       <div class="d-flex justify-end mt-4">
-        <v-btn block @click="submitInitialSalesActivityReport" variant="tonal"
-          :disabled="throttleInitialReportRequest">Submit</v-btn>
+        <v-btn block @click="submitNonScheduledActivityReport" variant="tonal"
+        :disabled="throttleInitialReportRequest">Submit</v-btn>
       </div>
     </div>
   </Dialog>
-
+  
   <Dialog v-model:visible="displaySalesActivityReportForm" style="width: 600px;" modal>
     <v-card>
       <v-card-title class="mt-6 text-center">Submit Sales Activity Report</v-card-title>
       <v-card-text class="mt-4">
-        <p class="font-16 mb-2">change customer journey</p>
-        <v-select :items="customerJourneyList" item-title="name" return-object
-          v-model="customerAssignment.customerJourney" />
         <p class="font-16 mt-4 mb-2">describe sales activity</p>
         <SalesActivityReportComponent :sales-activity-report="salesActivityReport" />
       </v-card-text>
@@ -79,43 +76,18 @@
     </v-card>
   </Dialog>
 
-  <Dialog v-model:visible="displayNextActionDialog" style="width: 600px;" modal :closable="false">
-    <div class="ma-4">
-      <p class="text-center font-20 font-weight-bold mb-8">Plan Next Activity</p>
-      <div class="mt-4">
-        <v-select label="next step" :items="nextStepItems" v-model="nextStep"></v-select>
-        <div v-if="nextStep === nextStepItems[0]">
-          <SubmitSalesActivityScheduleComponent :sales-activity-schedule="newActivitySchedule" />
-          <div class="d-flex justify-end mt-4">
-            <v-btn @click="submitNewSchedule" class="ml-4">Submit</v-btn>
-          </div>
-        </div>
-        <div v-if="nextStep === nextStepItems[1]">
-          <ClosingRequestComponent :closing-request="closingRequest" />
-          <v-btn @click="submitClosingRequest" class="ml-4">Submit</v-btn>
-        </div>
-        <div v-if="nextStep === nextStepItems[2]">
-          <RecycleRequestComponent :recycle-request="recycleRequest" />
-          <v-btn @click="submitRecycleRequest" class="ml-4">Submit</v-btn>
-        </div>
-      </div>
-    </div>
-  </Dialog>
-
 </template>
 
 <script setup lang="ts">
-import { CustomerJourneyType } from '@/company-bc/domain/model/customer-journey';
+import { SalesActivityScheduleType } from '@/company-bc/domain/model/manager/sales/customer-assignment/sales-activity-schedule';
+import { SalesActivityReportType } from '@/company-bc/domain/model/manager/sales/customer-assignment/sales-activity-schedule/sales-activity-report';
+import { SalesActivityType } from '@/company-bc/domain/model/sales-activity';
 import { useStringLimiter } from '@/resources/composables/typography';
-import CustomerAssignment, { CustomerAssignmentType } from '@/sales-bc/domain/model/sales/customer-assignment';
-import ClosingRequestComponent from '@/sales-bc/domain/model/sales/customer-assignment/ClosingRequestComponent.vue';
-import RecycleRequestComponent from '@/sales-bc/domain/model/sales/customer-assignment/RecycleRequestComponent.vue';
-import SubmitSalesActivityScheduleComponent from '@/sales-bc/domain/model/sales/customer-assignment/SubmitSalesActivityScheduleComponent.vue';
-import ClosingRequest, { ClosingRequestType } from '@/sales-bc/domain/model/sales/customer-assignment/closing-request';
-import RecycleRequest, { RecycleRequestType } from '@/sales-bc/domain/model/sales/customer-assignment/recycle-request';
+import CustomerAssignment from '@/sales-bc/domain/model/sales/customer-assignment';
+import SalesActivityReport from '@/sales-bc/domain/model/sales/customer-assignment/sales-activity-schedule/sales-activity-report';
 import SalesActivityReportComponent from '@/sales-bc/domain/model/sales/customer-assignment/sales-activity-schedule/SalesActivityReportComponent.vue';
-import SalesActivityReport, { SalesActivityReportType } from '@/sales-bc/domain/model/sales/customer-assignment/sales-activity-schedule/sales-activity-report';
-import SalesActivitySchedule, { SalesActivityScheduleType } from '@/sales-bc/domain/model/sales/customer-assignment/salesActivitySchedule';
+import SalesActivitySchedule from '@/sales-bc/domain/model/sales/customer-assignment/salesActivitySchedule';
+import SubmitSalesActivityScheduleComponent from '@/sales-bc/domain/model/sales/customer-assignment/SubmitSalesActivityScheduleComponent.vue';
 import { CustomerAssignmentStatus } from '@/shared-bc/domain/enum/customer-assignment-status';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import Dialog from 'primevue/dialog';
@@ -124,17 +96,17 @@ import { onMounted, reactive, ref } from 'vue';
 
 const props = defineProps<{ customerAssignment: CustomerAssignment }>();
 const { salesRepository, companyUserRepository } = useDependencyInjection()
+const salesActivityList = ref<SalesActivityType[]>([])
 
-const customerJourneyList = ref<CustomerJourneyType[]>([]);
 onMounted(async () => {
   const response = await companyUserRepository.getUser()!
-    .executeGraphqlQueryInCompany<{ viewAllActiveCustomerJourney: CustomerJourneyType[] }>({
-      operation: "viewAllActiveCustomerJourney",
-      variables: {},
-      fields: ["id", "initial", "name", "description"],
-    });
-  customerJourneyList.value = response.viewAllActiveCustomerJourney;
-});
+    .executeGraphqlQueryInCompany<{ salesActivityList: { list: SalesActivityType[] } }>({
+      operation: "salesActivityList",
+      variables: { filters: { type: "[FilterInput]", value: [{ column: "SalesActivity.disabled", value: false }] } },
+      fields: [{ list: ["id", "name"] }]
+    })
+  salesActivityList.value.push(...response.salesActivityList.list)
+})
 
 const limitString = (string: string | undefined, length: number) => {
   return useStringLimiter(string, length)
@@ -147,30 +119,35 @@ const showReportContent = (event: any, salesActivityReport: SalesActivityReport)
   selectedReport.value = salesActivityReport
 }
 
-const displayInitialReportDialog = ref<boolean>(false)
-const initialSalesReportContent = ref<string>("");
+const displayNonScheduleActivityReportDialog = ref<boolean>(false)
+const nonScheduledActivityReportContent = ref<string>("");
+const nonScheduledSalesActivity = ref<SalesActivityType>({});
 const throttleInitialReportRequest = ref<boolean>(false);
-const submitInitialSalesActivityReport = async () => {
+const submitNonScheduledActivityReport = async () => {
   throttleInitialReportRequest.value = true;
   const response = await salesRepository.getUser()
-    .executeSalesGraphqlMutation<{ submitInitialSalesActivityReport: SalesActivityScheduleType }>({
-      operation: 'submitInitialSalesActivityReport',
+    .executeSalesGraphqlMutation<{ submitNonScheduledActivityReport: SalesActivityReportType }>({
+      operation: 'submitNonScheduledActivityReport',
       variables: {
         CustomerAssignment_id: { type: "ID", value: props.customerAssignment.id },
-        content: initialSalesReportContent
+        SalesActivity_id: { type: "ID", value: nonScheduledSalesActivity.value.id },
+        content: nonScheduledActivityReportContent
       },
       fields: [
-        "id", "status", "createdTime", "startTime", "endTime",
-        { salesActivity: ["id", "duration", "initial", "name"] },
-        { salesActivityReport: ["id", "submitTime", "content"] },
+        "id", "submitTime", "content",
+        {
+          salesActivitySchedule: [
+            "id", "status", "startTime", "endTime",
+            { salesActivity: ["id", "name"] },
+          ]
+        },
       ]
     })
-  const submittedActivitySchedule = new SalesActivitySchedule();
-  submittedActivitySchedule.load(response.submitInitialSalesActivityReport)
-  props.customerAssignment.salesActivitySchedules.unshift(submittedActivitySchedule)
-  initialSalesReportContent.value = "";
-  displayInitialReportDialog.value = false;
-  displayNextActionDialog.value = true;
+  const submittedActivityReport = new SalesActivityReport();
+  submittedActivityReport.load(response.submitNonScheduledActivityReport);
+  props.customerAssignment.salesActivitySchedules.unshift(submittedActivityReport.salesActivitySchedule!)
+  nonScheduledActivityReportContent.value = "";
+  displayNonScheduleActivityReportDialog.value = false;
   throttleInitialReportRequest.value = false;
 }
 
@@ -184,17 +161,8 @@ let selectedActivitySchedule = reactive<SalesActivitySchedule>(new SalesActivity
 const salesActivityReport = reactive<SalesActivityReport>(new SalesActivityReport());
 const submitSalesActivityReport = async () => {
   throttleActivityReportRequest.value = true;
-  type ResponseType = { updateCustomerAssignmentJourney: CustomerAssignmentType, submitSalesActivityReport: SalesActivityReportType }
   const response = await salesRepository.getUser()
-    .executeSalesGraphqlMutation<ResponseType>([
-      {
-        operation: "updateCustomerAssignmentJourney",
-        variables: {
-          id: { type: "ID", required: true, value: props.customerAssignment.id },
-          CustomerJourney_id: { type: "ID", required: true, value: props.customerAssignment.customerJourney?.id },
-        },
-        fields: [{ customerJourney: ['id', 'name', 'description', 'initial'] }]
-      },
+    .executeSalesGraphqlMutation<{ submitSalesActivityReport: SalesActivityReportType }>(
       {
         operation: "submitSalesActivityReport",
         variables: {
@@ -203,19 +171,14 @@ const submitSalesActivityReport = async () => {
         },
         fields: ["id", "submitTime", "content", { salesActivitySchedule: ['status'] }],
       }
-    ])
-  props.customerAssignment.customerJourney = response.updateCustomerAssignmentJourney.customerJourney!
+    )
   salesActivityReport.load(response.submitSalesActivityReport);
   selectedActivitySchedule.salesActivityReport = salesActivityReport;
-  displayNextActionDialog.value = true;
   throttleActivityReportRequest.value = false;
   displaySalesActivityReportForm.value = false
 }
 
 const displayNewScheduleDialog = ref<boolean>(false)
-const displayNextActionDialog = ref<boolean>(false);
-const nextStepItems = ref(['plan next activity', 'request closing', 'request recycle'])
-const nextStep = ref(nextStepItems.value[0])
 const newActivitySchedule = ref<SalesActivitySchedule>(new SalesActivitySchedule())
 const throttleNewScheduleRequest = ref<boolean>(false)
 const submitNewSchedule = async () => {
@@ -234,45 +197,6 @@ const submitNewSchedule = async () => {
   props.customerAssignment.salesActivitySchedules.unshift(submittedActivitySchedule)
   throttleNewScheduleRequest.value = false;
   displayNewScheduleDialog.value = false;
-  displayNextActionDialog.value = false;
-}
-
-const closingRequest = reactive<ClosingRequest>(new ClosingRequest())
-const throttleClosingRequest = ref<boolean>(false)
-const submitClosingRequest = async () => {
-  throttleClosingRequest.value = true;
-  const response = await salesRepository.getUser()
-    .executeSalesGraphqlMutation<{ submitClosingRequest: ClosingRequestType }>({
-      operation: "submitClosingRequest",
-      variables: {
-        CustomerAssignment_id: { type: "ID", required: true, value: props.customerAssignment.id },
-        ...closingRequest.toGraphqlVariables(),
-      },
-      fields: ["id", 'status', "createdTime", "note", "transactionValue"]
-    })
-  closingRequest.load(response.submitClosingRequest);
-  props.customerAssignment.closingRequests.unshift(closingRequest)
-  throttleClosingRequest.value = false;
-  displayNextActionDialog.value = false;
-}
-
-const recycleRequest = reactive<RecycleRequest>(new RecycleRequest())
-const throttleRecycleRequest = ref<boolean>(false)
-const submitRecycleRequest = async () => {
-  throttleRecycleRequest.value = true;
-  const response = await salesRepository.getUser()
-    .executeSalesGraphqlMutation<{ submitRecycleRequest: RecycleRequestType }>({
-      operation: "submitRecycleRequest",
-      variables: {
-        CustomerAssignment_id: { type: "ID", required: true, value: props.customerAssignment.id },
-        ...recycleRequest.toGraphqlVariables(),
-      },
-      fields: ["id", 'status', "createdTime", "note"]
-    })
-  recycleRequest.load(response.submitRecycleRequest)
-  props.customerAssignment.recycleRequests.unshift(recycleRequest)
-  throttleRecycleRequest.value = false;
-  displayNextActionDialog.value = false;
 }
 
 </script>

@@ -3,8 +3,10 @@
     <h2 class="section-title mb-4">Metric Summaries</h2>
     <v-row>
       <v-col class="border-sm ma-2 pa-2" v-for="(metricSummary, key) in metricSummaries" :key="key">
-        <h4>Target: {{ metricSummary.target }}</h4>
-        <Chart type="bar" :data="setChartData(metricSummary)" :options="chartOptions" class="h-30rem" />
+        <div style="max-height: 300px;">
+          <h4 v-if="metricSummary.target">Target: {{ thousandSeparator(metricSummary.target) }}</h4>
+          <Bar :id="key" :options="setChartOptions(metricSummary)" :data="setChartData(metricSummary)" />
+        </div>
       </v-col>
     </v-row>
   </section>
@@ -13,26 +15,29 @@
 <script setup lang="ts">
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, ref } from 'vue';
-import Chart from 'primevue/chart';
-
+import { Bar } from 'vue-chartjs'
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, plugins } from 'chart.js'
+import { useThousandSeparator } from '@/resources/composables/typography';
+import Annotation from "chartjs-plugin-annotation";
 
 const { salesRepository } = useDependencyInjection()
-const chartOptions = ref();
+const thousandSeparator = (value: number) => useThousandSeparator(value);
 
-type MetricSummry = {
+type MetricSummary = {
   name: string;
   target?: number;
   result: { evaluationTime: string, achievement: number }[],
 }
-const metricSummaries = ref<MetricSummry[]>([])
+const metricSummaries = ref<MetricSummary[]>([])
 
 onMounted(async () => {
+  ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+  ChartJS.register(Annotation)
   metricSummaries.value = await salesRepository.getUser()
     .executeGetRequest('view-all-common-sales-metric-summary')
-  chartOptions.value = setChartOptions()
 })
 
-const setChartData = (companyMetricSummary: MetricSummry) => {
+const setChartData = (companyMetricSummary: MetricSummary) => {
   const documentStyle = getComputedStyle(document.documentElement);
 
   return {
@@ -47,42 +52,20 @@ const setChartData = (companyMetricSummary: MetricSummry) => {
     ]
   };
 };
-const setChartOptions = () => {
-  const documentStyle = getComputedStyle(document.documentElement);
-  const textColor = documentStyle.getPropertyValue('--text-color');
-  const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-  const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
+const setChartOptions = (metricSummary: MetricSummary) => {
   return {
+    responsive: true,
     maintainAspectRatio: false,
-    aspectRatio: 0.8,
     plugins: {
-      legend: {
-        labels: {
-          color: textColor
-        }
-      }
-    },
-    scales: {
-      x: {
-        ticks: {
-          color: textColorSecondary,
-          font: {
-            weight: 500
+      annotation: {
+        annotations: {
+          line1: {
+            yMin: metricSummary.target,
+            yMax: metricSummary.target,
+            borderColor: 'rgb(255, 99, 132)',
+            borderWidth: 2,
           }
-        },
-        grid: {
-          display: false,
-          drawBorder: false
-        }
-      },
-      y: {
-        ticks: {
-          color: textColorSecondary
-        },
-        grid: {
-          color: surfaceBorder,
-          drawBorder: false
         }
       }
     }

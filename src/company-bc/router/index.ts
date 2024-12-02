@@ -388,10 +388,28 @@ const companyRoutes = [
           import("@/company-bc/pages/customer-assignment/List.vue"),
       },
       {
-        path: "distribute",
-        name: "distribute-customer-assignment",
+        path: "distribute-greeting-assignment",
+        name: "distribute-greeting-assignment",
         component: () =>
-          import("@/company-bc/pages/customer-assignment/Distribute.vue"),
+          import(
+            "@/company-bc/pages/customer-assignment/DistributeGreetingAssignment.vue"
+          ),
+      },
+      {
+        path: "distribute-fact-finding-assignment",
+        name: "distribute-fact-finding-assignment",
+        component: () =>
+          import(
+            "@/company-bc/pages/customer-assignment/DistributeFactFindingAssignment.vue"
+          ),
+      },
+      {
+        path: "distribute-striking-assignment",
+        name: "distribute-striking-assignment",
+        component: () =>
+          import(
+            "@/company-bc/pages/customer-assignment/DistributeStrikingAssignment.vue"
+          ),
       },
       // {
       //   path: ":customerAssignmentId",

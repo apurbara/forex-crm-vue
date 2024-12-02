@@ -3,12 +3,12 @@
   <div class="d-flex justify-space-between flex-wrap">
     <NotificationCardComponent :title="`Pending Closing Request`" :info="pendingClosingRequestCount"
       @click="toClosingRequestPage()" />
-    <NotificationCardComponent :title="`Pending Recycle Request`" :info="pendingRecycleRequestCount"
-      @click="toRecycleRequestPage()" />
-    <NotificationCardComponent :title="`Idle Assignment`" :info="idleAssignmentCount"
-      @click="toAssignmentPage('idle-assignment')" />
-    <NotificationCardComponent :title="`New Assignment`" :info="newAssignmentCount"
-      @click="toAssignmentPage('new-assignment')" />
+    <NotificationCardComponent :title="`Idle Greeting`" :info="idleGreetingCount"
+      @click="toGreetingPage('idle-assignment')" />
+    <NotificationCardComponent :title="`Idle Fact Finding`" :info="idleFactFindingCount"
+      @click="toFactFindingPage('idle-assignment')" />
+    <NotificationCardComponent :title="`Idle Striking`" :info="idleStrikingCount"
+      @click="toStrikingPage('idle-assignment')" />
   </div>
   <ManagerDashboardManagerMetric />
   <ManagerDashboardSalesPerformanceMetric />
@@ -30,20 +30,21 @@ const { managerRepository } = useDependencyInjection()
 const router = useRouter()
 
 const pendingClosingRequestCount = ref<number>(0)
-const pendingRecycleRequestCount = ref<number>(0)
-const idleAssignmentCount = ref<number>(0)
-const newAssignmentCount = ref<number>(0)
+const idleGreetingCount = ref<number>(0)
+const idleFactFindingCount = ref<number>(0)
+const idleStrikingCount = ref<number>(0)
 
 const toClosingRequestPage = () => router.push(`/manager-closing-request`)
-const toRecycleRequestPage = () => router.push(`/manager-recycle-request`)
-const toAssignmentPage = (tab: string) => router.push(`/manager-customer-assignment/?tab=${tab}`)
+const toGreetingPage = (tab: string) => router.push(`/manager-greeting-assignment/?tab=${tab}`)
+const toFactFindingPage = (tab: string) => router.push(`/manager-fact-finding-assignment/?tab=${tab}`)
+const toStrikingPage = (tab: string) => router.push(`/manager-striking-assignment/?tab=${tab}`)
 
 onMounted(async () => {
   type ResponseDataType = {
     viewClosingRequestCount: number;
-    viewRecycleRequestCount: number;
-    idleAssignmentCount: number;
-    newAssignmentCount: number;
+    idleGreetingCount: number;
+    idleFactFindingCount: number;
+    idleStrikingCount: number;
   }
   const response = await managerRepository.getUser()
     .executeManagerGraphqlQuery<ResponseDataType>([
@@ -60,40 +61,42 @@ onMounted(async () => {
         fields: []
       },
       {
-        operation: "viewRecycleRequestCount",
+        operation: { name: "viewGreetingAssignmentCount", alias: "idleGreetingCount" },
         variables: {
-          pendingRecycleRequestFilter: {
+          idleGreetingFilters: {
             type: "[FilterInput]", name: "filters",
             value: [
-              { column: "RecycleRequest.status", value: ManagementApprovalStatus.WAITING_FOR_APPROVAL }
-            ]
-          }
-        },
-        fields: []
-      },
-      {
-        operation: { name: "viewCustomerAssignmentCount", alias: "newAssignmentCount" },
-        variables: {
-          newAssignmentFilters: {
-            type: "[FilterInput]", name: "filters",
-            value: [
-              { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
-              { column: "hasSalesActivitySchedule", value: false },
+              { column: "GreetingAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
+              { column: "hasSalesActivitySchedule", value: true },
+              { column: "hasActiveSalesActivitySchedule", value: false },
             ],
           }
         },
         fields: []
       },
       {
-        operation: { name: "viewCustomerAssignmentCount", alias: "idleAssignmentCount" },
+        operation: { name: "viewFactFindingAssignmentCount", alias: "idleFactFindingCount" },
         variables: {
-          idleAssignmentFilters: {
+          idleFactFindingFilters: {
             type: "[FilterInput]", name: "filters",
             value: [
-              { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
+              { column: "FactFindingAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
               { column: "hasSalesActivitySchedule", value: true },
               { column: "hasActiveSalesActivitySchedule", value: false },
-              { column: "hasPendingRecycleRequest", value: false },
+            ],
+          }
+        },
+        fields: []
+      },
+      {
+        operation: { name: "viewStrikingAssignmentCount", alias: "idleStrikingCount" },
+        variables: {
+          idleStrikingFilters: {
+            type: "[FilterInput]", name: "filters",
+            value: [
+              { column: "StrikingAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
+              { column: "hasSalesActivitySchedule", value: true },
+              { column: "hasActiveSalesActivitySchedule", value: false },
               { column: "hasPendingClosingRequest", value: false },
             ],
           }
@@ -102,9 +105,7 @@ onMounted(async () => {
       },
     ])
   pendingClosingRequestCount.value = response.viewClosingRequestCount
-  pendingRecycleRequestCount.value = response.viewRecycleRequestCount
-  idleAssignmentCount.value = response.idleAssignmentCount
-  newAssignmentCount.value = response.newAssignmentCount
+  idleGreetingCount.value = response.idleGreetingCount
 })
 
 

@@ -5,6 +5,21 @@ const salesRoutes = [
     component: () => import("@/sales-bc/pages/SalesDashboard.vue"),
   },
   {
+    path: "greeter-dashboard",
+    name: "greeter-dashboard",
+    component: () => import("@/sales-bc/pages/GreeterDashboard.vue"),
+  },
+  {
+    path: "fact-finder-dashboard",
+    name: "fact-finder-dashboard",
+    component: () => import("@/sales-bc/pages/FactFinderDashboard.vue"),
+  },
+  {
+    path: "striker-dashboard",
+    name: "striker-dashboard",
+    component: () => import("@/sales-bc/pages/StrikerDashboard.vue"),
+  },
+  {
     path: "sales-activity-schedule/",
     children: [
       {
@@ -15,26 +30,56 @@ const salesRoutes = [
     ],
   },
   {
-    path: "sales-customer-assignment/",
+    path: "sales-greeting-assignment/",
     children: [
       {
         path: "",
-        name: "sales-customer-assignment-list",
+        name: "sales-greeting-assignment-list",
         component: () =>
-          import("@/sales-bc/pages/customer-assignment/List.vue"),
+          import("@/sales-bc/pages/greeting-assignment/List.vue"),
       },
-      // {
-      //   path: "register",
-      //   name: "register-new-customer",
-      //   component: () =>
-      //     import("@/sales-bc/pages/customer-assignment/Register.vue"),
-      // },
       {
-        path: ":customerAssignmentId",
-        name: "sales-customer-assignment-detail",
+        path: ":greetingAssignmentId",
+        name: "sales-greeting-assignment-detail",
         props: true,
         component: () =>
-          import("@/sales-bc/pages/customer-assignment/Detail.vue"),
+          import("@/sales-bc/pages/greeting-assignment/Detail.vue"),
+      },
+    ],
+  },
+  {
+    path: "sales-fact-finding-assignment/",
+    children: [
+      {
+        path: "",
+        name: "sales-fact-finding-assignment-list",
+        component: () =>
+          import("@/sales-bc/pages/fact-finding-assignment/List.vue"),
+      },
+      {
+        path: ":factFindingAssignmentId",
+        name: "sales-fact-finding-assignment-detail",
+        props: true,
+        component: () =>
+          import("@/sales-bc/pages/fact-finding-assignment/Detail.vue"),
+      },
+    ],
+  },
+  {
+    path: "sales-striking-assignment/",
+    children: [
+      {
+        path: "",
+        name: "sales-striking-assignment-list",
+        component: () =>
+          import("@/sales-bc/pages/striking-assignment/List.vue"),
+      },
+      {
+        path: ":strikingAssignmentId",
+        name: "sales-striking-detail",
+        props: true,
+        component: () =>
+          import("@/sales-bc/pages/striking-assignment/Detail.vue"),
       },
     ],
   },

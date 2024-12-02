@@ -6,18 +6,26 @@ import {
 } from "@/resources/composables/validator";
 import { VerificationReportType } from "./customer/verification-report";
 import { CityType } from "./province/city";
+import { CustomerStatusEnum } from "@/shared-bc/domain/enum/customer-status-enum";
+import { GreetingAssignmentType } from "./manager/sales/greeting-assignment";
+import { FactFindingAssignmentType } from "./manager/sales/fact-finding-assignment";
+import { StrikingAssignmentType } from "./manager/sales/striking-assignment";
 
 export type CustomerType = {
   id?: string;
   createdTime?: string;
+  status?: CustomerStatusEnum;
   email?: string;
   name?: string;
   phone?: string;
   source?: string;
-  verificationScore?: number;
+  rating?: number;
   City_id?: string;
   city?: CityType;
   verificationReports?: VerificationReportType[];
+  greetingAssignments?: GreetingAssignmentType[];
+  factFindingAssignments?: FactFindingAssignmentType[];
+  strikingAssignments?: StrikingAssignmentType[];
 };
 
 export default class Customer {
@@ -26,6 +34,7 @@ export default class Customer {
   name: string = "";
   phone: string = "";
   source: string = "";
+  rating?: number;
   city?: CityType;
   verificationReports: VerificationReportType[] = [];
 
@@ -39,6 +48,7 @@ export default class Customer {
     this.name = data.name ?? this.name;
     this.phone = data.phone ?? this.phone;
     this.source = data.source ?? this.source;
+    this.rating = data.rating ?? this.rating;
     this.city = data.city ?? this.city;
 
     this.verificationReports =

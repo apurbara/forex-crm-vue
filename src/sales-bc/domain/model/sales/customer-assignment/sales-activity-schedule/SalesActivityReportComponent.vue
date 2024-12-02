@@ -1,6 +1,8 @@
 <template>
-  <v-textarea ref="focus" label="report content" v-model="salesActivityReport.content"
-    :rules="[salesActivityReport.isValidContent()]" />
+  <div>
+    <v-textarea ref="focus" label="report content" v-model="salesActivityReport.content"
+      :rules="[salesActivityReport.isValidContent()]" />
+  </div>
 </template>
 
 <script lang="ts" setup>

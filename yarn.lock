@@ -1027,6 +1027,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chartjs-plugin-annotation@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "chartjs-plugin-annotation@npm:3.0.1"
+  peerDependencies:
+    chart.js: ">=4.0.0"
+  checksum: 10c0/eeb76e3ebca8147710863c948636898e25605cf1490cf8dcb5df85ffb87079eb7076356fd9de846e89c943be3f745a91ca67d769a4e30159470cbabe933389ce
+  languageName: node
+  linkType: hard
+
 "chokidar@npm:>=3.0.0 <4.0.0, chokidar@npm:^3.5.3":
   version: 3.5.3
   resolution: "chokidar@npm:3.5.3"
@@ -1685,11 +1694,13 @@ __metadata:
     "@vue/eslint-config-typescript": "npm:^11.0.0"
     axios: "npm:^1.5.1"
     chart.js: "npm:^4.4.3"
+    chartjs-plugin-annotation: "npm:^3.0.1"
     core-js: "npm:^3.29.0"
     eslint: "npm:^8.37.0"
     eslint-plugin-vue: "npm:^9.3.0"
     gql-query-builder: "npm:^3.8.0"
     luxon: "npm:^3.4.4"
+    maska: "npm:^3.0.4"
     pinia: "npm:^2.0.0"
     primevue: "npm:^3.35.0"
     qalendar: "npm:^3.7.0"
@@ -1701,6 +1712,7 @@ __metadata:
     vite: "npm:^4.2.0"
     vite-plugin-vuetify: "npm:^1.0.0"
     vue: "npm:^3.2.0"
+    vue-chartjs: "npm:^5.3.1"
     vue-currency-input: "npm:^3.1.0"
     vue-router: "npm:^4.0.0"
     vue-tsc: "npm:^1.2.0"
@@ -2302,6 +2314,13 @@ __metadata:
     promise-retry: "npm:^2.0.1"
     ssri: "npm:^10.0.0"
   checksum: 10c0/df5f4dbb6d98153b751bccf4dc4cc500de85a96a9331db9805596c46aa9f99d9555983954e6c1266d9f981ae37a9e4647f42b9a4bb5466f867f4012e582c9e7e
+  languageName: node
+  linkType: hard
+
+"maska@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "maska@npm:3.0.4"
+  checksum: 10c0/89a363d53b2a6a2a93a54656d4077fcb22fc4ca5cd1b4bc0f4eaa87295e40a958ad0b8492fa68b64be5cb2efa340ec97a006e80e1580bc7f80f5549bdfc29369
   languageName: node
   linkType: hard
 
@@ -3354,6 +3373,16 @@ __metadata:
   bin:
     vite: bin/vite.js
   checksum: 10c0/d1359f147eb84aad9922460848184f14295e76f335ab03f90a585886ff070e1a7c74996022b3bb07da0a3130c9829565b5556e6eb1d0db12a8aad26f3694d445
+  languageName: node
+  linkType: hard
+
+"vue-chartjs@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "vue-chartjs@npm:5.3.1"
+  peerDependencies:
+    chart.js: ^4.1.1
+    vue: ^3.0.0-0 || ^2.7.0
+  checksum: 10c0/a5788cd62b8e662207c9762794e542f84144e777fd0a907eead1ece7301c74b549f9f5cf402ce972b78a8dbed41baee6603dcc57d3eb11257a663c0c17ad6035
   languageName: node
   linkType: hard
 

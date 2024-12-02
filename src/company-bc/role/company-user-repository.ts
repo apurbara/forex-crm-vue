@@ -52,7 +52,7 @@ export default class CompanyUserRepository {
     }
   }
   //
-  getUser<Role extends CompanyUserRole = CompanyUserRole>(): Role | undefined {
+  getUser<Role extends CompanyUserRole = CompanyUserRole>(): Role {
     return this.user as Role;
   }
 

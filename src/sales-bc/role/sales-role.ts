@@ -1,14 +1,17 @@
 import HttpRequestInterface from "@/infrastructure/http-request-interface";
 import RestRequestInterface from "@/infrastructure/rest-request-interface";
 import { GraphqlBuilderOptions } from "@/resources/types/graphql";
+import { SalesRoleEnum } from "@/shared-bc/domain/enum/sales-role-enum";
 
 export type SalesRoleType = {
+  role?: SalesRoleEnum;
   token?: string;
   name?: string;
   type?: string;
 };
 
 export default class SalesRole {
+  public role?: SalesRoleEnum;
   protected token: string;
   public name?: string;
   static readonly type: string = "SALES";
@@ -20,15 +23,26 @@ export default class SalesRole {
     httpRequest: HttpRequestInterface,
     restRequest: RestRequestInterface
   ) {
+    this.role = parameters.role;
     this.token = parameters.token!;
     this.name = parameters.name;
     this.httpRequest = httpRequest;
     this.restRequest = restRequest;
   }
 
-  getLandingPage(): string {
-    return "/sales-dashboard";
-  }
+  // getLandingPage(): string {
+  //   switch (this.role) {
+  //     case SalesRoleEnum.GREETER:
+  //       return "/greeter-dashboard";
+  //     case SalesRoleEnum.FACT_FINDER:
+  //       return "/fact-finder-dashboard";
+  //     case SalesRoleEnum.STRIKER:
+  //       return "/striker-dashboard";
+  //     default:
+  //       return "/striker-dashboard";
+  //   }
+  //   // return "/sales-dashboard";
+  // }
 
   //
   async executeSalesGraphqlMutation<ResponseType>(

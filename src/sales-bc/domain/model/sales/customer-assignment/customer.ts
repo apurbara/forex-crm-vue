@@ -1,33 +1,17 @@
+import { CustomerType } from "@/company-bc/domain/model/customer";
+import { CityType } from "@/company-bc/domain/model/province/city";
+import VerificationReport from "./customer/verification-report";
+import { VerificationReportType } from "@/company-bc/domain/model/customer/verification-report";
+import { CustomerVerificationType } from "@/company-bc/domain/model/customer-verification";
 import { ValidationResult } from "@/resources/types/custom-types";
 import { isEmail, isNotEmpty } from "@/resources/composables/validator";
-import VerificationReport, {
-  VerificationReportType,
-} from "./customer/verification-report";
-import { CityType } from "@/company-bc/domain/model/province/city";
-import { CustomerVerificationType } from "@/company-bc/domain/model/customer-verification";
-
-export type CustomerType = {
-  id?: string;
-  disabled?: boolean;
-  createdTime?: string;
-  name?: string;
-  email?: string;
-  phone?: string;
-  source?: string;
-  //
-  City_id?: string;
-  city?: CityType;
-  //
-  verificationReports?: VerificationReportType[];
-};
 
 export default class Customer {
   id?: string;
-  disabled?: boolean;
-  createdTime?: string;
   name?: string;
   email?: string;
   phone?: string;
+  rating?: number;
   source?: string;
   //
   city?: CityType;
@@ -39,11 +23,10 @@ export default class Customer {
 
   load(data: CustomerType) {
     this.id = data.id ?? this.id;
-    this.disabled = data.disabled ?? this.disabled;
-    this.createdTime = data.createdTime ?? this.createdTime;
     this.name = data.name ?? this.name;
     this.email = data.email ?? this.email;
     this.phone = data.phone ?? this.phone;
+    this.rating = data.rating ?? this.rating;
     this.source = data.source ?? this.source;
     this.city = data.city ?? this.city;
 

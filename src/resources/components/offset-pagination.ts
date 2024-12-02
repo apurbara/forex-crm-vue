@@ -19,7 +19,7 @@ export class OffsetLimit {
     public pageSize: number = 10,
     public page: number = 1,
     public availableOrders: Array<OrderType> = []
-  ) { }
+  ) {}
 
   load(offsetLimit: OffsetLimitType): void {
     this.pageSize = offsetLimit.pageSize;

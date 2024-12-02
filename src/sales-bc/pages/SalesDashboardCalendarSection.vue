@@ -23,8 +23,10 @@
 </template>
 
 <script setup lang="ts">
-import { SalesActivityScheduleType } from "@/company-bc/domain/model/sales/customer-assignment/sales-activity-schedule";
+import { SalesActivityScheduleType } from "@/company-bc/domain/model/manager/sales/customer-assignment/sales-activity-schedule";
 import { useIsoToLocalTimeFormat } from "@/resources/composables/typography";
+import { isNotEmpty } from "@/resources/composables/validator";
+import { SalesRoleEnum } from "@/shared-bc/domain/enum/sales-role-enum";
 import IconAndInfoComponent from "@/shared/components/IconAndInfoComponent.vue";
 import { useDependencyInjection } from "@/shared/composables/dependency-injection";
 import { Qalendar } from "qalendar";
@@ -40,9 +42,11 @@ const config = ref({ defaultMode: 'month', locale: 'id-ID', eventDialog: { isCus
 const calendarSchedules = computed(() => {
   return salesActivitySchedules.value.map((salesActivitySchedule: SalesActivityScheduleType) => {
     return {
-      id: salesActivitySchedule.customerAssignment?.id,
+      // id: salesActivitySchedule.strikingAssignment?.id || salesActivitySchedule.greetingAssignment?.id || salesActivitySchedule.factFindingAssignment?.id,
+      id: getAssignmentId(salesActivitySchedule),
       title: salesActivitySchedule.salesActivity?.name,
-      with: salesActivitySchedule.customerAssignment?.customer?.name,
+      // with: salesActivitySchedule.customerAssignment?.customer?.name,
+      with: getCustomerName(salesActivitySchedule),
       time: { start: useIsoToLocalTimeFormat(salesActivitySchedule.startTime!), end: useIsoToLocalTimeFormat(salesActivitySchedule.endTime!) },
     }
   })
@@ -63,19 +67,43 @@ const renderStartEndTime = ((time: { start: string, end: string }): string => {
 
 onMounted(async () => {
   const response = await salesRepository.getUser()
-    .executeSalesGraphqlQuery<{ viewAllNonInitialSchedules: SalesActivityScheduleType[] }>({
-      operation: "viewAllNonInitialSchedules",
+    .executeSalesGraphqlQuery<{ viewAllOngoingSchedule: SalesActivityScheduleType[] }>({
+      operation: "viewAllOngoingSchedule",
       variables: {},
       fields: [
         "id", "startTime", "endTime", "status",
-        { customerAssignment: ["id", "status", { customer: ["name"] }] },
+        { greetingAssignment: ["id", "status", { customer: ["name"] }] },
+        { factFindingAssignment: ["id", "status", { customer: ["name"] }] },
+        { strikingAssignment: ["id", "status", { customer: ["name"] }] },
         { salesActivity: ["id", "name", "duration"] },
       ]
     })
-  salesActivitySchedules.value = response.viewAllNonInitialSchedules
+  salesActivitySchedules.value = response.viewAllOngoingSchedule
 })
 
-const toCustomerAssignmentDetail = (customerAssignmentId: string) => router.push(`/sales-customer-assignment/${customerAssignmentId}`)
+const toCustomerAssignmentDetail = (assignmentId: string) => {
+  switch (salesRepository.getUser().role) {
+    case SalesRoleEnum.GREETER:
+      router.push(`/sales-greeting-assignment/${assignmentId}`);
+      break;
+    case SalesRoleEnum.FACT_FINDER:
+      router.push(`/sales-fact-finding-assignment/${assignmentId}`);
+      break;
+    case SalesRoleEnum.STRIKER:
+      router.push(`/sales-striking-assignment/${assignmentId}`);
+      break;
+    default:
+      break;
+  }
+}
+
+const getAssignmentId = (activity: SalesActivityScheduleType) => {
+  return activity.greetingAssignment?.id || activity.factFindingAssignment?.id || activity.strikingAssignment?.id;
+}
+
+const getCustomerName = (activity: SalesActivityScheduleType) => {
+  return activity.greetingAssignment?.customer?.name || activity.factFindingAssignment?.customer?.name || activity.strikingAssignment?.customer?.name;
+}
 
 </script>
 

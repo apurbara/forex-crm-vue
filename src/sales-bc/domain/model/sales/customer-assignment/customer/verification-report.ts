@@ -1,17 +1,6 @@
 import { CustomerVerificationType } from "@/company-bc/domain/model/customer-verification";
-import Customer, { CustomerType } from "../customer";
-
-export type VerificationReportType = {
-  id?: string;
-  createdTime?: string;
-  note?: string;
-  //
-  Customer_id?: string;
-  customer?: CustomerType;
-  //
-  CustomerVerification_id?: string;
-  customerVerification?: CustomerVerificationType;
-};
+import Customer from "../customer";
+import { VerificationReportType } from "@/company-bc/domain/model/customer/verification-report";
 
 export default class VerificationReport {
   id?: string;
