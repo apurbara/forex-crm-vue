@@ -9,7 +9,7 @@
       <thead>
         <tr>
           <th>name</th>
-          <th>metric type</th>
+          <th>performance metric type</th>
           <th>recurrence type</th>
           <th>recurrence count</th>
           <th>last modified time</th>
@@ -28,7 +28,7 @@
         <tr v-else v-for="(salesPerformanceMetric, index) in pagination.resultList"
           :key="salesPerformanceMetric.id ?? index" @dblclick="toDetail(salesPerformanceMetric.id!)">
           <td>{{ salesPerformanceMetric.name }}</td>
-          <td>{{ salesPerformanceMetric.metricType }}</td>
+          <td>{{ salesPerformanceMetric.salesPerformanceMetricType }}</td>
           <td>{{ salesPerformanceMetric.recurrenceType }}</td>
           <td>{{ salesPerformanceMetric.recurrenceCount }}</td>
           <td>{{ new Date(salesPerformanceMetric.lastModifiedTime!).toLocaleDateString() }}</td>
@@ -66,7 +66,7 @@ const pagination = reactive(new OffsetPagination<SalesPerformanceMetricType>(
         operation: 'viewSalesPerformanceMetricList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
-          'id', 'disabled', 'lastModifiedTime', 'name', 'metricType', 'recurrenceType', 'recurrenceCount',
+          'id', 'disabled', 'lastModifiedTime', 'name', 'salesPerformanceMetricType', 'recurrenceType', 'recurrenceCount',
           { evaluations: ['alias', 'evaluationType'] }
         ])
       })!

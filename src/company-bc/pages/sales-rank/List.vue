@@ -9,7 +9,8 @@
       <thead>
         <tr>
           <th>name</th>
-          <th>metric type</th>
+          <th>sales metric type</th>
+          <th>sales role</th>
           <th>evaluation type</th>
           <th>recurrence type</th>
           <th>query order</th>
@@ -30,7 +31,8 @@
         <tr v-else v-for="(salesRank, index) in pagination.resultList" :key="salesRank.id ?? index"
           @dblclick="toDetail(salesRank.id!)">
           <td>{{ salesRank.name }}</td>
-          <td>{{ salesRank.metricType }}</td>
+          <td>{{ salesRank.salesMetricType }}</td>
+          <td>{{ salesRank.salesRole }}</td>
           <td>{{ salesRank.evaluationType }}</td>
           <td>{{ salesRank.recurrenceType }}</td>
           <td>{{ salesRank.queryOrder }}</td>
@@ -70,7 +72,7 @@ const pagination = reactive(new OffsetPagination<SalesRankType>(
         operation: 'viewSalesRankList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
-          'id', 'disabled', 'lastModifiedTime', 'name', 'displaySalesNumber', 'metricType',
+          'id', 'disabled', 'lastModifiedTime', 'name', 'displaySalesNumber', 'salesMetricType', 'salesRole',
           'evaluationType', 'recurrenceType', 'queryOrder'
         ])
       })!

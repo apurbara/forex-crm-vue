@@ -9,6 +9,7 @@ import { isEmail, isNotEmpty } from "@/resources/composables/validator";
 export default class Customer {
   id?: string;
   name?: string;
+  bio?: string;
   email?: string;
   phone?: string;
   rating?: number;
@@ -24,6 +25,7 @@ export default class Customer {
   load(data: CustomerType) {
     this.id = data.id ?? this.id;
     this.name = data.name ?? this.name;
+    this.bio = data.bio ?? this.bio;
     this.email = data.email ?? this.email;
     this.phone = data.phone ?? this.phone;
     this.rating = data.rating ?? this.rating;
@@ -86,7 +88,7 @@ export default class Customer {
   isValidEmail(): ValidationResult {
     return !this.email
       ? true
-      : isEmail(this.email) || "customer name is mandatory";
+      : isEmail(this.email) || "invalid mail format";
   }
   isValidProperties(): boolean {
     return this.isValidName() === true && this.isValidEmail() === true;
@@ -97,7 +99,8 @@ export default class Customer {
     return {
       name: this.name,
       email: this.email,
-      City_id: this.city?.id,
+      bio: this.bio,
+      City_id: { type: "ID", value: this.city?.id },
     };
   }
 }

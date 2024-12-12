@@ -53,7 +53,7 @@ onMounted(async () => {
         'id', 'status', 'createdTime',
         {
           customer: [
-            'name', "email", "phone", "rating", "source",
+            'name', "email", "phone", "rating", "source", "bio",
             { city: ["id", "name"] },
             { verificationReports: ["id", "note", "CustomerVerification_id"] },
             {

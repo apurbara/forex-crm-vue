@@ -1,4 +1,3 @@
-import { SalesEnumType } from "@/shared-bc/domain/enum/sales-enum-type";
 import { useDependencyInjection } from "@/shared/composables/dependency-injection";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
@@ -24,7 +23,6 @@ export const useSalesStore = defineStore("sales", () => {
             type: "[FilterInput]",
             value: [
               { column: "Sales.contractTerminated", value: false },
-              { column: "Sales.type", value: SalesEnumType.IN_HOUSE },
             ],
           },
         },
@@ -53,7 +51,6 @@ export const useSalesStore = defineStore("sales", () => {
             type: "[FilterInput]",
             value: [
               { column: "Sales.contractTerminated", value: false },
-              { column: "Sales.type", value: SalesEnumType.IN_HOUSE },
             ],
           },
         },

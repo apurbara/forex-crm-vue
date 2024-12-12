@@ -20,7 +20,7 @@ const FactFindingAssignmentPagination = reactive(new OffsetPagination<FactFindin
       .executeSalesGraphqlQuery<{ factFindingAssignmentList: PaginationResponseType<FactFindingAssignmentType> }>({
         operation: "factFindingAssignmentList",
         variables: pagination.toGraphqlVariables(),
-        fields: OffsetPagination.wrapResultFields(["id", "status", { customer: ["id", "name", "email", "phone", { city: ["name"] }] }])
+        fields: OffsetPagination.wrapResultFields(["id", "status", { customer: ["id", "name", "email", "phone", "rating", { city: ["name"] }] }])
       })
     return response.factFindingAssignmentList;
   },

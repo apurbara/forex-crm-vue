@@ -10,7 +10,7 @@
     <NotificationCardComponent :title="'Idle Assignment'" :info="idleAssignment"
       @click="toAssignmentPage('idle-assignment')" />
   </div>
-  <SalesDashboardMetricComponent />
+  <StrikerDashboardMetricComponent />
   <SalesDashboardCalendarSection />
   <!-- <section class="page-section calendar-container is-light-mode">
     <Qalendar :events="calendarSchedules" :config="config" @updated-period="periodUpdated" />
@@ -30,6 +30,7 @@ import { useRouter } from "vue-router";
 // import { SalesActivityScheduleSummaryType } from "../domain/model/sales/customer-assignment/salesActivitySchedule";
 import NotificationCardComponent from "@/shared/components/NotificationCardComponent.vue";
 import SalesDashboardCalendarSection from "./SalesDashboardCalendarSection.vue";
+import StrikerDashboardMetricComponent from "./StrikerDashboardMetricComponent.vue";
 
 const { salesRepository } = useDependencyInjection()
 // const salesActivityScheduleSummaryList = ref<SalesActivityScheduleSummaryType[]>([])

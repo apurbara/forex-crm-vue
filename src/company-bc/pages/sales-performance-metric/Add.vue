@@ -29,7 +29,7 @@ const submit = async () => {
       operation: 'createSalesPerformanceMetric',
       variables: salesPerformanceMetric.toGraphqlVariables(),
       fields: [
-        'id', 'disabled', 'lastModifiedTime', 'name', 'metricType', 'recurrenceType', 'recurrenceCount',
+        'id', 'disabled', 'lastModifiedTime', 'name', 'salesPerformanceMetricType', 'recurrenceType', 'recurrenceCount',
         { evaluations: ['alias', 'evaluationType'] }
       ]
     })

@@ -29,7 +29,7 @@ const submit = async () => {
       operation: 'createSalesRank',
       variables: salesRank.toGraphqlVariables(),
       fields: [
-        'id', 'disabled', 'lastModifiedTime', 'name', 'metricType', 'evaluationType', 'recurrenceType',
+        'id', 'disabled', 'lastModifiedTime', 'name', 'salesMetricType', 'salesRole', 'evaluationType', 'recurrenceType',
         'queryOrder', 'displaySalesNumber'
       ]
     })

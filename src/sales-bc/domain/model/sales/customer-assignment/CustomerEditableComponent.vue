@@ -4,6 +4,8 @@
     <v-text-field label="email" v-model="customer.email" density="compact" :rules="[customer.isValidEmail()]" />
     <v-autocomplete label="city" variant="outlined" :items="cityList" density="compact" item-title="name" return-object
       v-model="customer.city" />
+    <v-textarea v-model="customer.bio" label="bio" auto-grow></v-textarea>
+
   </div>
 </template>
 
@@ -13,7 +15,7 @@ import { useDependencyInjection } from '@/shared/composables/dependency-injectio
 import { CityType } from '@/company-bc/domain/model/province/city';
 import Customer from './customer';
 
-const props = defineProps<{ customer: Customer }>();
+defineProps<{ customer: Customer }>();
 const { companyUserRepository } = useDependencyInjection()
 
 const cityList = ref<CityType[]>([]);

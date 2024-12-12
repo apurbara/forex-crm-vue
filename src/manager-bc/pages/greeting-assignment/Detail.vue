@@ -8,7 +8,7 @@
   </div>
   <div>
     <section class="page-section ma-2">
-      <DetailCustomerSection :customer="greetingAssignment?.customer" />
+      <DetailCustomerSection :customer="greetingAssignment?.customer!" />
     </section>
   </div>
   <div>

@@ -1,7 +1,7 @@
 import { isNotEmpty, isNumber } from "@/resources/composables/validator";
 import { ValidationResult } from "@/resources/types/custom-types"
 import { EvaluationType } from "@/shared-bc/domain/enum/evaluation-type";
-import { MetricType } from "@/shared-bc/domain/enum/metric-type";
+import { MetricTypeEnum } from "@/shared-bc/domain/enum/metric-type-enum";
 import { RecurrenceType } from "@/shared-bc/domain/enum/recurrence-type";
 
 export type CompanyMetricType = {
@@ -11,7 +11,7 @@ export type CompanyMetricType = {
     lastModifiedTime?: string;
     name?: string;
     target?: number;
-    metricType?: MetricType;
+    metricType?: MetricTypeEnum;
     evaluationType?: EvaluationType;
     recurrenceType?: RecurrenceType;
     recurrenceCount?: number;
@@ -25,7 +25,7 @@ export default class CompanyMetric {
     lastModifiedTime?: string = undefined;
     name?: string = undefined;
     target?: number = undefined;
-    metricType?: MetricType = undefined;
+    metricType?: MetricTypeEnum = undefined;
     evaluationType?: EvaluationType = undefined;
     recurrenceType?: RecurrenceType = undefined;
     recurrenceCount?: number = undefined;

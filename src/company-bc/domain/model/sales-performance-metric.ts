@@ -10,7 +10,7 @@ export type SalesPerformanceMetricType = {
     createdTime?: string;
     lastModifiedTime?: string;
     name?: string;
-    metricType?: SalesPerformanceMetricTypeEnum;
+    salesPerformanceMetricType?: SalesPerformanceMetricTypeEnum;
     recurrenceType?: RecurrenceType;
     recurrenceCount?: number;
     displaySchema?: string;
@@ -23,7 +23,7 @@ export default class SalesPerformanceMetric {
     createdTime?: string = undefined;
     lastModifiedTime?: string = undefined;
     name?: string = undefined;
-    metricType?: SalesPerformanceMetricTypeEnum = undefined;
+    salesPerformanceMetricType?: SalesPerformanceMetricTypeEnum = undefined;
     recurrenceType?: RecurrenceType = undefined;
     recurrenceCount?: number = undefined;
     displaySchema?: string = undefined;
@@ -40,7 +40,7 @@ export default class SalesPerformanceMetric {
         this.createdTime = data.createdTime ?? this.createdTime;
         this.lastModifiedTime = data.lastModifiedTime ?? this.lastModifiedTime;
         this.name = data.name ?? this.name;
-        this.metricType = data.metricType ?? this.metricType;
+        this.salesPerformanceMetricType = data.salesPerformanceMetricType ?? this.salesPerformanceMetricType;
         this.recurrenceType = data.recurrenceType ?? this.recurrenceType;
         this.recurrenceCount = data.recurrenceCount ?? this.recurrenceCount;
         this.displaySchema = data.displaySchema ?? this.displaySchema;
@@ -68,7 +68,7 @@ export default class SalesPerformanceMetric {
         return {
             id: { type: "ID", value: this.id },
             name: this.name,
-            metricType: this.metricType,
+            salesPerformanceMetricType: this.salesPerformanceMetricType,
             recurrenceType: this.recurrenceType,
             recurrenceCount: Number(this.recurrenceCount),
             displaySchema: this.displaySchema,
@@ -84,8 +84,8 @@ export default class SalesPerformanceMetric {
     isValidName(): ValidationResult {
         return isNotEmpty(this.name) || "name is mandatory";
     }
-    isValidMetricType(): ValidationResult {
-        return isNotEmpty(this.metricType) || "metric type is mandatory";
+    isValidSalesPerformanceMetricType(): ValidationResult {
+        return isNotEmpty(this.salesPerformanceMetricType) || "sales performance metric type is mandatory";
     }
     isValidRecurrenceType(): ValidationResult {
         return isNotEmpty(this.recurrenceType) || "recurrence type is mandatory";
@@ -99,7 +99,7 @@ export default class SalesPerformanceMetric {
             allEvaluationValid ||= evaluation.isValidProperties();
             // allEvaluationValid = allEvaluationValid || evaluation.isValidProperties();
         });
-        return this.isValidName() === true && this.isValidMetricType() === true
+        return this.isValidName() === true && this.isValidSalesPerformanceMetricType() === true
             && this.isValidRecurrenceType() === true && this.isValidRecurrenceCount() === true
             && allEvaluationValid;
     }

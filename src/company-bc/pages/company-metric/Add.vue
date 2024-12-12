@@ -19,7 +19,7 @@ import { useRouter } from 'vue-router';
 
 const companyMetric = reactive(new CompanyMetric());
 
-const { httpRequest, companyUserRepository, cache } = useDependencyInjection()
+const { companyUserRepository, cache } = useDependencyInjection()
 const router = useRouter()
 
 

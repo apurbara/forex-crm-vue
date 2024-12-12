@@ -17,6 +17,7 @@ export type CustomerType = {
   status?: CustomerStatusEnum;
   email?: string;
   name?: string;
+  bio?: string;
   phone?: string;
   source?: string;
   rating?: number;
@@ -32,6 +33,7 @@ export default class Customer {
   id?: string;
   email: string = "";
   name: string = "";
+  bio: string = "";
   phone: string = "";
   source: string = "";
   rating?: number;
@@ -46,6 +48,7 @@ export default class Customer {
     this.id = data.id ?? this.id;
     this.email = data.email ?? this.email;
     this.name = data.name ?? this.name;
+    this.bio = data.bio ?? this.bio;
     this.phone = data.phone ?? this.phone;
     this.source = data.source ?? this.source;
     this.rating = data.rating ?? this.rating;

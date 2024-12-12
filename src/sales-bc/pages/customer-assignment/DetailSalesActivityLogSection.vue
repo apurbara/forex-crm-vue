@@ -44,7 +44,8 @@
       <p class="text-center font-20 font-weight-bold mb-8">Plan new activity</p>
       <SubmitSalesActivityScheduleComponent :sales-activity-schedule="newActivitySchedule" />
       <div class="d-flex justify-end mt-4">
-        <v-btn block @click="submitNewSchedule" variant="tonal" :disabled="throttleNewScheduleRequest">Submit</v-btn>
+        <v-btn block @click="submitNewSchedule" variant="tonal"
+          :disabled="throttleNewScheduleRequest || !newActivitySchedule.isValidToSubmit()">Submit</v-btn>
       </div>
     </div>
   </Dialog>
@@ -52,16 +53,16 @@
   <Dialog v-model:visible="displayNonScheduleActivityReportDialog" style="width: 600px;" modal>
     <div class="ma-4">
       <p class="text-center font-20 font-weight-bold mb-8">Submit Non Scheduled Activity Report</p>
-      <v-select label="select activity" :items="salesActivityList" item-title="name" return-object
-        v-model="nonScheduledSalesActivity" hide-details />
+      <v-select density="compact" label="select activity" :items="salesActivityList" item-title="name" return-object
+        v-model="nonScheduledSalesActivity" />
       <v-textarea label="content" v-model="nonScheduledActivityReportContent" />
       <div class="d-flex justify-end mt-4">
         <v-btn block @click="submitNonScheduledActivityReport" variant="tonal"
-        :disabled="throttleInitialReportRequest">Submit</v-btn>
+          :disabled="throttleInitialReportRequest || isEmpty(nonScheduledActivityReportContent) || isEmpty(nonScheduledSalesActivity)">Submit</v-btn>
       </div>
     </div>
   </Dialog>
-  
+
   <Dialog v-model:visible="displaySalesActivityReportForm" style="width: 600px;" modal>
     <v-card>
       <v-card-title class="mt-6 text-center">Submit Sales Activity Report</v-card-title>
@@ -71,7 +72,7 @@
       </v-card-text>
       <div class="d-flex justify-center ma-6">
         <v-btn block @click="submitSalesActivityReport" variant="tonal"
-          :disabled="!salesActivityReport.isValidToSubmit() && throttleActivityReportRequest">submit</v-btn>
+          :disabled="!salesActivityReport.isValidToSubmit() || throttleActivityReportRequest">submit</v-btn>
       </div>
     </v-card>
   </Dialog>
@@ -83,6 +84,7 @@ import { SalesActivityScheduleType } from '@/company-bc/domain/model/manager/sal
 import { SalesActivityReportType } from '@/company-bc/domain/model/manager/sales/customer-assignment/sales-activity-schedule/sales-activity-report';
 import { SalesActivityType } from '@/company-bc/domain/model/sales-activity';
 import { useStringLimiter } from '@/resources/composables/typography';
+import { isEmpty, isNotEmpty } from '@/resources/composables/validator';
 import CustomerAssignment from '@/sales-bc/domain/model/sales/customer-assignment';
 import SalesActivityReport from '@/sales-bc/domain/model/sales/customer-assignment/sales-activity-schedule/sales-activity-report';
 import SalesActivityReportComponent from '@/sales-bc/domain/model/sales/customer-assignment/sales-activity-schedule/SalesActivityReportComponent.vue';
@@ -121,7 +123,7 @@ const showReportContent = (event: any, salesActivityReport: SalesActivityReport)
 
 const displayNonScheduleActivityReportDialog = ref<boolean>(false)
 const nonScheduledActivityReportContent = ref<string>("");
-const nonScheduledSalesActivity = ref<SalesActivityType>({});
+const nonScheduledSalesActivity = ref<SalesActivityType>();
 const throttleInitialReportRequest = ref<boolean>(false);
 const submitNonScheduledActivityReport = async () => {
   throttleInitialReportRequest.value = true;
@@ -130,7 +132,7 @@ const submitNonScheduledActivityReport = async () => {
       operation: 'submitNonScheduledActivityReport',
       variables: {
         CustomerAssignment_id: { type: "ID", value: props.customerAssignment.id },
-        SalesActivity_id: { type: "ID", value: nonScheduledSalesActivity.value.id },
+        SalesActivity_id: { type: "ID", value: nonScheduledSalesActivity.value?.id },
         content: nonScheduledActivityReportContent
       },
       fields: [

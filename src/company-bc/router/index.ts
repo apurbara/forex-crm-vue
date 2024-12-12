@@ -103,31 +103,56 @@ const companyRoutes = [
     ],
   },
   {
-    path: "common-sales-metric/",
+    path: "sales-metric/",
     beforeEnter: () => {
       inject<CompanyUserRepository>("companyUserRepository")
         ?.getUser()
-        ?.canAccessCompanyMenu("common-sales-metric");
+        ?.canAccessCompanyMenu("sales-metric");
     },
     children: [
       {
         path: "",
-        name: "common-sales-metric-list",
-        component: () =>
-          import("@/company-bc/pages/common-sales-metric/List.vue"),
+        name: "sales-metric-list",
+        component: () => import("@/company-bc/pages/sales-metric/List.vue"),
       },
       {
-        path: "add",
-        name: "add-common-sales-metric",
+        path: "create-greeter-metric",
+        name: "create-greeter-metric",
         component: () =>
-          import("@/company-bc/pages/common-sales-metric/Add.vue"),
+          import("@/company-bc/pages/sales-metric/CreateGreeterMetric.vue"),
       },
       {
-        path: ":commonSalesMetricId",
-        name: "common-sales-metric-detail",
+        path: "greeter/:greeterMetricId",
+        name: "greeter-metric-detail",
         props: true,
         component: () =>
-          import("@/company-bc/pages/common-sales-metric/Detail.vue"),
+          import("@/company-bc/pages/sales-metric/GreeterMetricDetail.vue"),
+      },
+      {
+        path: "create-striker-metric",
+        name: "create-striker-metric",
+        component: () =>
+          import("@/company-bc/pages/sales-metric/CreateStrikerMetric.vue"),
+      },
+      {
+        path: "striker/:strikerMetricId",
+        name: "striker-metric-detail",
+        props: true,
+        component: () =>
+          import("@/company-bc/pages/sales-metric/StrikerMetricDetail.vue"),
+      },
+      {
+        path: "create-fact-finder-metric",
+        name: "create-fact-finder-metric",
+        component: () =>
+          import("@/company-bc/pages/sales-metric/CreateFactFinderMetric.vue"),
+      },
+      {
+        path: "fact-finder/:factFinderMetricId",
+        name: "fact-finder-metric-detail",
+        props: true,
+        component: () =>
+          import("@/company-bc/pages/sales-metric/FactFinderMetricDetail.vue"),
       },
     ],
   },

@@ -1,16 +1,10 @@
 <template>
   <h1 class="page-title">{{ greetingAssignment.customerAssignment.customer.name }}</h1>
-  <div>
-    <div class="d-flex justify-end mb-2">
-      <v-btn v-if="!editingCustomerBio" variant="tonal" @click="editingCustomerBio = true">edit customer</v-btn>
-      <v-btn v-else variant="tonal" @click="editingCustomerBio = false">cancel</v-btn>
+  <div class="d-flex">
+    <div class="flex-grow-1 flex-shrink-0">
+      <DetailSalesActivityLogSection :customer-assignment="greetingAssignment.customerAssignment" />
     </div>
-    <section v-if="editingCustomerBio" class="page-section ma-2">
-      <CustomerEditableComponent :customer="greetingAssignment.customerAssignment.customer" />
-      <v-btn :disabled="!greetingAssignment.customerAssignment.customer?.isValidProperties()!" variant="tonal"
-        @click="updateCustomerBio">update</v-btn>
-    </section>
-    <section v-else class="page-section ma-2">
+    <section class="page-section ma-2" style="width: 30%;">
       <DetailCustomerSection :customer-assignment="greetingAssignment.customerAssignment" />
       <div class="d-flex justify-end">
         <div class="px-2">
@@ -22,18 +16,13 @@
       </div>
     </section>
   </div>
-  <div>
-    <DetailSalesActivityLogSection :customer-assignment="greetingAssignment.customerAssignment" />
-  </div>
 </template>
 
 <script setup lang="ts">
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive } from 'vue';
 import GreetingAssignment from '@/sales-bc/domain/model/sales/greeting-assignment';
 import { GreetingAssignmentType } from '@/company-bc/domain/model/manager/sales/greeting-assignment';
-import CustomerEditableComponent from '@/sales-bc/domain/model/sales/customer-assignment/CustomerEditableComponent.vue';
-import CustomerReadonlyComponent from '@/sales-bc/domain/model/sales/customer-assignment/CustomerReadonlyComponent.vue';
 import { useRouter } from 'vue-router'
 import DetailSalesActivityLogSection from '../customer-assignment/DetailSalesActivityLogSection.vue';
 import DetailCustomerSection from '../customer-assignment/DetailCustomerSection.vue';
@@ -43,7 +32,6 @@ const greetingAssignment = reactive(new GreetingAssignment());
 const { salesRepository, httpRequest } = useDependencyInjection()
 
 const router = useRouter()
-const editingCustomerBio = ref<boolean>(false);
 
 onMounted(async () => {
   const response = await salesRepository.getUser()
@@ -54,7 +42,7 @@ onMounted(async () => {
         'id', 'status', 'createdTime',
         {
           customer: [
-            'name', "email", "phone", "rating", "source",
+            'name', "email", "phone", "rating", "source", "bio",
             { city: ["id", "name"] },
           ]
         },
@@ -69,22 +57,6 @@ onMounted(async () => {
     });
   greetingAssignment.load(response.greetingAssignmentDetail);
 })
-
-const updateCustomerBio = async () => {
-  const response = await salesRepository.getUser()
-    .executeSalesGraphqlMutation<{ updateCustomerBio: GreetingAssignmentType }>({
-      operation: "updateCustomerBio",
-      variables: {
-        id: { type: "ID", required: true, value: greetingAssignment.customerAssignment.id },
-        customer: {
-          type: "CustomerInput", value: greetingAssignment.customerAssignment.customer?.toGraphqlVariables()
-        },
-      },
-      fields: [{ customer: ["name", "email", { city: ["id", "name"] }] }]
-    })
-  greetingAssignment.customerAssignment.customer?.load(response.updateCustomerBio.customer!)
-  editingCustomerBio.value = false;
-}
 
 const validateCustomer = async () => {
   const response = await salesRepository.getUser()

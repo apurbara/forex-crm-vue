@@ -24,14 +24,14 @@
 
 <script setup lang="ts">
 import CompanyMetric from './company-metric';
-import { MetricType } from '@/shared-bc/domain/enum/metric-type';
+import { MetricTypeEnum } from '@/shared-bc/domain/enum/metric-type-enum';
 import { EvaluationType } from '@/shared-bc/domain/enum/evaluation-type';
 import { RecurrenceType } from '@/shared-bc/domain/enum/recurrence-type';
 import VCurrencyField from '@/shared/components/VCurrencyField.vue';
 
 defineProps<{ companyMetric: CompanyMetric, readonly?: boolean }>()
 
-const metricTypeList = Object.keys(MetricType)
+const metricTypeList = Object.keys(MetricTypeEnum)
 const evaluationTypeList = Object.keys(EvaluationType)
 const recurrenceTypeList = Object.keys(RecurrenceType)
 

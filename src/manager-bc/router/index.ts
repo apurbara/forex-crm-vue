@@ -70,44 +70,6 @@ const managerRoutes = [
       },
     ],
   },
-  // {
-  //   path: "manager-fact-finding-assignment/",
-  //   children: [
-  //     {
-  //       path: "",
-  //       name: "manager_fact-finding-assignment-list",
-  //       component: () => import("@/manager-bc/pages/fact-finding-assignment/List.vue"),
-  //     },
-  //     {
-  //       path: ":customerAssignmentId",
-  //       name: "manager_fact-finding-assignment-detail",
-  //       props: true,
-  //       component: () => import("@/manager-bc/pages/fact-finding-assignment/Detail.vue"),
-  //     },
-  //     {
-  //       path: "distribute",
-  //       name: "manager_fact-finding-greeting-assignment",
-  //       props: true,
-  //       component: () => import("@/manager-bc/pages/fact-finding-assignment/Distribute.vue"),
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: "manager-customer-assignment/",
-  //   children: [
-  //     {
-  //       path: "",
-  //       name: "manager-customer-assignment-list",
-  //       component: () => import("@/manager-bc/pages/customer-assignment/List.vue"),
-  //     },
-  //     {
-  //       path: ":customerAssignmentId",
-  //       name: "manager-customer-assignment-detail",
-  //       props: true,
-  //       component: () => import("@/manager-bc/pages/customer-assignment/Detail.vue"),
-  //     },
-  //   ],
-  // },
   {
     path: "manager-closing-request/",
     children: [

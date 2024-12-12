@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="page-title">Common Metric Sales Detail</h1>
+    <h1 class="page-title">Sales Rank Setting Detail</h1>
     <div class="d-flex justify-end">
     </div>
     <div class="form">
@@ -21,7 +21,6 @@ import SalesRankComponent from '@/company-bc/domain/model/SalesRankComponent.vue
 import SalesRank, { SalesRankType } from '@/company-bc/domain/model/sales-rank';
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 import { onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
 
 const { companyUserRepository, cache } = useDependencyInjection();
 
@@ -40,7 +39,7 @@ onMounted(async () => {
         operation: 'viewSalesRankDetail',
         variables: { id: { type: 'ID!', value: props.salesRankId } },
         fields: [
-          'id', 'lastModifiedTime', 'name', 'metricType', 'evaluationType', 'recurrenceType', 'queryOrder',
+          'id', 'lastModifiedTime', 'name', 'salesMetricType', 'salesRole', 'evaluationType', 'recurrenceType', 'queryOrder',
           'displaySalesNumber'
         ],
       })
@@ -55,7 +54,7 @@ const update = async () => {
       operation: "updateSalesRank",
       variables: salesRank.toGraphqlVariables(),
       fields: [
-        'lastModifiedTime', 'name', 'metricType', 'evaluationType', 'recurrenceType', 'queryOrder',
+        'lastModifiedTime', 'name', 'salesMetricType', 'salesRole', 'evaluationType', 'recurrenceType', 'queryOrder',
         'displaySalesNumber'
       ],
     })

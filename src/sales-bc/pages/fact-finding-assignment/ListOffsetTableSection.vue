@@ -10,6 +10,7 @@
           <th>name</th>
           <th>email</th>
           <th>phone</th>
+          <th>rating</th>
           <th>status</th>
           <th>city</th>
         </tr>
@@ -28,6 +29,8 @@
           <td>{{ customerAssignment.customer?.name }}</td>
           <td>{{ customerAssignment.customer?.email }}</td>
           <td>{{ customerAssignment.customer?.phone }}</td>
+          <td><v-rating disabled :length="3" :size="16" :model-value="customerAssignment.customer?.rating"
+              active-color="primary" /></td>
           <td>{{ customerAssignment.status }}</td>
           <td>{{ customerAssignment.customer?.city?.name }}</td>
         </tr>

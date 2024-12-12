@@ -72,7 +72,7 @@ const update = async () => {
       operation: "updateSales",
       variables: { ...sales.toGraphqlVariables(), name: undefined, email: undefined, password: undefined },
       fields: [
-        'type',
+        'name', 'email', 'role',
         { manager: ["id", "name"] }
       ],
     })

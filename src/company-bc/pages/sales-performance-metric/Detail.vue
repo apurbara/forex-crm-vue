@@ -40,7 +40,7 @@ onMounted(async () => {
         operation: 'viewSalesPerformanceMetricDetail',
         variables: { id: { type: 'ID!', value: props.salesPerformanceMetricId } },
         fields: [
-          'id', 'disabled', 'lastModifiedTime', 'name', 'metricType', 'recurrenceType', 'recurrenceCount',
+          'id', 'disabled', 'lastModifiedTime', 'name', 'salesPerformanceMetricType', 'recurrenceType', 'recurrenceCount',
           { evaluations: ['alias', 'evaluationType'] }
         ],
       })
@@ -55,7 +55,7 @@ const update = async () => {
       operation: "updateSalesPerformanceMetric",
       variables: salesPerformanceMetric.toGraphqlVariables(),
       fields: [
-        'lastModifiedTime', 'name', 'metricType', 'recurrenceType', 'recurrenceCount',
+        'lastModifiedTime', 'name', 'salesPerformanceMetricType', 'recurrenceType', 'recurrenceCount',
         { evaluations: ['alias', 'evaluationType'] }
       ],
     })

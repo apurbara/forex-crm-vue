@@ -13,7 +13,6 @@
           <th>status</th>
           <th>email</th>
           <th>phone</th>
-          <th>verification score</th>
           <th>source</th>
           <th>created time</th>
         </tr>
@@ -32,7 +31,6 @@
           <td>{{ customer.status }}</td>
           <td>{{ customer.email }}</td>
           <td>{{ customer.phone }}</td>
-          <td>{{ customer.verificationScore }}</td>
           <td>{{ customer.source }}</td>
           <td>{{ new Date(customer.createdTime!).toLocaleDateString() }}</td>
         </tr>
@@ -65,7 +63,7 @@ const pagination = reactive(new OffsetPagination<CustomerType>(
         operation: 'customerList',
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
-          'id', 'createdTime', 'status', 'name', 'email', 'phone', 'source', 'verificationScore'
+          'id', 'createdTime', 'status', 'name', 'email', 'phone', 'source'
         ])
       })!
     return response.customerList;

@@ -44,7 +44,7 @@ router.beforeEach((to, from) => {
   const companyUserRepository = inject<CompanyUserRepository>(
     "companyUserRepository"
   );
-  console.log(to.name)
+  // console.log(to.name)
   // console.log(!!companyUserRepository?.getUser())
   if (to.name === "landing-page" || to.name === "home") {
   } else if (to.name === "login") {

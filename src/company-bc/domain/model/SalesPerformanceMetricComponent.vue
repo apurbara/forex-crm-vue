@@ -3,8 +3,8 @@
         :readonly="readonly" />
     <v-row>
         <v-col cols="12" md="6">
-            <v-select :items="metricTypeList" v-model="salesPerformanceMetric.metricType" label="metric type"
-                :rules="[salesPerformanceMetric.isValidMetricType()]" :readonly="readonly" />
+            <v-select :items="salesPerformanceMetricTypeList" v-model="salesPerformanceMetric.salesPerformanceMetricType" label="sales performance metric type"
+                :rules="[salesPerformanceMetric.isValidSalesPerformanceMetricType()]" :readonly="readonly" />
         </v-col>
         <v-col cols="12" md="6">
             <v-select :items="recurrenceTypeList" v-model="salesPerformanceMetric.recurrenceType"
@@ -46,7 +46,7 @@ import { SalesPerformanceMetricTypeEnum } from '@/shared-bc/domain/enum/sales-pe
 
 defineProps<{ salesPerformanceMetric: SalesPerformanceMetric, readonly?: boolean }>()
 
-const metricTypeList = Object.keys(SalesPerformanceMetricTypeEnum)
+const salesPerformanceMetricTypeList = Object.keys(SalesPerformanceMetricTypeEnum)
 const recurrenceTypeList = Object.keys(RecurrenceType)
 
 </script>

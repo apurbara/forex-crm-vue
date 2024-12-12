@@ -77,7 +77,7 @@ onMounted(async () => {
         'id', 'status', 'createdTime',
         {
           customer: [
-            'name', "email", "phone", "rating", "source",
+            'name', "email", "phone", "rating", "source", "bio",
             { city: ["id", "name"] },
             { verificationReports: ["id", "note", "CustomerVerification_id"] },
             {
@@ -120,18 +120,6 @@ onMounted(async () => {
   greetingAssignmentsHistory = response.strikingAssignmentDetail.customer?.greetingAssignments ?? [];
   factFindingAssignmentsHistory = response.strikingAssignmentDetail.customer?.factFindingAssignments ?? [];
 })
-
-const markCustomerVerified = async () => {
-  const response = await salesRepository.getUser()
-    .executeSalesGraphqlMutation<{ validateCustomer: StrikingAssignmentType }>({
-      operation: "markCustomerVerified",
-      variables: {
-        id: { type: "ID", required: true, value: strikingAssignment.customerAssignment.id },
-      },
-      fields: ['status']
-    })
-  router.push({ path: '/sales-striking-assignment' })
-}
 
 const displayClosingRequestDialog = ref<boolean>(false);
 const closingRequest = reactive<ClosingRequest>(new ClosingRequest())

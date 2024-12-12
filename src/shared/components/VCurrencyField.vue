@@ -16,7 +16,6 @@ const { inputRef, formattedValue, setValue } = useCurrencyInput({
 watch(
   () => props.modelValue,
   (value) => {
-    console.log(value);
     setValue(value);
   }
 );

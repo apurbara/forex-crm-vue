@@ -66,8 +66,8 @@ export default class AdminRole implements CompanyUserRole {
           to: "/city",
         },
         {
-          title: "common sales metric",
-          to: "/common-sales-metric",
+          title: "sales metric",
+          to: "/sales-metric",
         },
         {
           title: "company metric",
