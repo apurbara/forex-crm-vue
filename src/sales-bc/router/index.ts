@@ -1,10 +1,5 @@
 const salesRoutes = [
   {
-    path: "sales-dashboard",
-    name: "sales-dashboard",
-    component: () => import("@/sales-bc/pages/SalesDashboard.vue"),
-  },
-  {
     path: "greeter-dashboard",
     name: "greeter-dashboard",
     component: () => import("@/sales-bc/pages/GreeterDashboard.vue"),

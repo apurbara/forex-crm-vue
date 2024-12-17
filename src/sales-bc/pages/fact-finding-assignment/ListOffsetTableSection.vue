@@ -25,7 +25,7 @@
           </td>
         </tr>
         <tr v-else v-for="(customerAssignment, index) in customerAssignmentPagination.resultList"
-          :key="customerAssignment.id ?? index" @dblclick="toDetail(customerAssignment.id!)">
+          :key="customerAssignment.id ?? index" @click="toDetail(customerAssignment.id!)">
           <td>{{ customerAssignment.customer?.name }}</td>
           <td>{{ customerAssignment.customer?.email }}</td>
           <td>{{ customerAssignment.customer?.phone }}</td>

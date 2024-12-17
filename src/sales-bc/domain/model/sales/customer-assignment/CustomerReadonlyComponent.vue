@@ -4,7 +4,9 @@
     <InfoComponentIcon style="min-width: 40%;" :info="{ value: customer.email, icon: `mdi-email-outline` }" />
     <InfoComponentIcon style="min-width: 40%;" :info="{ value: customer.city?.name, icon: `mdi-map-marker-outline` }" />
     <InfoComponentIcon style="min-width: 40%;" :info="{ value: customer.source, icon: `mdi-account-group-outline` }" />
-    <v-textarea v-model="customer.bio" label="bio" auto-grow disabled></v-textarea>
+    <div class="mt-6">
+      <v-textarea v-model="customer.bio" label="bio" auto-grow disabled rows="1"></v-textarea>
+    </div>
   </div>
 </template>
 

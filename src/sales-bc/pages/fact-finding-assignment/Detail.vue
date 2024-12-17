@@ -1,15 +1,16 @@
 <template>
   <h1 class="page-title">{{ factFindingAssignment.customerAssignment.customer.name }}</h1>
   <div class="d-flex flex-wrap">
-    <div style="width: 68%;">
+    <div class="flex-grow-1 flex-shrink-0">
       <section class="page-section ma-2">
         <DetailCustomerVerificationSection :fact-finding-assignment="factFindingAssignment" />
         <div class="ma-2">
-          <v-btn variant="tonal" @click="markCustomerVerified">complete verification</v-btn>
+          <v-btn variant="tonal" @click="markCustomerVerified" :disabled="processingVerificationRequest">complete
+            verification</v-btn>
         </div>
       </section>
     </div>
-    <div style="width: 30%;">
+    <div style="width: 35%;">
       <section class="page-section ma-2">
         <DetailCustomerSection :customer-assignment="factFindingAssignment.customerAssignment" />
       </section>
@@ -83,7 +84,9 @@ onMounted(async () => {
   greetingAssignmentsHistory = response.factFindingAssignmentDetail.customer?.greetingAssignments ?? [];
 })
 
+const processingVerificationRequest = ref<boolean>(false)
 const markCustomerVerified = async () => {
+  processingVerificationRequest.value = true;
   const response = await salesRepository.getUser()
     .executeSalesGraphqlMutation<{ validateCustomer: FactFindingAssignmentType }>({
       operation: "markCustomerVerified",
@@ -92,6 +95,7 @@ const markCustomerVerified = async () => {
       },
       fields: ['status']
     })
+  processingVerificationRequest.value = false;
   router.push({ path: '/sales-fact-finding-assignment' })
 }
 

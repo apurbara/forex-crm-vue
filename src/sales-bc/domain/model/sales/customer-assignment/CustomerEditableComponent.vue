@@ -4,7 +4,7 @@
     <v-text-field label="email" v-model="customer.email" density="compact" :rules="[customer.isValidEmail()]" />
     <v-autocomplete label="city" variant="outlined" :items="cityList" density="compact" item-title="name" return-object
       v-model="customer.city" />
-    <v-textarea v-model="customer.bio" label="bio" auto-grow></v-textarea>
+    <v-textarea v-model="customer.bio" label="bio" auto-grow rows="1"></v-textarea>
 
   </div>
 </template>

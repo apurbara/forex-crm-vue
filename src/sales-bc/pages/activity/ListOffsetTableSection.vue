@@ -19,7 +19,7 @@
           </td>
         </tr>
         <tr v-else v-for="(activity, index) in activitySchedulePagination.resultList" :key="activity.id ?? index"
-          @dblclick="toDetail(activity)">
+          @click="toDetail(activity)">
           <td>{{ getCustomerName(activity) }}</td>
           <!-- <td>{{ activity.customerAssignment?.customerJourney?.name }}</td> -->
           <td>{{ activity.status }}</td>

@@ -4,14 +4,14 @@
     <div class="flex-grow-1 flex-shrink-0">
       <DetailSalesActivityLogSection :customer-assignment="greetingAssignment.customerAssignment" />
     </div>
-    <section class="page-section ma-2" style="width: 30%;">
+    <section class="page-section ma-2" style="width: 35%;">
       <DetailCustomerSection :customer-assignment="greetingAssignment.customerAssignment" />
       <div class="d-flex justify-end">
         <div class="px-2">
-          <v-btn variant="tonal" @click="recycleCustomer">recycle</v-btn>
+          <v-btn variant="tonal" @click="recycleCustomer" :disabled="processingValidationRequest">recycle</v-btn>
         </div>
         <div class="px-2">
-          <v-btn variant="tonal" @click="validateCustomer">validate</v-btn>
+          <v-btn variant="tonal" @click="validateCustomer" :disabled="processingValidationRequest">validate</v-btn>
         </div>
       </div>
     </section>
@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
-import { onMounted, reactive } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import GreetingAssignment from '@/sales-bc/domain/model/sales/greeting-assignment';
 import { GreetingAssignmentType } from '@/company-bc/domain/model/manager/sales/greeting-assignment';
 import { useRouter } from 'vue-router'
@@ -58,7 +58,9 @@ onMounted(async () => {
   greetingAssignment.load(response.greetingAssignmentDetail);
 })
 
+const processingValidationRequest = ref<boolean>(false);
 const validateCustomer = async () => {
+  processingValidationRequest.value = true;
   const response = await salesRepository.getUser()
     .executeSalesGraphqlMutation<{ validateCustomer: GreetingAssignmentType }>({
       operation: "validateCustomer",
@@ -67,10 +69,11 @@ const validateCustomer = async () => {
       },
       fields: ['status']
     })
+  processingValidationRequest.value = false;
   router.push({ path: '/sales-greeting-assignment' })
 }
-
 const recycleCustomer = async () => {
+  processingValidationRequest.value = true;
   const response = await salesRepository.getUser()
     .executeSalesGraphqlMutation<{ recycleCustomer: GreetingAssignmentType }>({
       operation: "recycleCustomer",
@@ -79,6 +82,7 @@ const recycleCustomer = async () => {
       },
       fields: ['status']
     })
+  processingValidationRequest.value = false;
   router.push({ path: '/sales-greeting-assignment' })
 }
 
