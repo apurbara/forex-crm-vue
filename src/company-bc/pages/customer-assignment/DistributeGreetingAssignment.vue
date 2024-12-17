@@ -12,6 +12,7 @@
               <Checkbox v-model="allCustomerSelected" :binary="true" />
             </th>
             <th>name</th>
+            <th>status</th>
             <th>email</th>
             <th>phone</th>
             <th>source</th>
@@ -32,6 +33,7 @@
               <Checkbox v-model="payload.customerList" :value="customer.id" />
             </td>
             <td>{{ customer.name }}</td>
+            <td>{{ customer.status }}</td>
             <td>{{ customer.email }}</td>
             <td>{{ customer.phone }}</td>
             <td>{{ customer.source }}</td>
@@ -103,34 +105,34 @@ import Checkbox from 'primevue/checkbox';
 import { SalesType } from '@/company-bc/domain/model/manager/sales';
 import { CustomerStatusEnum } from '@/shared-bc/domain/enum/customer-status-enum';
 import { SalesRoleEnum } from '@/shared-bc/domain/enum/sales-role-enum';
+import EnumFilter from '@/resources/components/pagination/enum-filter';
 
 const { companyUserRepository } = useDependencyInjection();
 
 const customerPagination = reactive(new OffsetPagination<CustomerType>(
   async (pagination) => {
-    // let variables: any = pagination.toGraphqlVariables();
-    // variables['filters']['value'] = [
-    //   ...variables['filters']['value'],
-    //   { column: "hasActiveAssignment", value: false, comparisonType: 'EQ' },
-    //   { column: "Customer.status", value: CustomerStatusEnum.NEW, comparisonType: 'EQ' },
-    // ];
     const response = await companyUserRepository.getUser()!
       .executeGraphqlQueryInCompany<{ customerList: PaginationResponseType<CustomerType> }>({
         operation: 'customerList',
         variables: pagination.toGraphqlVariables(),
         // variables: variables,
         fields: OffsetPagination.wrapResultFields([
-          'id', 'name', 'email', 'phone', 'source', 'verificationScore', 'createdTime',
+          'id', 'name', 'status', 'email', 'phone', 'source', 'verificationScore', 'createdTime',
         ])
       })!
     return response.customerList;
   },
-  [],
+  [
+    new EnumFilter('status', 'Customer.status', () => [
+      { label: CustomerStatusEnum.NEW, value: CustomerStatusEnum.NEW },
+      { label: CustomerStatusEnum.RECYCLED, value: CustomerStatusEnum.RECYCLED },
+    ], 'select status ...')
+  ],
   new KeywordSearch(['Customer.name', 'Customer.email', 'Customer.phone']),
   new OffsetLimit(100)
 )
   .addHiddenFilter({ column: "hasActiveGreetingAssignment", value: false, comparisonType: 'EQ' })
-  .addHiddenFilter({ column: "Customer.status", value: CustomerStatusEnum.NEW, comparisonType: 'EQ' })
+  .addHiddenFilter({ column: "Customer.status", value: [CustomerStatusEnum.NEW, CustomerStatusEnum.RECYCLED], comparisonType: 'IN' })
 )
 
 const salesPagination = reactive(new OffsetPagination<SalesType>(
