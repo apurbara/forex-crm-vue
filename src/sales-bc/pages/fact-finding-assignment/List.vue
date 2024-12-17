@@ -32,7 +32,7 @@
 
 
 import { useDependencyInjection } from '@/shared/composables/dependency-injection';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import ListAllAssignmentTab from './ListAllAssignmentTab.vue';
 import ListActiveAssignmentTab from './ListActiveAssignmentTab.vue';
 import ListNewAssignmentTab from './ListNewAssignmentTab.vue';
@@ -41,7 +41,7 @@ import { CustomerAssignmentStatus } from '@/shared-bc/domain/enum/customer-assig
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const tab = ref<string>('newAssignment')
+const tab = ref<string>('new-assignment')
 
 const { salesRepository } = useDependencyInjection();
 const customerAssignmentCount = ref<number>(0)
@@ -51,7 +51,10 @@ const activeAssignmentCount = ref<number>(0)
 
 onMounted(async () => {
   await viewSummary()
-  tab.value = route.query.tab as string ?? "new-assignment"
+  tab.value = route.query.tab as string ?? sessionStorage.getItem('fact-finding-assignment-tab-state') ?? "new-assignment"
+})
+watch(tab, (newTab) => {
+  sessionStorage.setItem('fact-finding-assignment-tab-state', newTab);
 })
 
 const viewSummary = async () => {
