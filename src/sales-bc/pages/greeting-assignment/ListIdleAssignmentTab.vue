@@ -24,7 +24,9 @@ const customerAssignmentPagination = reactive(new OffsetPagination<GreetingAssig
     return response.greetingAssignmentList;
   },
   [],
-  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"])
+  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"]),
+  undefined,
+  'greeting-assignment-idle-page-state'
 ))
 
 onMounted(async () => {

@@ -24,7 +24,9 @@ const StrikingAssignmentPagination = reactive(new OffsetPagination<StrikingAssig
     return response.strikingAssignmentList;
   },
   [],
-  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"])
+  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"]),
+  undefined,
+  'striking-assignment-active-page-state'
 ))
 
 onMounted(async () => {

@@ -119,7 +119,7 @@ const customerPagination = reactive(new OffsetPagination<CustomerType>(
   },
   [],
   new KeywordSearch(['Customer.name', 'Customer.email', 'Customer.phone']),
-  new OffsetLimit(100)
+  new OffsetLimit({ pageSize: 100 })
 )
   .addHiddenFilter({ column: "hasActiveFactFindingAssignment", value: false, comparisonType: 'EQ' })
   .addHiddenFilter({ column: "Customer.status", value: CustomerStatusEnum.FACT_FINDING_REQUIRED, comparisonType: 'EQ' })

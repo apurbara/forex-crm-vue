@@ -24,7 +24,9 @@ const customerAssignmentPagination = reactive(new OffsetPagination<FactFindingAs
     return response.factFindingAssignmentList;
   },
   [],
-  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"])
+  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"]),
+  undefined,
+  'fact-finding-assignment-idle-page-state'
 ))
 
 onMounted(async () => {

@@ -27,7 +27,9 @@ const FactFindingAssignmentPagination = reactive(new OffsetPagination<FactFindin
   [
     new EnumFilter('status', 'FactFindingAssignment.status', () => Object.keys(CustomerAssignmentStatus).map(key => { return { label: key, value: key } }), 'select status...'),
   ],
-  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"])
+  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"]),
+  undefined,
+  'fact-finding-assignment-all-page-state'
 ))
 
 onMounted(async () => await FactFindingAssignmentPagination.loadPage())

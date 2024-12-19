@@ -37,7 +37,7 @@ import PaginationComponent from "./PaginationComponent.vue";
 
 const props = defineProps<{ pagination: OffsetPagination<ResultType> }>()
 
-const pageSizeSelection = reactive<number[]>([20, 50, 100])
+const pageSizeSelection = reactive<number[]>([10, 20, 50, 100])
 
 const loadPage = async () => {
   await props.pagination.loadPage();

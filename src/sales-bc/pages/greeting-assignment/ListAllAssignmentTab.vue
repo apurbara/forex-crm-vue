@@ -27,7 +27,9 @@ const greetingAssignmentPagination = reactive(new OffsetPagination<GreetingAssig
   [
     new EnumFilter('status', 'GreetingAssignment.status', () => Object.keys(CustomerAssignmentStatus).map(key => { return { label: key, value: key } }), 'select status...'),
   ],
-  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"])
+  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"]),
+  undefined,
+  'greeting-assignment-all-page-state',
 ))
 
 onMounted(async () => await greetingAssignmentPagination.loadPage())

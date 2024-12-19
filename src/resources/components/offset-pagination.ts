@@ -1,3 +1,4 @@
+import store from "@/store";
 import AbstractPagination, {
   KeywordSearch,
   PaginationResponseType,
@@ -6,25 +7,32 @@ import EnumFilter from "./pagination/enum-filter";
 import OrderType from "./pagination/order-type";
 
 export type OffsetLimitType = {
-  pageSize: number;
-  page: number;
-  total: number;
+  pageSize?: number;
+  page?: number;
+  total?: number;
+  availableOrders?: OrderType[];
+  appliedOrder?: OrderType;
 };
 
 export class OffsetLimit {
-  public total?: number = undefined;
-  public appliedOrder?: OrderType = undefined;
+  pageSize: number = 10;
+  page: number = 1;
+  total?: number = undefined;
+  availableOrders: OrderType[] = [];
+  appliedOrder?: OrderType = undefined;
+  // public total?: number = undefined;
+  // public appliedOrder?: OrderType = undefined;
 
-  constructor(
-    public pageSize: number = 10,
-    public page: number = 1,
-    public availableOrders: Array<OrderType> = []
-  ) {}
+  constructor(data: OffsetLimitType = {}) {
+    this.load(data);
+  }
 
-  load(offsetLimit: OffsetLimitType): void {
-    this.pageSize = offsetLimit.pageSize;
-    this.page = offsetLimit.page;
-    this.total = offsetLimit.total;
+  load(data: OffsetLimitType): void {
+    this.pageSize = data.pageSize ?? this.pageSize;
+    this.page = data.page ?? this.page;
+    this.total = data.total ?? this.total;
+    this.availableOrders = data.availableOrders ?? this.availableOrders;
+    this.appliedOrder = data.appliedOrder ?? this.appliedOrder;
   }
 
   //
@@ -34,6 +42,9 @@ export class OffsetLimit {
       page: this.page,
       orders: this.appliedOrder ? [this.appliedOrder] : [],
     };
+  }
+  toStateObject(): Object {
+    return { ...this.toJSON(), availableOrders: this.availableOrders };
   }
 
   //
@@ -62,9 +73,17 @@ export default class OffsetPagination<
     ) => Promise<PaginationResponseType<ResultType>>,
     filters: EnumFilter[] = [],
     keywordSearch: KeywordSearch | undefined = undefined,
-    public offsetLimit: OffsetLimit = new OffsetLimit()
+    public offsetLimit: OffsetLimit = new OffsetLimit(),
+    public paginationStateIndex: string | undefined = undefined
   ) {
     super(viewListCallback, filters, keywordSearch);
+    if (this.paginationStateIndex) {
+      const storedState = sessionStorage.getItem(this.paginationStateIndex);
+      console.log(storedState);
+      if (storedState) {
+        this.offsetLimit.load(JSON.parse(storedState));
+      }
+    }
   }
 
   //
@@ -85,6 +104,12 @@ export default class OffsetPagination<
     const response = await this.viewListCallback(this);
     this.resultList = response.list;
     this.offsetLimit.load(response.offsetLimit!);
+    if (this.paginationStateIndex) {
+      sessionStorage.setItem(
+        this.paginationStateIndex,
+        JSON.stringify(this.offsetLimit.toStateObject())
+      );
+    }
   }
   async resetList(): Promise<void> {
     this.offsetLimit.reset();

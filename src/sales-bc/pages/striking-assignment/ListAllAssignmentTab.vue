@@ -27,7 +27,9 @@ const strikingAssignmentPagination = reactive(new OffsetPagination<StrikingAssig
   [
     new EnumFilter('status', 'StrikingAssignment.status', () => Object.keys(CustomerAssignmentStatus).map(key => { return { label: key, value: key } }), 'select status...'),
   ],
-  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"])
+  new KeywordSearch(["Customer.name", "Customer.email", "Customer.phone"]),
+  undefined,
+  'striking-assignment-all-page-state'
 ))
 
 onMounted(async () => await strikingAssignmentPagination.loadPage())
