@@ -181,7 +181,7 @@ const fetchNewAssignmentList = async () => {
   console.log("fetchNewAssignmentList");
   resetHiddenFilterAndApplyActiveAssignmentFilter();
   pagination.addHiddenFilter({ column: "hasSalesActivitySchedule", value: 0 });
-  await pagination.loadPage();
+  await pagination.resetList();
   fetchingList.value = false;
 };
 const fetchIdleAssignmentList = async () => {
@@ -191,13 +191,13 @@ const fetchIdleAssignmentList = async () => {
   pagination.addHiddenFilter({ column: "hasActiveSalesActivitySchedule", value: 0 });
   pagination.addHiddenFilter({ column: "hasPendingClosingRequest", value: 0 });
   pagination.addHiddenFilter({ column: "hasPendingRecycleRequest", value: 0 });
-  await pagination.loadPage();
+  await pagination.resetList();
   fetchingList.value = false;
 };
 const fetchActiveAssignmentList = async () => {
   selectedCardTitle.value = "Active";
   resetHiddenFilterAndApplyActiveAssignmentFilter();
-  await pagination.loadPage();
+  await pagination.resetList();
   fetchingList.value = false;
 };
 const predefinedFilterCardItems = reactive([

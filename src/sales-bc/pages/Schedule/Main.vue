@@ -178,7 +178,7 @@ const fetchPastActivityList = async () => {
     value: new Date().toISOString(),
     comparisonType: "LTE",
   });
-  await pagination.loadPage();
+  await pagination.resetList();
   fetchingList.value = false;
 };
 const fetchUpcomingActivityList = async () => {
@@ -193,7 +193,7 @@ const fetchUpcomingActivityList = async () => {
     value: new Date().toISOString(),
     comparisonType: "GTE",
   });
-  await pagination.loadPage();
+  await pagination.resetList();
   fetchingList.value = false;
 };
 const fetchCompletedActivityList = async () => {
@@ -203,7 +203,7 @@ const fetchCompletedActivityList = async () => {
     column: "SalesActivitySchedule.Status",
     value: SalesActivityScheduleStatus.COMPLETED,
   });
-  await pagination.loadPage();
+  await pagination.resetList();
   fetchingList.value = false;
 };
 
