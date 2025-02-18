@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="page-section">
     <h1 class="page-title">Add Customer Verification</h1>
     <div class="form">
       <CustomerVerificationComponent :customer-verification="customerVerification" />
@@ -11,31 +11,33 @@
 </template>
 
 <script lang="ts" setup>
-import CustomerVerificationComponent from '@/company-bc/domain/model/CustomerVerificationComponent.vue';
-import CustomerVerification, { CustomerVerificationType } from '@/company-bc/domain/model/customer-verification';
-import { useDependencyInjection } from '@/shared/composables/dependency-injection';
-import { reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import CustomerVerificationComponent from "@/company-bc/domain/model/CustomerVerificationComponent.vue";
+import CustomerVerification, {
+  CustomerVerificationType,
+} from "@/company-bc/domain/model/customer-verification";
+import { useDependencyInjection } from "@/shared/composables/dependency-injection";
+import { reactive } from "vue";
+import { useRouter } from "vue-router";
 
 const customerVerification = reactive(new CustomerVerification());
 
-const { companyUserRepository, cache } = useDependencyInjection()
-const router = useRouter()
-
+const { companyUserRepository, cache } = useDependencyInjection();
+const router = useRouter();
 
 const submit = async () => {
-  const response = await companyUserRepository.getUser()!
+  const response = await companyUserRepository
+    .getUser()!
     .executeGraphqlMutationInCompany<{ addCustomerVerification: CustomerVerificationType }>({
-      operation: 'addCustomerVerification',
+      operation: "addCustomerVerification",
       variables: customerVerification.toGraphqlVariables(),
-      fields: [
-        'id', 'disabled', 'createdTime', 'name', 'description', 'weight', 'position'
-      ]
-    })
-  cache?.set(`customer-verification-${response?.addCustomerVerification.id}`, response?.addCustomerVerification)
-  router.push(`/customer-verification/${response?.addCustomerVerification.id}`)
-}
-
+      fields: ["id", "disabled", "createdTime", "name", "description", "weight", "position"],
+    });
+  cache?.set(
+    `customer-verification-${response?.addCustomerVerification.id}`,
+    response?.addCustomerVerification
+  );
+  router.push(`/company/customer-verification/${response?.addCustomerVerification.id}`);
+};
 </script>
 
 <style lang="scss" scoped></style>

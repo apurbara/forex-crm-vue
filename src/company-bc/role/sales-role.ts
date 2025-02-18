@@ -33,7 +33,7 @@ export default class SalesRole implements CompanyUserRole {
     return false;
   }
   getLandingPage(): string {
-    return "/sales-dashboard";
+    return "/sales/dashboard";
   }
   getLayout(): LayoutInterface {
     // const asSuperUserNavbarMenus = this.aSuperUser

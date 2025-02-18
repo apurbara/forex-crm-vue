@@ -1,7 +1,5 @@
-import AbstractPagination, {
-  KeywordSearch,
-  PaginationResponseType,
-} from "./abstract-pagination";
+import Fields from "gql-query-builder/build/Fields";
+import AbstractPagination, { KeywordSearch, PaginationResponseType } from "./abstract-pagination";
 import EnumFilter from "./pagination/enum-filter";
 import OrderType from "./pagination/order-type";
 
@@ -19,7 +17,7 @@ export class OffsetLimit {
     public pageSize: number = 10,
     public page: number = 1,
     public availableOrders: Array<OrderType> = []
-  ) { }
+  ) {}
 
   load(offsetLimit: OffsetLimitType): void {
     this.pageSize = offsetLimit.pageSize;
@@ -51,9 +49,7 @@ export class OffsetLimit {
   }
 }
 
-export default class OffsetPagination<
-  ResultType
-> extends AbstractPagination<ResultType> {
+export default class OffsetPagination<ResultType> extends AbstractPagination<ResultType> {
   public resultList: Array<ResultType> = [];
 
   constructor(
@@ -75,8 +71,20 @@ export default class OffsetPagination<
     };
   }
 
+  //
+  toQueryParams() {
+    return {
+      ...super.toQueryParams(),
+      offsetLimit: this.offsetLimit.toJSON(),
+    };
+  }
+
   static wrapResultFields(fields: Array<any>) {
     return [{ list: fields }, { offsetLimit: ["page", "pageSize", "total"] }];
+  }
+
+  wrapSelectionFields(fields: Fields): Fields {
+    return OffsetPagination.wrapResultFields(fields);
   }
 
   //

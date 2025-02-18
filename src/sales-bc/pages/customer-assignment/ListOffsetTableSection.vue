@@ -14,13 +14,10 @@
           <th>city</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="h-full">
         <tr v-if="customerAssignmentPagination.resultList.length < 1">
           <td class="no-data" colspan="12">
-            <div class="justify-center text-center pa-5">
-              <img src="@/assets/images/image-no-data.svg" alt="No Data" /><br /><br />
-              <span class="text-disabled text-body-1">Data Customer Assignment kosong</span>
-            </div>
+            <EmptyDataIllustrationComponent message="Data Assignment Kosong" />
           </td>
         </tr>
         <tr v-else v-for="(customerAssignment, index) in customerAssignmentPagination.resultList"
@@ -40,12 +37,13 @@
 import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
 import OffsetPagination from '@/resources/components/offset-pagination';
 import { CustomerAssignmentType } from '@/sales-bc/domain/model/sales/customer-assignment';
+import EmptyDataIllustrationComponent from '@/shared/components/EmptyDataIllustrationComponent.vue';
 import { useRouter } from 'vue-router';
 
 defineProps<{ customerAssignmentPagination: OffsetPagination<CustomerAssignmentType> }>()
 const router = useRouter();
 
-const toDetail = (customerAssignmentId: string) => router.push(`/sales-customer-assignment/${customerAssignmentId}`)
+const toDetail = (customerAssignmentId: string) => router.push(`/sales/customer-assignment/${customerAssignmentId}`)
 
 </script>
 

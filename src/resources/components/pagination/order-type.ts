@@ -1,5 +1,5 @@
 type OrderType = {
-  title: string;
+  title?: string;
   column: string;
   direction?: "ASC" | "DESC";
 };

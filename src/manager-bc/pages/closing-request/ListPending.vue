@@ -30,7 +30,7 @@
           <td>{{ closingRequest.customerAssignment?.sales?.name }}</td>
           <td>{{ closingRequest.status }}</td>
           <td>{{ useThousandSeparator(closingRequest.transactionValue!) }}</td>
-          <td>{{ closingRequest.note }}</td>
+          <td>{{ limitString(closingRequest.note, 20) }}</td>
           <td>{{ closingRequest.remark }}</td>
           <td>{{ new Date(closingRequest.createdTime!).toLocaleDateString() }}</td>
           <td>
@@ -49,6 +49,7 @@
 
 <script lang="ts" setup>
 import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
+import { useStringLimiter } from '@/resources/composables/typography';
 import { PaginationResponseType } from '@/resources/components/abstract-pagination';
 import OffsetPagination from '@/resources/components/offset-pagination';
 import { onMounted, reactive } from 'vue';
@@ -126,6 +127,10 @@ const rejectConfirmation = (event: Event, closingRequest: ClosingRequestType) =>
     reject: () => { }
   });
 };
+
+const limitString = (string: string | undefined, length: number) => {
+  return useStringLimiter(string, length)
+}
 
 </script>
 

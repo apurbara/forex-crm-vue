@@ -2,8 +2,10 @@
   <div>
     <LayoutComponent :layout="layout" :show-logout="showLogout">
       <div class="content">
-        <Toast></Toast>
-        <ConfirmPopup class="elevation-1"></ConfirmPopup>
+        <!-- <Toast></Toast> -->
+        <ConfirmPopup class="elevation-1 p-2">
+
+        </ConfirmPopup>
         <router-view></router-view>
       </div>
     </LayoutComponent>

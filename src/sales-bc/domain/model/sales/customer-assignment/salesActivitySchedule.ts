@@ -1,8 +1,6 @@
 import { SalesActivityScheduleStatus } from "@/shared-bc/domain/enum/sales-activity-schedule-status";
 import { isNotEmpty } from "@/resources/composables/validator";
-import CustomerAssignment, {
-  CustomerAssignmentType,
-} from "../customer-assignment";
+import CustomerAssignment, { CustomerAssignmentType } from "../customer-assignment";
 import SalesActivityReport, {
   SalesActivityReportType,
 } from "./sales-activity-schedule/sales-activity-report";
@@ -32,13 +30,19 @@ export type SalesActivityScheduleType = {
   //
 };
 
+export type ExtendedSalesActivityScheduleType = {
+  salesActivityName?: string;
+  customerName?: string;
+  customerPhone?: string;
+} & SalesActivityScheduleType;
+
 export default class SalesActivitySchedule {
   customerAssignment?: CustomerAssignment;
   id?: string;
   createdTime?: string;
   status?: SalesActivityScheduleStatus;
-  startTime?: string;
-  endTime?: string;
+  startTime?: Date;
+  endTime?: Date;
   salesActivity?: SalesActivityType;
   salesActivityReport?: SalesActivityReport;
 
@@ -52,8 +56,8 @@ export default class SalesActivitySchedule {
     this.id = data.id ?? this.id;
     this.createdTime = data.createdTime ?? this.createdTime;
     this.status = data.status ?? this.status;
-    this.startTime = data.startTime ?? this.startTime;
-    this.endTime = data.endTime ?? this.endTime;
+    this.startTime = data.startTime ? new Date(data.startTime) : this.startTime;
+    this.endTime = data.endTime ? new Date(data.endTime) : this.endTime;
     this.salesActivity = data.salesActivity ?? this.salesActivity;
 
     if (data.salesActivityReport) {
@@ -70,7 +74,7 @@ export default class SalesActivitySchedule {
         required: true,
         value: this.salesActivity?.id,
       },
-      startTime: { value: this.startTime, type: "DateTimeZ" },
+      startTime: { value: this.startTime?.toISOString(), type: "DateTimeZ" },
     };
   }
 
@@ -80,9 +84,7 @@ export default class SalesActivitySchedule {
   }
   isValidToSubmit() {
     return (
-      this.isValidStartTime() === true &&
-      !!this.customerAssignment?.id &&
-      !!this.salesActivity?.id
+      this.isValidStartTime() === true && !!this.customerAssignment?.id && !!this.salesActivity?.id
     );
   }
 }

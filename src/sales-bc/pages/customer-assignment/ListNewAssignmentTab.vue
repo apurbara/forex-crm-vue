@@ -17,10 +17,7 @@
       <tbody>
         <tr v-if="customerAssignmentPagination.resultList.length < 1">
           <td class="no-data" colspan="12">
-            <div class="justify-center text-center pa-5">
-              <img src="@/assets/images/image-no-data.svg" alt="No Data" /><br /><br />
-              <span class="text-disabled text-body-1">Data Customer Assignment kosong</span>
-            </div>
+            <EmptyDataIllustrationComponent message="Data Customer Assignment Kosong" />
           </td>
         </tr>
         <tr v-else v-for="(customerAssignment, index) in customerAssignmentPagination.resultList"
@@ -45,6 +42,7 @@ import { onMounted, reactive } from 'vue';
 import { CustomerAssignmentStatus } from '@/shared-bc/domain/enum/customer-assignment-status';
 import { useRouter } from 'vue-router';
 import { CustomerAssignmentType } from '@/sales-bc/domain/model/sales/customer-assignment';
+import EmptyDataIllustrationComponent from '@/shared/components/EmptyDataIllustrationComponent.vue';
 
 const { salesRepository } = useDependencyInjection();
 const router = useRouter();
@@ -69,7 +67,7 @@ onMounted(async () => {
   await customerAssignmentPagination.loadPage();
 })
 
-const toDetail = (customerAssignmentId: string) => router.push(`/sales-customer-assignment/${customerAssignmentId}`)
+const toDetail = (customerAssignmentId: string) => router.push(`/sales/customer-assignment/${customerAssignmentId}`)
 
 </script>
 

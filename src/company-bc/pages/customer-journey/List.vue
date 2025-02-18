@@ -1,128 +1,122 @@
 <template>
-  <h1 class="page-title">Customer Journey List</h1>
-  <OffsetPaginationComponent :pagination="pagination">
-    <template v-slot:editSection>
-      <v-btn prepend-icon="mdi-account-plus-outline" variant="tonal" to="/customer-journey/set-initial">Set Initial
-        Customer Journey</v-btn>
-      <v-btn class="ml-2" prepend-icon="mdi-account-plus-outline" variant="tonal" to="/customer-journey/add">Add
-        Customer Journey</v-btn>
-    </template>
-    <v-table height="400px" density="compact" style="width: 100%;" class="datatable">
-      <thead>
-        <tr>
-          <th>name</th>
-          <th>intial</th>
-          <th>description</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="pagination.resultList.length < 1">
-          <td class="no-data" colspan="12">
-            <div class="justify-center text-center pa-5">
-              <img src="@/assets/images/image-no-data.svg" alt="No Data" /><br /><br />
-              <span class="text-disabled text-body-1">Data Customer Journey kosong</span>
-            </div>
-          </td>
-        </tr>
-        <tr v-else v-for="(customerJourney, index) in pagination.resultList" :key="customerJourney.id ?? index"
-          @dblclick="toDetail(customerJourney.id!)">
-          <td>{{ customerJourney.name }}</td>
-          <td><v-btn color="green" v-if="customerJourney.initial" variant="text" icon="mdi-check-circle-outline"
-              size="small" /></td>
-          <td>{{ customerJourney.description }}</td>
-          <td>
-            <v-btn color="green" v-if="!customerJourney.disabled" variant="text" icon="mdi-toggle-switch-outline"
-              @click="disableConfirmation($event, customerJourney.id!)"></v-btn>
-            <v-btn color="red" v-else variant="text" icon="mdi-toggle-switch-off-outline"
-              @click="enableConfirmation($event, customerJourney.id!)"></v-btn>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-  </OffsetPaginationComponent>
+  <div class="page-section">
+    <h1 class="page-title">Customer Journey List</h1>
+    <OffsetPaginationComponent :pagination="pagination">
+      <template v-slot:editSection>
+        <v-btn
+          prepend-icon="mdi-account-plus-outline"
+          variant="tonal"
+          to="/company/customer-journey/set-initial"
+          >Set Initial Customer Journey</v-btn
+        >
+        <v-btn
+          class="ml-2"
+          prepend-icon="mdi-account-plus-outline"
+          variant="tonal"
+          to="/company/customer-journey/add"
+          >Add Customer Journey</v-btn
+        >
+      </template>
+      <EmptyDataIllustrationComponent
+        class="w-full"
+        v-if="pagination.resultList.length < 1"
+        message="Data Customer Verification Kosong"
+      />
+      <DataTable v-else :value="pagination.resultList" size="small" class="w-full">
+        <Column field="name" header="Name"></Column>
+        <Column field="initial" header="Initial"></Column>
+        <Column field="description" header="Description"></Column>
+        <Column>
+          <template #body="{ data }">
+            <DataTableActionComponent
+              :value="data.disabled"
+              :detail-path="`/company/customer-journey/${data.id}`"
+              :enable-callback="enableCallback(data.id)"
+              :enable-message="`do you really want to enable ${data.name}`"
+              :disable-callback="disableCallback(data.id)"
+              :disable-message="`do you really want to disable ${data.name}`"
+            />
+          </template>
+        </Column>
+      </DataTable>
+    </OffsetPaginationComponent>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import OffsetPaginationComponent from '@/resources/components/OffsetPaginationComponent.vue';
-import { KeywordSearch, PaginationResponseType } from '@/resources/components/abstract-pagination';
-import OffsetPagination from '@/resources/components/offset-pagination';
-import EnumFilter from '@/resources/components/pagination/enum-filter';
-import { onMounted, reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import OffsetPaginationComponent from "@/resources/components/OffsetPaginationComponent.vue";
+import { KeywordSearch, PaginationResponseType } from "@/resources/components/abstract-pagination";
+import OffsetPagination from "@/resources/components/offset-pagination";
+import EnumFilter from "@/resources/components/pagination/enum-filter";
+import { onMounted, reactive } from "vue";
+import { useRouter } from "vue-router";
 import { useConfirm } from "primevue/useconfirm";
-import { useDependencyInjection } from '@/shared/composables/dependency-injection';
-import { CustomerJourneyType } from '@/company-bc/domain/model/customer-journey';
+import { useDependencyInjection } from "@/shared/composables/dependency-injection";
+import { CustomerJourneyType } from "@/company-bc/domain/model/customer-journey";
+import EmptyDataIllustrationComponent from "@/shared/components/EmptyDataIllustrationComponent.vue";
+import DataTableActionComponent from "@/shared/components/data-table-action-component.vue";
 
-const { companyUserRepository } = useDependencyInjection()
+const { companyUserRepository } = useDependencyInjection();
 const router = useRouter();
 const confirm = useConfirm();
 
-const pagination = reactive(new OffsetPagination<CustomerJourneyType>(
-  async (pagination) => {
-    const response = await companyUserRepository.getUser()!
-      .executeGraphqlQueryInCompany<{ customerJourneyList: PaginationResponseType<CustomerJourneyType> }>({
-        operation: 'customerJourneyList',
+const pagination = reactive(
+  new OffsetPagination<CustomerJourneyType>(
+    async (pagination) => {
+      const response = await companyUserRepository.getUser()!.executeGraphqlQueryInCompany<{
+        customerJourneyList: PaginationResponseType<CustomerJourneyType>;
+      }>({
+        operation: "customerJourneyList",
         variables: pagination.toGraphqlVariables(),
         fields: OffsetPagination.wrapResultFields([
-          'id', 'name', 'initial', 'description', 'disabled'
-        ])
-      })!
-    return response.customerJourneyList;
-  },
-  [
-    new EnumFilter('status', 'CustomerJourney.disabled', () => [{ label: 'active', value: false }, { label: 'disabled', value: true }], 'select status ...')
-  ],
-  new KeywordSearch(["CustomerJourney.name", "CustomerJourney.description"])
-))
+          ...["id", "name", "initial", "description", "disabled"],
+        ]),
+      })!;
+      return response.customerJourneyList;
+    },
+    [
+      new EnumFilter(
+        "status",
+        "CustomerJourney.disabled",
+        () => [
+          { label: "active", value: false },
+          { label: "disabled", value: true },
+        ],
+        "select status ..."
+      ),
+    ],
+    new KeywordSearch(["CustomerJourney.name", "CustomerJourney.description"])
+  )
+);
 
 onMounted(async () => {
   await pagination.loadPage();
-})
-
-const toDetail = (customerjourneyId: string) => router.push(`/customer-journey/${customerjourneyId}`)
-
-const disableConfirmation = (event: Event, customerJourneyId: string) => {
-  confirm.require({
-    target: event.currentTarget as HTMLElement,
-    message: 'Do you want to disable this customer journey?',
-    icon: 'mdi mdi-alert-outline',
-    acceptClass: 'p-button-danger',
-    accept: async () => {
-      const response = await companyUserRepository.getUser()!
-        .executeGraphqlMutationInCompany<{ disableCustomerJourney: CustomerJourneyType }>({
-          operation: "disableCustomerJourney",
-          variables: { id: { type: "ID", value: customerJourneyId } },
-          fields: ['disabled']
-        })
-      pagination.resultList.find(
-        (customerJourney: CustomerJourneyType) => customerJourney.id === customerJourneyId
-      )!.disabled = response.disableCustomerJourney.disabled
-    },
-    reject: () => { }
+});
+const disableCallback = (customerJourneyId: string) => async () => {
+  const response = await companyUserRepository.getUser()!.executeGraphqlMutationInCompany<{
+    disableCustomerJourney: CustomerJourneyType;
+  }>({
+    operation: "disableCustomerJourney",
+    variables: { id: { type: "ID", value: customerJourneyId } },
+    fields: ["disabled"],
   });
-};
-const enableConfirmation = (event: Event, customerJourneyId: string) => {
-  confirm.require({
-    target: event.currentTarget as HTMLElement,
-    message: 'Do you want to enable this customer journey?',
-    icon: 'mdi mdi-alert-outline',
-    acceptClass: 'p-button-danger',
-    accept: async () => {
-      const response = await companyUserRepository.getUser()!
-        .executeGraphqlMutationInCompany<{ enableCustomerJourney: CustomerJourneyType }>({
-          operation: "enableCustomerJourney",
-          variables: { id: { type: "ID", value: customerJourneyId } },
-          fields: ['disabled']
-        })
-      pagination.resultList.find(
-        (customerJourney: CustomerJourneyType) => customerJourney.id === customerJourneyId
-      )!.disabled = response.enableCustomerJourney.disabled
-    },
-    reject: () => { }
-  });
+  pagination.resultList.find(
+    (customerJourney: CustomerJourneyType) => customerJourney.id === customerJourneyId
+  )!.disabled = response.disableCustomerJourney.disabled;
 };
 
+const enableCallback = (customerJourneyId: string) => async () => {
+  const response = await companyUserRepository.getUser()!.executeGraphqlMutationInCompany<{
+    enableCustomerJourney: CustomerJourneyType;
+  }>({
+    operation: "enableCustomerJourney",
+    variables: { id: { type: "ID", value: customerJourneyId } },
+    fields: ["disabled"],
+  });
+  pagination.resultList.find(
+    (customerJourney: CustomerJourneyType) => customerJourney.id === customerJourneyId
+  )!.disabled = response.enableCustomerJourney.disabled;
+};
 </script>
 
 <style lang="scss" scoped></style>

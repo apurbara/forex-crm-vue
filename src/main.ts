@@ -24,6 +24,7 @@ import SalesRepository from "./sales-bc/role/sales-repository";
 
 // Styles
 import "./assets/styles/main.scss";
+import "./assets/tailwind.css";
 import ManagerRepository from "./manager-bc/role/manager-repository";
 import AdminRepository from "./admin-bc/role/admin-repository";
 

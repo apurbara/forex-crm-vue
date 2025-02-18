@@ -1,7 +1,7 @@
 <template>
   <v-app-bar-title>
     <router-link :to="home.to">
-      <v-img :src="home.logo ?? defaultLogo" width="40"></v-img>
+      <v-img :src="home.logo ?? defaultLogo" width="160px"></v-img>
       <!-- {{ home.title }} -->
     </router-link>
   </v-app-bar-title>

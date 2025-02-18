@@ -6,27 +6,39 @@
 @import "layout";
 @import "primevue";
 @import "textstyle";
+@import 'primeicons/primeicons.css';
+
+
+html {
+  font-size: 14px;
+}
+
 
 body {
-  font-family: "Montserrat", sans-serif !important;
+  // font-family: "Montserrat", sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
 }
 // #app {
 .content {
-  background-color: #eaf1f3;
-  padding: 24px;
+  background-color: #ebe9dd;
+  // background-color: #ded7b3;
+  // background-color: #eaf1f3;
+  padding: 2rem;
   min-height: calc(100vh - 110px);
   height: auto;
   .page-title {
-    font-size: 24px;
-    margin-bottom: 12px;
+    font-size: 2rem;
+    margin-bottom: 1.6rem;
+
   }
   .page-section {
     background-color: #ffffff;
-    padding: 24px 24px 24px 24px;
-    border-radius: 8px;
-    font-size: 12px;
-    margin-top: 12px;
-    margin-bottom: 12px;
+    // padding: 14px 24px 24px 24px;
+    padding: 1rem 2rem 2rem 2rem;
+    border-radius: 10px;
+    // font-size: 12px;
+    // margin-top: 12px;
+    // margin-bottom: 12px;
     .section-title {
       font-size: 16px;
     }

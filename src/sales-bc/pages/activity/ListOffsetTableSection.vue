@@ -41,7 +41,7 @@ import { useRouter } from 'vue-router';
 defineProps<{ activitySchedulePagination: OffsetPagination<SalesActivityScheduleType> }>()
 const router = useRouter();
 
-const toDetail = (customerAssignmentId: string) => router.push(`/sales-customer-assignment/${customerAssignmentId}`)
+const toDetail = (customerAssignmentId: string) => router.push(`/sales/customer-assignment/${customerAssignmentId}`)
 
 </script>
 

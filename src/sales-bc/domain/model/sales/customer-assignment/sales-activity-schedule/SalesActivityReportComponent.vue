@@ -1,15 +1,26 @@
 <template>
-  <v-textarea ref="focus" label="report content" v-model="salesActivityReport.content"
-    :rules="[salesActivityReport.isValidContent()]" />
+  <FloatLabel variant="on">
+    <Textarea
+      id="content"
+      v-model="salesActivityReport.content"
+      rows="5"
+      :invalid="salesActivityReport.isValidContent() !== true"
+      fluid
+    />
+    <label for="content">Report Content</label>
+    <!-- <Message severity="error" v-if="salesActivityReport.isValidContent() !== true">{{
+      salesActivityReport.isValidContent()
+    }}</Message> -->
+  </FloatLabel>
 </template>
 
 <script lang="ts" setup>
-import useFocus from '@/resources/composables/focus';
-import SalesActivityReport from './sales-activity-report';
+import useFocus from "@/resources/composables/focus";
+import SalesActivityReport from "./sales-activity-report";
 
-const { focus } = useFocus()
+const { focus } = useFocus();
 
-const props = defineProps<{ salesActivityReport: SalesActivityReport }>()
+const props = defineProps<{ salesActivityReport: SalesActivityReport }>();
 </script>
 
 <style lang="scss" scoped></style>

@@ -1,17 +1,13 @@
 import { CustomerAssignmentStatus } from "@/shared-bc/domain/enum/customer-assignment-status";
 import Customer, { CustomerType } from "./customer-assignment/customer";
-import { CustomerJourneyType } from "@/company-bc/domain/model/customer-journey";
 import SalesActivitySchedule, {
   SalesActivityScheduleType,
 } from "./customer-assignment/salesActivitySchedule";
-import ClosingRequest, {
-  ClosingRequestType,
-} from "./customer-assignment/closing-request";
-import RecycleRequest, {
-  RecycleRequestType,
-} from "./customer-assignment/recycle-request";
+import ClosingRequest, { ClosingRequestType } from "./customer-assignment/closing-request";
+import RecycleRequest, { RecycleRequestType } from "./customer-assignment/recycle-request";
 import { SalesActivityScheduleStatus } from "@/shared-bc/domain/enum/sales-activity-schedule-status";
 import { ManagementApprovalStatus } from "@/shared-bc/domain/enum/management-approval-status";
+import { CustomerJourneyType } from "@/company-bc/domain/model/customer-journey";
 
 export type CustomerAssignmentType = {
   id?: string;
@@ -28,6 +24,15 @@ export type CustomerAssignmentType = {
   closingRequests?: ClosingRequestType[];
   recycleRequests?: RecycleRequestType[];
 };
+
+export type ExtendedCustomerAssignmentType = {
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  customerSource?: string;
+  customerJourneyName?: string;
+  verificationScore?: number;
+} & CustomerAssignmentType;
 
 export default class CustomerAssignment {
   id?: string;
@@ -99,13 +104,11 @@ export default class CustomerAssignment {
       ).length === 0 &&
       this.closingRequests.filter(
         (closingRequest: ClosingRequest) =>
-          closingRequest.status ===
-          ManagementApprovalStatus.WAITING_FOR_APPROVAL
+          closingRequest.status === ManagementApprovalStatus.WAITING_FOR_APPROVAL
       ).length === 0 &&
       this.recycleRequests.filter(
         (recycleRequest: RecycleRequest) =>
-          recycleRequest.status ===
-          ManagementApprovalStatus.WAITING_FOR_APPROVAL
+          recycleRequest.status === ManagementApprovalStatus.WAITING_FOR_APPROVAL
       ).length === 0
     );
   }

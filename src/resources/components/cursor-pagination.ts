@@ -1,8 +1,5 @@
 import { OptionalString } from "../types/custom-types";
-import AbstractPagination, {
-  KeywordSearch,
-  PaginationResponseType,
-} from "./abstract-pagination";
+import AbstractPagination, { KeywordSearch, PaginationResponseType } from "./abstract-pagination";
 import EnumFilter from "./pagination/enum-filter";
 import OrderType from "./pagination/order-type";
 import Fields from "gql-query-builder/build/Fields";
@@ -19,10 +16,7 @@ export class CursorLimit {
   public total?: number = undefined;
   public cursor?: string = undefined;
 
-  constructor(
-    public pageSize: number = 10,
-    public availableOrders: Array<OrderType> = []
-  ) { }
+  constructor(public pageSize: number = 10, public availableOrders: Array<OrderType> = []) {}
 
   load(cursorLimit: CursorLimitType): void {
     this.pageSize = cursorLimit.pageSize;
@@ -38,11 +32,11 @@ export class CursorLimit {
       cursor: this.cursor,
       orders: this.appliedOrder
         ? [
-          {
-            column: this.appliedOrder.column,
-            direction: this.appliedOrder.direction,
-          },
-        ]
+            {
+              column: this.appliedOrder.column,
+              direction: this.appliedOrder.direction,
+            },
+          ]
         : undefined,
     };
   }
@@ -55,9 +49,7 @@ export class CursorLimit {
   }
 }
 
-export default class CursorPagination<
-  ResultType
-> extends AbstractPagination<ResultType> {
+export default class CursorPagination<ResultType> extends AbstractPagination<ResultType> {
   public resultList: Array<ResultType> = [];
 
   constructor(
@@ -83,10 +75,11 @@ export default class CursorPagination<
   }
 
   static wrapResultFields(fields: Fields) {
-    return [
-      { list: fields },
-      { cursorLimit: ["pageSize", "total", "cursorToNextPage"] },
-    ];
+    return [{ list: fields }, { cursorLimit: ["pageSize", "total", "cursorToNextPage"] }];
+  }
+
+  wrapSelectionFields(fields: Fields): Fields {
+    return CursorPagination.wrapResultFields(fields);
   }
 
   //

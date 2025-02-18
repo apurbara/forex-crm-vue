@@ -2,7 +2,6 @@ import { inject } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import companyRoutes from "@/company-bc/router";
 import salesRoutes from "@/sales-bc/router";
-import adminRoutes from "@/admin-bc/router";
 import managerRoutes from "@/manager-bc/router";
 import CompanyUserRepository from "@/company-bc/role/company-user-repository";
 
@@ -10,6 +9,7 @@ const routes = [
   {
     path: "/login",
     name: "login",
+    meta: { title: "Login" },
     component: () => import("@/shared-bc/pages/Login.vue"),
   },
   {
@@ -18,16 +18,15 @@ const routes = [
     children: [
       {
         path: "",
-        name: "landing-page",
+        meta: { title: "Home" },
         component: () => import("@/shared-bc/pages/LandingPage.vue"),
       },
-      {
-        path: "home",
-        name: "home",
-        component: () => import("@/shared-bc/pages/Home.vue"),
-      },
+      // {
+      //   path: "home",
+      //   meta: { title: "Home" },
+      //   component: () => import("@/shared-bc/pages/Home.vue"),
+      // },
       ...companyRoutes,
-      ...adminRoutes,
       ...managerRoutes,
       ...salesRoutes,
     ],
@@ -37,14 +36,13 @@ const routes = [
 const router = createRouter({
   // history: createWebHistory(process.env.BASE_URL),
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
+  routes: routes,
 });
 
 router.beforeEach((to, from) => {
-  const companyUserRepository = inject<CompanyUserRepository>(
-    "companyUserRepository"
-  );
-  console.log(to.name)
+  const companyUserRepository = inject<CompanyUserRepository>("companyUserRepository");
+  // console.log(to.name)
+  document.title = (to.meta?.title as string) ?? "Vinov";
   // console.log(!!companyUserRepository?.getUser())
   if (to.name === "landing-page" || to.name === "home") {
   } else if (to.name === "login") {

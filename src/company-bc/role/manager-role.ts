@@ -33,7 +33,7 @@ export default class ManagerRole implements CompanyUserRole {
     return ["customer"].includes(menu);
   }
   getLandingPage(): string {
-    return "/manager-dashboard";
+    return "/manager/dashboard";
   }
   getLayout(): LayoutInterface {
     // const asSuperUserNavbarMenus = this.aSuperUser

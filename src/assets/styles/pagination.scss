@@ -1,9 +1,10 @@
 .pagination {
   background-color: #ffffff;
-  padding: 24px;
-  border-radius: 8px;
+  // padding: 24px;
+  // border-radius: 8px;
   font-size: 12px;
   .pagination__filter {
+    margin-bottom: 1.2rem;
     .v-text-field {
       .v-input__control {
         border: 1px solid #e0e0e0;

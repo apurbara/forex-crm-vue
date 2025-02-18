@@ -45,7 +45,7 @@ export default class AdminRole implements CompanyUserRole {
   }
 
   getLandingPage(): string {
-    return "/admin-dashboard";
+    return "/company/customer";
   }
   getLayout(): LayoutInterface {
     // const asSuperUserNavbarMenus = this.aSuperUser

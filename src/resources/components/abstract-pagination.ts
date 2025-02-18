@@ -1,3 +1,4 @@
+import Fields from "gql-query-builder/build/Fields";
 import { OptionalString } from "../types/custom-types";
 import { CursorLimitType } from "./cursor-pagination";
 import { OffsetLimitType } from "./offset-pagination";
@@ -15,8 +16,8 @@ export class KeywordSearch {
   constructor(
     public columns: string[],
     public comparisonType: OptionalString = "LIKE",
-    public placeholder: OptionalString = undefined,
-  ) { }
+    public placeholder: OptionalString = undefined
+  ) {}
 
   //
   toJSON() {
@@ -37,11 +38,11 @@ export default abstract class AbstractPagination<ResultType> {
     ) => Promise<PaginationResponseType<ResultType>>,
     public availableFilters: EnumFilter[] = [],
     public keywordSearch: KeywordSearch | undefined = undefined
-  ) { }
+  ) {}
 
   //
   hasSelectedFilter(): boolean {
-    return this.availableFilters.some(filter => filter.hasSelectedFilter());
+    return this.availableFilters.some((filter) => filter.hasSelectedFilter());
   }
 
   //
@@ -51,13 +52,22 @@ export default abstract class AbstractPagination<ResultType> {
     });
     this.resetList();
   }
-  async removeFilterSelectedItem(filter: EnumFilter, selectedItem: EnumFilterItemType): Promise<void> {
+  async removeFilterSelectedItem(
+    filter: EnumFilter,
+    selectedItem: EnumFilterItemType
+  ): Promise<void> {
     filter.removeSelectedItem(selectedItem);
     this.resetList();
   }
 
-  addHiddenFilter(filter: FilterType): void {
+  addHiddenFilter(filter: FilterType): this {
     this.hiddenFilters.push(filter);
+    return this;
+  }
+
+  clearHiddenFilter(): this {
+    this.hiddenFilters.length = 0;
+    return this;
   }
 
   //
@@ -88,11 +98,12 @@ export default abstract class AbstractPagination<ResultType> {
     });
     return {
       keywordSearch: this.keywordSearch?.value ? this.keywordSearch.toJSON() : null,
-      filters: filters,
+      filters: [...filters, ...this.hiddenFilters],
     };
   }
 
   //
   abstract loadPage(): void;
   abstract resetList(): void;
+  abstract wrapSelectionFields(fields: Fields): Fields;
 }

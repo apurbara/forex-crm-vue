@@ -3,13 +3,29 @@
     <template v-slot:editSection>
       <slot name="editSection"></slot>
     </template>
-    
+
+    <template v-slot:filterExtension>
+      <div v-if="!!pagination.offsetLimit.availableOrders.length" class="flex justify-end">
+        <Select
+          :options="pagination.offsetLimit.availableOrders"
+          placeholder="Order By"
+          optionLabel="title"
+          @value-change="
+            (value) => {
+              pagination.offsetLimit.appliedOrder = value;
+              loadPage();
+            }
+          "
+        />
+      </div>
+    </template>
+
     <template v-slot:default>
-      <section class="pagination__result-list d-flex justify-start ma-2">
+      <section class="pagination__result-list d-flex justify-start">
         <slot></slot>
       </section>
     </template>
-    
+
     <template v-slot:navigation>
       <div class="d-flex justify-space-between align-center">
         <div>
@@ -18,12 +34,30 @@
         <section class="pagination__page-navigation d-flex justify-end align-center">
           <div class="d-flex justify-right align-center">
             <span class="mr-4">Page Size</span>
-            <v-combobox variant="plain" menu-icon="mdi-chevron-down" :items="pageSizeSelection"
-              v-model="pagination.offsetLimit.pageSize" hide-details @update:modelValue="loadPage"></v-combobox>
+            <!-- <v-combobox
+              variant="plain"
+              menu-icon="mdi-chevron-down"
+              :items="pageSizeSelection"
+              v-model="pagination.offsetLimit.pageSize"
+              hide-details
+              @update:modelValue="loadPage"
+            ></v-combobox> -->
+            <Select
+              menu-icon="mdi-chevron-down"
+              :options="pageSizeSelection"
+              v-model="pagination.offsetLimit.pageSize"
+              hide-details
+              @update:modelValue="loadPage"
+            ></Select>
           </div>
-          <v-pagination :length="pagination.offsetLimit.getTotalPage()" :total-visible="4"
-            v-model="pagination.offsetLimit.page" density="comfortable" variant="text"
-            @update:modelValue="loadPage"></v-pagination>
+          <v-pagination
+            :length="pagination.offsetLimit.getTotalPage()"
+            :total-visible="4"
+            v-model="pagination.offsetLimit.page"
+            density="comfortable"
+            variant="text"
+            @update:modelValue="loadPage"
+          ></v-pagination>
         </section>
       </div>
     </template>
@@ -31,17 +65,17 @@
 </template>
 
 <script setup lang="ts" generic="ResultType">
-import { reactive } from 'vue';
-import OffsetPagination from './offset-pagination';
+import { reactive } from "vue";
+import OffsetPagination from "./offset-pagination";
 import PaginationComponent from "./PaginationComponent.vue";
 
-const props = defineProps<{ pagination: OffsetPagination<ResultType> }>()
+const props = defineProps<{ pagination: OffsetPagination<ResultType> }>();
 
-const pageSizeSelection = reactive<number[]>([20, 50, 100])
+const pageSizeSelection = reactive<number[]>([10, 20, 50, 100]);
 
 const loadPage = async () => {
   await props.pagination.loadPage();
-}
+};
 </script>
 
 <style scoped></style>

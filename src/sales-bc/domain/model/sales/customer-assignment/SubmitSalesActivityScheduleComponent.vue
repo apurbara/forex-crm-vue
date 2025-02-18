@@ -1,32 +1,49 @@
 <template>
-  <div class="d-flex justify-space-between">
-    <v-select label="select activity" :items="salesActivityList" item-title="name" return-object
-      v-model="salesActivitySchedule.salesActivity" hide-details />
-    <Calendar id="calendar-24h" v-model="salesActivitySchedule.startTime" showTime hourFormat="24" class="ml-4" />
+  <div>
+    <ProgressSpinner v-if="fetchingSalesActivityListData" />
+    <div v-else class="flex justify-between gap-4 align-center" fluid>
+      <FloatLabel class="w-1/2" variant="on">
+        <Select
+          v-model="salesActivitySchedule.salesActivity"
+          inputId="sales_activity"
+          :options="salesActivityList"
+          optionLabel="name"
+          class="w-full"
+        />
+        <label for="sales_activity">Select Activity</label>
+      </FloatLabel>
+      <FloatLabel variant="on">
+        <DatePicker
+          id="startTime"
+          v-model="salesActivitySchedule.startTime"
+          showTime
+          hourFormat="24"
+          :stepMinute="60"
+          fluid
+        />
+        <label for="startTime">Start Time</label>
+      </FloatLabel>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import Calendar from 'primevue/calendar';
-import { useDependencyInjection } from '@/shared/composables/dependency-injection';
-import { onMounted, ref } from 'vue';
-import SalesActivitySchedule from './salesActivitySchedule';
-import { SalesActivityType } from '@/company-bc/domain/model/sales-activity';
+import { onMounted, ref } from "vue";
+import SalesActivitySchedule from "./salesActivitySchedule";
+import { SalesActivityType } from "@/company-bc/domain/model/sales-activity";
+import { useSalesActivityStore } from "@/company-bc/stores/sales-activity-store";
 
-defineProps<{ salesActivitySchedule: SalesActivitySchedule }>()
-const { companyUserRepository } = useDependencyInjection();
-const salesActivityList = ref<SalesActivityType[]>([])
+defineProps<{ salesActivitySchedule: SalesActivitySchedule }>();
+const salesActivityList = ref<SalesActivityType[]>();
 
+const salesActivityStore = useSalesActivityStore();
+
+const fetchingSalesActivityListData = ref(true);
 onMounted(async () => {
-  const response = await companyUserRepository.getUser()!
-    .executeGraphqlQueryInCompany<{ salesActivityList: { list: SalesActivityType[] } }>({
-      operation: "salesActivityList",
-      variables: { filters: { type: "[FilterInput]", value: [{ column: "SalesActivity.disabled", value: false }] } },
-      fields: [{ list: ["id", "name"] }]
-    })
-  salesActivityList.value.push(...response.salesActivityList.list)
-})
-
+  salesActivityList.value = await salesActivityStore.fecthAllActiveSalesActivityList();
+  //
+  fetchingSalesActivityListData.value = false;
+});
 </script>
 
 <style lang="scss" scoped></style>

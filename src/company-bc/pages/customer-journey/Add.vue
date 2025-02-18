@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="page-section">
     <h1 class="page-title">Add Customer Journey</h1>
     <div class="form">
       <CustomerJourneyComponent :customer-journey="customerJourney" />
@@ -33,7 +33,7 @@ const submit = async () => {
       ]
     })
   cache?.set(`customer-journey-${response?.addCustomerJourney.id}`, response?.addCustomerJourney)
-  router.push(`/customer-journey/${response?.addCustomerJourney.id}`)
+  router.push(`/company/customer-journey/${response?.addCustomerJourney.id}`)
 }
 
 </script>

@@ -1,17 +1,45 @@
 <template>
-  <h1 class="page-title">Sales Dashboard</h1>
-  <div class="d-flex justify-space-between flex-wrap">
-    <NotificationCardComponent :title="'Upcoming Activity'" :info="upcomingScheduleCount"
+  <!-- <h1 class="page-title">Sales Dashboard</h1> -->
+  <div class="flex flex-wrap justify-between gap-6">
+    <DashboardCardComponent
+      target-path="/sales/schedule?card=Upcoming"
+      title="Upcoming Activity"
+      :badge="upcomingScheduleCount"
+      icon="pi pi-calendar-clock"
+      icon-bg-color="bg-sky-300"
+    />
+    <DashboardCardComponent
+      target-path="/sales/schedule?card=Past"
+      title="Past Activity"
+      :badge="pastScheduleCount"
+      icon="pi pi-phone"
+      icon-bg-color="bg-red-400"
+    />
+    <DashboardCardComponent
+      target-path="/sales/customer-assignment?card=New"
+      title="New Assignment"
+      :badge="newAssignment"
+      icon="pi pi-user-plus"
+      icon-bg-color="bg-green-300"
+    />
+    <DashboardCardComponent
+      target-path="/sales/customer-assignment?card=Idle"
+      title="Idle Assignment"
+      :badge="idleAssignment"
+      icon="pi pi-user"
+      icon-bg-color="bg-orange-400"
+    />
+    <!-- <NotificationCardComponent :title="'Upcoming Activity'" :info="upcomingScheduleCount"
       @click="toActivityPage('upcoming-activity')" />
     <NotificationCardComponent :title="'Past Activity'" :info="pastScheduleCount"
       @click="toActivityPage('past-activity')" />
     <NotificationCardComponent :title="'New Assignment'" :info="newAssignment"
       @click="toAssignmentPage('new-assignment')" />
     <NotificationCardComponent :title="'Idle Assignment'" :info="idleAssignment"
-      @click="toAssignmentPage('idle-assignment')" />
+      @click="toAssignmentPage('idle-assignment')" /> -->
   </div>
-  <SalesDashboardMetricComponent />
-  <SalesDashboardCalendarSection />
+  <SalesDashboardMetricComponent class="mt-4" />
+  <!-- <SalesDashboardCalendarSection class="mt-4" /> -->
   <!-- <section class="page-section calendar-container is-light-mode">
     <Qalendar :events="calendarSchedules" :config="config" @updated-period="periodUpdated" />
   </section> -->
@@ -30,13 +58,14 @@ import { useRouter } from "vue-router";
 // import { SalesActivityScheduleSummaryType } from "../domain/model/sales/customer-assignment/salesActivitySchedule";
 import NotificationCardComponent from "@/shared/components/NotificationCardComponent.vue";
 import SalesDashboardCalendarSection from "./SalesDashboardCalendarSection.vue";
+import DashboardCardComponent from "@/shared/components/DashboardCardComponent.vue";
 
-const { salesRepository } = useDependencyInjection()
+const { salesRepository } = useDependencyInjection();
 // const salesActivityScheduleSummaryList = ref<SalesActivityScheduleSummaryType[]>([])
-const upcomingScheduleCount = ref<number>(0)
-const pastScheduleCount = ref<number>(0)
-const newAssignment = ref<number>(0)
-const idleAssignment = ref<number>(0)
+const upcomingScheduleCount = ref<number>(0);
+const pastScheduleCount = ref<number>(0);
+const newAssignment = ref<number>(0);
+const idleAssignment = ref<number>(0);
 
 // const calendarSchedules = computed(() => {
 //   return salesActivityScheduleSummaryList.value.map((list) => {
@@ -51,8 +80,8 @@ const idleAssignment = ref<number>(0)
 // })
 // const config = ref({ defaultMode: 'month', locale: 'id-ID' });
 const router = useRouter();
-const toAssignmentPage = (tab: string) => router.push(`/sales-customer-assignment/?tab=${tab}`)
-const toActivityPage = (tab: string) => router.push(`/sales-activity/?tab=${tab}`)
+const toAssignmentPage = (tab: string) => router.push(`/sales-customer-assignment/?tab=${tab}`);
+const toActivityPage = (tab: string) => router.push(`/sales-activity-schedule/?tab=${tab}`);
 
 // const periodUpdated = (period: { start: string, end: string }) => {
 //   console.log(new Date(period.start).getDate())
@@ -65,83 +94,99 @@ onMounted(async () => {
     pastScheduleCount: number;
     newAssignment: number;
     idleAssignment: number;
-  }
-  const response = await salesRepository.getUser()
-    .executeSalesGraphqlQuery<ReponseType>([
-      // {
-      //   operation: "salesActivityScheduleSummaryList",
-      //   variables: {},
-      //   fields: ["total", "startTime", "endTime", "status"],
-      // },
-      {
-        operation: { name: "totalSalesActivitySchedule", alias: "upcomingScheduleCount" },
-        variables: {
-          upcomingScheduleFilters: {
-            type: "[FilterInput]", name: "filters",
-            value: [
-              { column: "SalesActivitySchedule.startTime", value: new Date().toISOString(), comparisonType: 'GTE' },
-              { column: "SalesActivitySchedule.status", value: SalesActivityScheduleStatus.SCHEDULED },
-            ],
-          }
+  };
+  const response = await salesRepository.getUser().executeSalesGraphqlQuery<ReponseType>([
+    // {
+    //   operation: "salesActivityScheduleSummaryList",
+    //   variables: {},
+    //   fields: ["total", "startTime", "endTime", "status"],
+    // },
+    {
+      operation: { name: "totalSalesActivitySchedule", alias: "upcomingScheduleCount" },
+      variables: {
+        upcomingScheduleFilters: {
+          type: "[FilterInput]",
+          name: "filters",
+          value: [
+            {
+              column: "SalesActivitySchedule.startTime",
+              value: new Date().toISOString(),
+              comparisonType: "GTE",
+            },
+            {
+              column: "SalesActivitySchedule.status",
+              value: SalesActivityScheduleStatus.SCHEDULED,
+            },
+          ],
         },
-        fields: []
       },
-      {
-        operation: { name: "totalSalesActivitySchedule", alias: "pastScheduleCount" },
-        variables: {
-          pastScheduleFilters: {
-            type: "[FilterInput]", name: "filters",
-            value: [
-              { column: "SalesActivitySchedule.endTime", value: new Date().toISOString(), comparisonType: 'LTE' },
-              { column: "SalesActivitySchedule.status", value: SalesActivityScheduleStatus.SCHEDULED },
-            ],
-          }
+      fields: [],
+    },
+    {
+      operation: { name: "totalSalesActivitySchedule", alias: "pastScheduleCount" },
+      variables: {
+        pastScheduleFilters: {
+          type: "[FilterInput]",
+          name: "filters",
+          value: [
+            {
+              column: "SalesActivitySchedule.endTime",
+              value: new Date().toISOString(),
+              comparisonType: "LTE",
+            },
+            {
+              column: "SalesActivitySchedule.status",
+              value: SalesActivityScheduleStatus.SCHEDULED,
+            },
+          ],
         },
-        fields: []
       },
-      {
-        operation: { name: "totalCustomerAssignment", alias: "newAssignment" },
-        variables: {
-          newAssignmentFilters: {
-            type: "[FilterInput]", name: "filters",
-            value: [
-              { column: "CustomerAssignment.status", value: 'ACTIVE' },
-              { column: "hasSalesActivitySchedule", value: false },
-            ],
-          }
+      fields: [],
+    },
+    {
+      operation: { name: "totalCustomerAssignment", alias: "newAssignment" },
+      variables: {
+        newAssignmentFilters: {
+          type: "[FilterInput]",
+          name: "filters",
+          value: [
+            { column: "CustomerAssignment.status", value: "ACTIVE" },
+            { column: "hasSalesActivitySchedule", value: false },
+          ],
         },
-        fields: []
       },
-      {
-        operation: { name: "totalCustomerAssignment", alias: "idleAssignment" },
-        variables: {
-          assignmentWithoutActiveScheduleFilters: {
-            type: "[FilterInput]", name: "filters",
-            value: [
-              { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
-              { column: "hasSalesActivitySchedule", value: true },
-              { column: "hasActiveSalesActivitySchedule", value: false },
-              { column: "hasPendingClosingRequest", value: false },
-              { column: "hasPendingRecycleRequest", value: false },
-            ],
-          }
+      fields: [],
+    },
+    {
+      operation: { name: "totalCustomerAssignment", alias: "idleAssignment" },
+      variables: {
+        assignmentWithoutActiveScheduleFilters: {
+          type: "[FilterInput]",
+          name: "filters",
+          value: [
+            { column: "CustomerAssignment.status", value: CustomerAssignmentStatus.ACTIVE },
+            { column: "hasSalesActivitySchedule", value: true },
+            { column: "hasActiveSalesActivitySchedule", value: false },
+            { column: "hasPendingClosingRequest", value: false },
+            { column: "hasPendingRecycleRequest", value: false },
+          ],
         },
-        fields: []
       },
-    ])
+      fields: [],
+    },
+  ]);
   // salesActivityScheduleSummaryList.value = response.salesActivityScheduleSummaryList
-  upcomingScheduleCount.value = response.upcomingScheduleCount
-  pastScheduleCount.value = response.pastScheduleCount
-  newAssignment.value = response.newAssignment
-  idleAssignment.value = response.idleAssignment
-})
-
+  upcomingScheduleCount.value = response.upcomingScheduleCount;
+  pastScheduleCount.value = response.pastScheduleCount;
+  newAssignment.value = response.newAssignment;
+  idleAssignment.value = response.idleAssignment;
+});
 </script>
 
 <script lang="ts">
 export default {
-  name: 'SalesDashboard',
-}
+  name: "SalesDashboard",
+};
 </script>
 
 <style>
