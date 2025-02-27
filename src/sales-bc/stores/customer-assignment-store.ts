@@ -6,10 +6,10 @@ import CustomerAssignmentService from "../domain/service/customer-assignment-ser
 
 export const useCustomerAssignmentStore = defineStore("CustomerAssignment", () => {
   const { salesRepository } = useDependencyInjection();
-  const customerAssignmentService = new CustomerAssignmentService(salesRepository.getUser());
   const cachedCustomerAssignment = ref<CustomerAssignment>();
-
+  
   const getCustomerAssignment = async (id: string) => {
+    const customerAssignmentService = new CustomerAssignmentService(salesRepository.getUser());
     if (cachedCustomerAssignment.value?.id !== id) {
       cachedCustomerAssignment.value = new CustomerAssignment();
       const data = await customerAssignmentService.customerAssignmentDetail(id);
