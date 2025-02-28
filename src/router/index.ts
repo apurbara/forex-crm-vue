@@ -1,23 +1,17 @@
-// Composables
-import UserRepository from "@/domain/user-repository";
 import { inject } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
-import companyRoutes from "./company-routes";
-import { UserRoleInterface } from "@/domain/user-role/role-interfaces";
-import salesRoutes from "./sales-routes";
+import companyRoutes from "@/company-bc/router";
+import salesRoutes from "@/sales-bc/router";
+import adminRoutes from "@/admin-bc/router";
+import managerRoutes from "@/manager-bc/router";
+import CompanyUserRepository from "@/company-bc/role/company-user-repository";
 
 const routes = [
   {
     path: "/login",
     name: "login",
-    component: () => import("@/pages/Login.vue"),
+    component: () => import("@/shared-bc/pages/Login.vue"),
   },
-  {
-    path: "/admin-login",
-    name: "admin-login",
-    component: () => import("@/pages/AdminLogin.vue"),
-  },
-  // { path: "/", redirect: "/lading-page" },
   {
     path: "/",
     component: () => import("@/shared/components/UserLayoutComponent.vue"),
@@ -25,14 +19,16 @@ const routes = [
       {
         path: "",
         name: "landing-page",
-        component: () => import("@/pages/LandingPage.vue"),
+        component: () => import("@/shared-bc/pages/LandingPage.vue"),
       },
       {
         path: "home",
         name: "home",
-        component: () => import("@/pages/Home.vue"),
+        component: () => import("@/shared-bc/pages/Home.vue"),
       },
       ...companyRoutes,
+      ...adminRoutes,
+      ...managerRoutes,
       ...salesRoutes,
     ],
   },
@@ -45,14 +41,18 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-  console.log(to.name);
-  if (to.name === "landing-page" || to.name === "login" || to.name === "admin-login" || to.name === "home") {
+  const companyUserRepository = inject<CompanyUserRepository>(
+    "companyUserRepository"
+  );
+  console.log(to.name)
+  // console.log(!!companyUserRepository?.getUser())
+  if (to.name === "landing-page" || to.name === "home") {
+  } else if (to.name === "login") {
+    if (!!companyUserRepository?.getUser()) {
+      return { name: "landing-page" };
+    }
   } else {
-    const userRepository = inject<UserRepository>("userRepository");
-    if (
-      !userRepository?.getUser<UserRoleInterface>().isAuthenticated() &&
-      to.name !== "login"
-    ) {
+    if (!companyUserRepository?.getUser() && to.name !== "login") {
       return { name: "login" };
     }
   }

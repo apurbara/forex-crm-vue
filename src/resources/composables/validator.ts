@@ -12,6 +12,10 @@ export function isPassword(password: string): boolean {
   const passwordFormat = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
   return passwordFormat.test(String(password));
 }
+export function isPhone(phone: string): boolean {
+  const passwordFormat = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+  return passwordFormat.test(String(phone));
+}
 export function isUrl(address: string): boolean {
   try {
     return Boolean(new URL(address));

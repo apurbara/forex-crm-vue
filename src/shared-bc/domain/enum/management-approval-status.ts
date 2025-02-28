@@ -1,0 +1,5 @@
+export enum ManagementApprovalStatus {
+  WAITING_FOR_APPROVAL = 'WAITING_FOR_APPROVAL',
+  REJECTED = 'REJECTED',
+  APPROVED = 'APPROVED',
+}

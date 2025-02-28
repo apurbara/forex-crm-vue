@@ -1,0 +1,42 @@
+import { SalesActivityReportType } from "@/company-bc/domain/model/manager/sales/customer-assignment/sales-activity-schedule/sales-activity-report";
+import SalesActivitySchedule from "../salesActivitySchedule";
+import { ValidationResult } from "@/resources/types/custom-types";
+import { isNotEmpty } from "@/resources/composables/validator";
+
+export default class SalesActivityReport {
+  id?: string;
+  submitTime?: string;
+  content?: string;
+  salesActivitySchedule?: SalesActivitySchedule;
+
+  constructor(data: SalesActivityReportType = {}) {
+    this.load(data);
+  }
+
+  load(data: SalesActivityReportType) {
+    this.id = data.id ?? this.id;
+    this.submitTime = data.submitTime ?? this.submitTime;
+    this.content = data.content ?? this.content;
+
+    if (data.salesActivitySchedule) {
+      this.salesActivitySchedule ??= new SalesActivitySchedule();
+      this.salesActivitySchedule.load(data.salesActivitySchedule);
+      this.salesActivitySchedule.salesActivityReport = this;
+    }
+  }
+
+  toGraphqlVariables() {
+    return {
+      content: this.content,
+    };
+  }
+
+  //
+  isValidContent(): ValidationResult {
+    return isNotEmpty(this.content) || "report content is mandatory";
+  }
+
+  isValidToSubmit() {
+    return this.isValidContent() === true;
+  }
+}

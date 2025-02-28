@@ -1,0 +1,7 @@
+export enum CustomerAssignmentStatus {
+  ACTIVE = "ACTIVE",
+  COMPLETED = "COMPLETED",
+  RECYCLED = "RECYCLED",
+  CANCELLED = "CANCELLED",
+  CANCELLED_BY_SYSTEM = "CANCELLED_BY_SYSTEM",
+}

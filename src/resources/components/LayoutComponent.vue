@@ -6,6 +6,9 @@
       <v-spacer />
       <AppBarMenuItemComponent v-for="(appBarMenuItem, key) in layout.appBarMenuItems" :key="key"
         :menu-item="appBarMenuItem" />
+      <v-btn v-if="showLogout" plain @click="logout">
+        <v-icon icon="mdi-logout" />
+      </v-btn>
     </v-app-bar>
     <!--  -->
     <v-navigation-drawer v-if="showNavBar" permanent app :clipped="true" absolute elevation="1">
@@ -36,14 +39,23 @@ import HomeComponent from './layout/HomeComponent.vue';
 import { computed } from 'vue';
 import MenuItemComponent from './layout/MenuItemComponent.vue';
 import { useDisplay } from 'vuetify/lib/framework.mjs';
+import { useDependencyInjection } from '@/shared/composables/dependency-injection';
 
-const props = defineProps<{ layout: LayoutInterface }>();
+const props = withDefaults(defineProps<{ layout: LayoutInterface, showLogout?: boolean }>(), { showLogout: true });
 const { smAndDown, lgAndUp } = useDisplay()
 const navBarShowStatus = ref(!smAndDown.value);
+const { companyUserRepository, adminRepository, managerRepository, salesRepository } = useDependencyInjection();
 
 const showNavBar = computed((): boolean => !!props.layout.navBarMenuItems?.length && navBarShowStatus.value)
 
 const toggleNavbar = () => navBarShowStatus.value = !navBarShowStatus.value;
+
+const logout = () => {
+  adminRepository.logUserOut();
+  managerRepository.logUserOut();
+  salesRepository.logUserOut();
+  companyUserRepository.logUserOut();
+}
 </script>
 
 <style></style>

@@ -1,8 +1,8 @@
 import RegularException from "@/resources/exception/regular-exception";
-import axios from "axios";
+import axios, { AxiosProgressEvent } from "axios";
 import { mutation, query } from "gql-query-builder";
-import HttpRequestInterface from "@/domain/user-role/http-request-interface";
 import { GraphqlBuilderOptions } from "@/resources/types/graphql";
+import HttpRequestInterface from "../http-request-interface";
 
 export default class AxiosHttpRequest implements HttpRequestInterface {
   protected axios;
@@ -25,10 +25,10 @@ export default class AxiosHttpRequest implements HttpRequestInterface {
   ): Promise<ResponseType> {
     const authHeader = token
       ? {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
       : undefined;
     const response = await this.axios
       .post<ResponseType>(context, mutation(options), authHeader)
@@ -54,10 +54,10 @@ export default class AxiosHttpRequest implements HttpRequestInterface {
   ): Promise<ResponseType> {
     const authHeader = token
       ? {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
       : undefined;
     const response = await this.axios
       .post<ResponseType>(context, query(options), authHeader)
