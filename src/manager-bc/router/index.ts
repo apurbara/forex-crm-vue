@@ -2,9 +2,13 @@ import { components } from "vuetify/dist/vuetify-labs.js";
 
 const managerRoutes = [
   {
-    path: "/manager",
-    component: () => import("@/manager-bc/pages/ManagerDashboard.vue"),
+    path: "manager/",
+    component: () => import("@/manager-bc/components/ManagerLayoutComponent.vue"),
     children: [
+      {
+        path: "",
+        redirect: "/manager/dashboard",
+      },
       {
         path: "dashboard",
         meta: { title: "Manager Dashboard" },
