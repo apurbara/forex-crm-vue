@@ -4,7 +4,16 @@
       message="no pending closing request"
       v-if="!pagination.resultList.length"
     />
-    <DataTable v-else :value="pagination.resultList" size="small" class="w-full">
+    <DataTable
+      v-else
+      :value="pagination.resultList"
+      size="small"
+      class="w-full"
+      selectionMode="single"
+      @row-click="
+        (event) => router.push(`/manager/customer-assignment/${event.data.customerAssignment.id}`)
+      "
+    >
       <Column>
         <template #body="{ data }">
           <div class="my-2">

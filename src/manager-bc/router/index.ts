@@ -1,5 +1,3 @@
-import { components } from "vuetify/dist/vuetify-labs.js";
-
 const managerRoutes = [
   {
     path: "manager/",
@@ -20,7 +18,7 @@ const managerRoutes = [
           {
             path: "",
             meta: { title: "Customer Assignment List" },
-            component: () => import("@/manager-bc/pages/customer-assignment/List.vue"),
+            component: () => import("@/manager-bc/pages/customer-assignment/Main.vue"),
           },
           {
             path: ":customerAssignmentId",

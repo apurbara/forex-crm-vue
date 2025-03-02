@@ -40,13 +40,14 @@
         v-else
         :value="pagination.resultList"
         selectionMode="single"
-        @row-click="(event) => router.push(`/sales/customer-assignment/${event.data.id}`)"
+        @row-click="(event) => router.push(`/manager/customer-assignment/${event.data.id}`)"
         size="small"
         fluid
         class="w-full"
       >
-        <Column field="customerName" header="Customer Name"></Column>
-        <Column field="customerPhone" header="Customer Phone"></Column>
+        <Column field="customerName" header="Customer"></Column>
+        <Column field="salesName" header="Sales"></Column>
+        <!-- <Column field="customerPhone" header="Customer Phone"></Column> -->
         <Column field="verificationScore" header="Verification Score"></Column>
         <Column field="customerJourneyName" header="Customer Journey"></Column>
         <Column
@@ -59,21 +60,21 @@
 </template>
 
 <script setup lang="ts">
+import { ExtendedCustomerAssignmentType } from "@/manager-bc/domain/model/manager/sales/customer-assignment";
+import CustomerAssignmentService from "@/manager-bc/domain/service/customer-assignment-service";
 import { KeywordSearch } from "@/resources/components/abstract-pagination";
 import OffsetPagination, { OffsetLimit } from "@/resources/components/offset-pagination";
 import OffsetPaginationComponent from "@/resources/components/OffsetPaginationComponent.vue";
-import { ExtendedCustomerAssignmentType } from "@/sales-bc/domain/model/sales/customer-assignment";
-import CustomerAssignmentService from "@/sales-bc/domain/service/customer-assignment-service";
 import { CustomerAssignmentStatus } from "@/shared-bc/domain/enum/customer-assignment-status";
 import EmptyDataIllustrationComponent from "@/shared/components/EmptyDataIllustrationComponent.vue";
 import { useDependencyInjection } from "@/shared/composables/dependency-injection";
 import { onMounted, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-const { salesRepository } = useDependencyInjection();
+const { managerRepository } = useDependencyInjection();
 const router = useRouter();
 const route = useRoute();
-const customerAssignmentService = new CustomerAssignmentService(salesRepository.getUser());
+const customerAssignmentService = new CustomerAssignmentService(managerRepository.getUser());
 const pagination = reactive(
   new OffsetPagination<ExtendedCustomerAssignmentType>(
     (pagination) => customerAssignmentService.customerAssignmentListRest(pagination),
@@ -114,10 +115,11 @@ const viewSummary = async () => {
     newAssignmentCount: number;
     idleAssignmentCount: number;
     activeAssignmentCount: number;
+    completedAssignmentCount: number;
   };
-  const response = await salesRepository.getUser().executeSalesGraphqlQuery<ResponseType>([
+  const response = await managerRepository.getUser().executeManagerGraphqlQuery<ResponseType>([
     {
-      operation: { name: "totalCustomerAssignment", alias: "newAssignmentCount" },
+      operation: { name: "viewCustomerAssignmentCount", alias: "newAssignmentCount" },
       variables: {
         newAssignmentFilters: {
           type: "[FilterInput]",
@@ -131,7 +133,7 @@ const viewSummary = async () => {
       fields: [],
     },
     {
-      operation: { name: "totalCustomerAssignment", alias: "idleAssignmentCount" },
+      operation: { name: "viewCustomerAssignmentCount", alias: "idleAssignmentCount" },
       variables: {
         assignmentWithoutActiveScheduleFilters: {
           type: "[FilterInput]",
@@ -148,7 +150,7 @@ const viewSummary = async () => {
       fields: [],
     },
     {
-      operation: { name: "totalCustomerAssignment", alias: "activeAssignmentCount" },
+      operation: { name: "viewCustomerAssignmentCount", alias: "activeAssignmentCount" },
       variables: {
         activeFilters: {
           type: "[FilterInput]",
@@ -158,11 +160,30 @@ const viewSummary = async () => {
       },
       fields: [],
     },
+    {
+      operation: { name: "viewCustomerAssignmentCount", alias: "completedAssignmentCount" },
+      variables: {
+        completedFilters: {
+          type: "[FilterInput]",
+          name: "filters",
+          value: [
+            {
+              column: "CustomerAssignment.status",
+              value: [CustomerAssignmentStatus.RECYCLED, CustomerAssignmentStatus.GOOD_FUND],
+              comparisonType: "IN",
+            },
+          ],
+        },
+      },
+      fields: [],
+    },
   ]);
   predefinedFilterCardItems.find((el) => el.title === "Active")!.total =
     response.activeAssignmentCount;
   predefinedFilterCardItems.find((el) => el.title === "New")!.total = response.newAssignmentCount;
   predefinedFilterCardItems.find((el) => el.title === "Idle")!.total = response.idleAssignmentCount;
+  predefinedFilterCardItems.find((el) => el.title === "Completed")!.total =
+    response.completedAssignmentCount;
 };
 
 const fetchingList = ref(false);
@@ -199,6 +220,18 @@ const fetchActiveAssignmentList = async () => {
   await pagination.resetList();
   fetchingList.value = false;
 };
+const fetchCompletedAssignmentList = async () => {
+  selectedCardTitle.value = "Completed";
+  fetchingList.value = true;
+  pagination.clearHiddenFilter();
+  pagination.addHiddenFilter({
+    column: "CustomerAssignment.Status",
+    value: [CustomerAssignmentStatus.RECYCLED, CustomerAssignmentStatus.GOOD_FUND],
+    comparisonType: "IN",
+  });
+  await pagination.resetList();
+  fetchingList.value = false;
+};
 const predefinedFilterCardItems = reactive([
   {
     ...{ title: "Active", icon: "mdi mdi-account-tie", iconBgColor: "bg-slate-200", total: 0 },
@@ -211,6 +244,15 @@ const predefinedFilterCardItems = reactive([
   {
     ...{ title: "Idle", icon: "mdi mdi-bed-outline", iconBgColor: "bg-slate-200", total: 0 },
     action: fetchIdleAssignmentList,
+  },
+  {
+    ...{
+      title: "Completed",
+      icon: "mdi mdi-account-check-outline",
+      iconBgColor: "bg-slate-200",
+      total: 0,
+    },
+    action: fetchCompletedAssignmentList,
   },
 ]);
 </script>

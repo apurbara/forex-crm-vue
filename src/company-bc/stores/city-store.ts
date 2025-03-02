@@ -26,5 +26,28 @@ export const useCityStore = defineStore("city", () => {
     return allActiveCityList.value ?? [];
   }
 
-  return { fecthAllActiveCityList };
+  const findCityById = async (id: string): Promise<CityType | undefined> => {
+    return await fecthAllActiveCityList().then((cityList) =>
+      cityList.find((city) => city.id === id)
+    );
+  };
+
+  // async function fecthAllActiveCityList(): Promise<CityType[]> {
+  //   if (!isAllActiveCityListFetched.value) {
+  //     const response = await companyUserRepository
+  //       .getUser()!
+  //       .executeGraphqlQueryInCompany<{ viewAllCity: CityType[] }>({
+  //         operation: "viewAllCity",
+  //         variables: {
+  //           filters: { type: "[FilterInput]", value: [{ column: "City.disabled", value: false }] },
+  //         },
+  //         fields: ["id", "name"],
+  //       });
+  //     allActiveCityList.value = response.viewAllCity;
+  //     isAllActiveCityListFetched.value = true;
+  //   }
+  //   return allActiveCityList.value ?? [];
+  // }
+
+  return { fecthAllActiveCityList, findCityById };
 });

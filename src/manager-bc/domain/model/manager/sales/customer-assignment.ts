@@ -5,6 +5,7 @@ import { SalesActivityScheduleType } from "./customer-assignment/sales-activity-
 import { ClosingRequestType } from "./customer-assignment/closing-request";
 import { RecycleRequestType } from "./customer-assignment/recycle-request";
 import { CustomerType } from "@/company-bc/domain/model/customer";
+import { customerAssignmentJourneyType } from "./customer-assignment/customer-assignment-journey";
 
 export type CustomerAssignmentType = {
   id?: string;
@@ -21,5 +22,15 @@ export type CustomerAssignmentType = {
   salesActivitySchedules?: SalesActivityScheduleType[];
   closingRequests?: ClosingRequestType[];
   recycleRequests?: RecycleRequestType[];
+  customerAssignmentJourneys?: customerAssignmentJourneyType[];
 };
 
+export type ExtendedCustomerAssignmentType = {
+  salesName?: string;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  customerSource?: string;
+  customerJourneyName?: string;
+  verificationScore?: number;
+} & CustomerAssignmentType;

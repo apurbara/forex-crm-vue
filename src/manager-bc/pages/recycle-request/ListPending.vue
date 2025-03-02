@@ -4,7 +4,16 @@
       message="no pending recycle request"
       v-if="!pagination.resultList.length"
     />
-    <DataTable v-else :value="pagination.resultList" size="small" class="w-full">
+    <DataTable
+      v-else
+      :value="pagination.resultList"
+      size="small"
+      class="w-full"
+      selectionMode="single"
+      @row-click="
+        (event) => router.push(`/manager/customer-assignment/${event.data.customerAssignment.id}`)
+      "
+    >
       <Column>
         <template #body="{ data }">
           <div class="flex justify-end align-center">
@@ -107,6 +116,7 @@ import { useDependencyInjection } from "@/shared/composables/dependency-injectio
 import { RecycleRequestType } from "@/company-bc/domain/model/sales/customer-assignment/recycle-request";
 import { ManagementApprovalStatus } from "@/shared-bc/domain/enum/management-approval-status";
 import EnumFilter from "@/resources/components/pagination/enum-filter";
+import EmptyDataIllustrationComponent from "@/shared/components/EmptyDataIllustrationComponent.vue";
 
 const { managerRepository } = useDependencyInjection();
 const router = useRouter();
@@ -114,24 +124,22 @@ const confirm = useConfirm();
 
 const pagination = reactive(
   new OffsetPagination<RecycleRequestType>(async (pagination) => {
-    const response = await managerRepository
-      .getUser()
-      .executeManagerGraphqlQuery<{
-        recycleRequestList: PaginationResponseType<RecycleRequestType>;
-      }>({
-        operation: "recycleRequestList",
-        variables: pagination.toGraphqlVariables(),
-        fields: OffsetPagination.wrapResultFields([
-          "id",
-          "status",
-          "createdTime",
-          "note",
-          "remark",
-          {
-            customerAssignment: ["id", { customer: ["name"] }, { sales: ["name"] }],
-          },
-        ]),
-      })!;
+    const response = await managerRepository.getUser().executeManagerGraphqlQuery<{
+      recycleRequestList: PaginationResponseType<RecycleRequestType>;
+    }>({
+      operation: "recycleRequestList",
+      variables: pagination.toGraphqlVariables(),
+      fields: OffsetPagination.wrapResultFields([
+        "id",
+        "status",
+        "createdTime",
+        "note",
+        "remark",
+        {
+          customerAssignment: ["id", { customer: ["name"] }, { sales: ["name"] }],
+        },
+      ]),
+    })!;
     return response.recycleRequestList;
   })
 );
