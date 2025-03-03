@@ -4,6 +4,7 @@
     <v-row>
       <v-col class="border-sm ma-2 pa-2" v-for="(metricSummary, key) in metricSummaries" :key="key">
         <h4>Target: {{ useThousandSeparator(metricSummary.target!) }}</h4>
+        <ProgressBar :value="getOngoingAchievement(metricSummary)"></ProgressBar>
         <Chart
           type="bar"
           :data="setChartData(metricSummary)"
@@ -20,16 +21,17 @@ import { useDependencyInjection } from "@/shared/composables/dependency-injectio
 import { onMounted, ref } from "vue";
 import Chart from "primevue/chart";
 import { useThousandSeparator } from "@/resources/composables/typography";
+import { DateTime } from "luxon";
 
 const { salesRepository } = useDependencyInjection();
 const chartOptions = ref();
 
-type MetricSummry = {
+type MetricSummary = {
   name: string;
   target?: number;
-  result: { evaluationTime: string; achievement: number }[];
+  result: { evaluationTime: string; achievement: number; reccurenceType: string }[];
 };
-const metricSummaries = ref<MetricSummry[]>([]);
+const metricSummaries = ref<MetricSummary[]>([]);
 
 onMounted(async () => {
   metricSummaries.value = await salesRepository
@@ -38,7 +40,39 @@ onMounted(async () => {
   chartOptions.value = setChartOptions();
 });
 
-const setChartData = (companyMetricSummary: MetricSummry) => {
+const getOngoingAchievement = (metricSummary: MetricSummary): number => {
+  const currentTime = DateTime.now();
+  let ongoingAchievment = 0;
+  metricSummary.result.forEach((element) => {
+    switch (element.reccurenceType) {
+      case "DAILY":
+        if (currentTime.toFormat("yyyy-LL-dd") == element.evaluationTime) {
+          ongoingAchievment = element.achievement;
+        }
+        break;
+      case "WEEKLY":
+        if (currentTime.toFormat("yyyy-WW") == element.evaluationTime) {
+          ongoingAchievment = element.achievement;
+        }
+        break;
+      case "MONTHLY":
+        console.log("current " + currentTime.toFormat("yyyy-LL"));
+        console.log("data" + element.evaluationTime);
+        if (currentTime.toFormat("yyyy-LL") == element.evaluationTime) {
+          ongoingAchievment = element.achievement;
+        }
+        break;
+      case "YEARLY":
+        if (currentTime.toFormat("yyyy") == element.evaluationTime) {
+          ongoingAchievment = element.achievement;
+        }
+        break;
+    }
+  });
+  return Math.round((100 * ongoingAchievment) / metricSummary.target!);
+};
+
+const setChartData = (companyMetricSummary: MetricSummary) => {
   const documentStyle = getComputedStyle(document.documentElement);
 
   return {
