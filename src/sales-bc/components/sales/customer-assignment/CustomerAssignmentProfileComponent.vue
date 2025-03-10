@@ -13,7 +13,11 @@
     </div>
     <div class="flex flex-wrap gap-2 text-sm mt-2">
       <div class="flex justify-start align-center gap-2">
-        <Avatar shape="circle" icon="pi pi-phone" class="border" />
+        <Button
+          icon="pi pi-whatsapp"
+          as="a"
+          :href="`whatsapp://send/?phone=${customerAssignment.customer.phone}`"
+        />
         <p class="font-semibold">{{ customerAssignment.customer.phone }}</p>
       </div>
       <div class="flex justify-start align-center gap-2">

@@ -20,6 +20,13 @@
       <div class="flex justify-start align-center gap-2">
         <Avatar icon="pi pi-phone" />
         <p>{{ customerAssignment.customer.phone }}</p>
+        <Button
+          icon="pi pi-whatsapp"
+          as="a"
+          :href="`whatsapp://send/?phone=${customerAssignment.customer.phone}&text=&app_absent=1`"
+          target="_blank"
+          rel="noopener"
+        />
       </div>
       <div class="flex justify-start align-center gap-2">
         <Avatar icon="pi pi-envelope" />
